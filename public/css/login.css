@@ -1,0 +1,117 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+  }
+
+/* CSS Reset */
+body, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+dl, dd, ol, ul, figure,
+hr, fieldset, legend {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  line-height: 1.6;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+ol, ul {
+    list-style: none;
+  }
+  
+.main-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.logoBackground {
+    height: 100%;
+    width: 60%;
+    background-color: var(--color4);
+}
+
+.comLogo {
+    height: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+#logo{
+    height: 55%;
+}
+
+.photoBooks {
+    height: 75%;
+    display: flex;
+    justify-content: center;
+}
+
+#background {
+    width: 60%;
+}
+
+.loginContainer {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#loginWord {
+    margin-top: 10%;
+    font-weight: bold;
+    font-size: 3em;
+}
+
+#welcomeSentence {
+    margin-top: 5%;
+    font-weight: bolder;
+    font-size: 2em;
+}
+
+.form-container {
+    width: 80%;
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+#label {
+    font-size: 2em;
+}
+
+.inputVariables {
+    font-size: 1.5em;
+    padding: 0.5em 0.5em;
+    border-radius: 25px;
+}
+
+#sign-in-button {
+    background-color: var(--color2);
+    border: none;
+    width: 45%;
+    margin-left: 27.5%;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 0.8em 1em 0.8em 1em;
+    margin-top: 1em;
+}
+
+#register-sentence {
+    margin-top: 2em;
+    font-size: 1.5em;
+}
