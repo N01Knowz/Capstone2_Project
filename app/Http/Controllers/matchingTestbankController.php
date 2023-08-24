@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\testbank;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\questions;
+use DOMDocument;
+use Illuminate\Support\Facades\File;
 
 class matchingTestbankController extends Controller
 {
@@ -72,8 +75,11 @@ class matchingTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        $questions = questions::where('testbank_id', '=', $id)
+            ->get();
         return view('testbank.matching.matching_test-description', [
             'test' => $test,
+            'questions' => $questions,
         ]);
     }
 

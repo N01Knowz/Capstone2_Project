@@ -73,7 +73,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div class="add-test-button-anchor">
+                <div href="/mcq" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
@@ -84,30 +84,28 @@
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <form method="POST" action="/mtf/{{$test->id}}/create_question" class="test-add-question-container">
+                <form method="POST" action="/mtf/{{$test->id}}/{{$question->id}}/edit" class="test-add-question-container">
                     @csrf
+                    @method('PUT')
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input" name="item_question"></textarea>
+                    <textarea class="text-input" name="item_question">{{$question->item_question}}</textarea>
                     @error('item_question')
                     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image">
+                        <input type="text" class="text-input-attach-image" name="question_image" value="{{$question->question_image}}">
                         <button class="text-input-image-button">Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
                     <div id="optionsContainer">
-                        <p class="text-input-label">Option 1</p>
-                        <textarea class="summernote" name="option_1" id="option_1"><p>True</p></textarea>
-                        @error('option_1')
-                        <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                        @enderror
-                        <p class="text-input-label">Option 2</p>
-                        <textarea class="summernote" name="option_2" id="option_2"><p>False</p></textarea>
-                        @error('option_1')
-                        <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                        @enderror
+                        @for($i = 1; $i <= $question->choices_number; $i++)
+                            <p class="text-input-label">Option {{$i}}</p>
+                            <textarea class="summernote" name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'option_' . $i )}}</textarea>
+                            @error('option_1')
+                            <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                            @enderror
+                            @endfor
                     </div>
                     <div class="item-answer-points-container">
                         <div class="correct-answer-container">
@@ -165,14 +163,61 @@
             placeholder: 'Enter Option...',
             tabsize: 2,
             height: 100,
-            toolbar: [],
-            focus: false,
-            disableResizeEditor: true
+            toolbar: []
         });
-        $('#option_1').summernote('disable');
-        $('#option_2').summernote('disable');
+
+        // JavaScript Code
+        document.addEventListener("DOMContentLoaded", function() {
+            const numChoicesInput = document.getElementById("numChoicesInput");
+            const optionsContainer = document.getElementById("optionsContainer");
+            const optionSelect = document.getElementById("option-select");
+
+            const textareaValues = {};
+
+            numChoicesInput.addEventListener("input", function() {
+                const numChoices = parseInt(numChoicesInput.value);
+
+                optionsContainer.querySelectorAll(".summernote").forEach((textarea, index) => {
+                    textareaValues[`option_${index + 1}`] = textarea.value;
+                });
+
+                // Clear existing options
+                optionsContainer.innerHTML = "";
+                optionSelect.innerHTML = "";
+
+                // Validate input and create components
+                if (!isNaN(numChoices) && numChoices >= 1 && numChoices <= 10) {
+                    for (let i = 1; i <= numChoices; i++) {
+                        const optionContainer = document.createElement("div");
+                        optionContainer.className = "option-container"; // You can style this container if needed
+
+                        const label = document.createElement("p");
+                        label.className = "text-input-label";
+                        label.textContent = `Option ${i}`;
+
+                        const textarea = document.createElement("textarea");
+                        textarea.className = "summernote";
+                        textarea.name = `option_${i}`;
+                        textarea.value = textareaValues[`option_${i}`] || ""; // Restore old value if available
+
+                        const optionElement = document.createElement("option");
+                        optionElement.textContent = `Option ${i}`;
+                        optionElement.value = `${i}`;
+                        optionSelect.appendChild(optionElement);
 
 
+                        optionContainer.appendChild(label);
+                        optionContainer.appendChild(textarea);
+                        optionsContainer.appendChild(optionContainer);
+                        $(textarea).summernote();
+                    }
+                }
+            });
+        });
+
+        for (var i = 1; i <= 2; i++) {
+            $('#option_' + i).summernote('disable');
+        }
     </script>
 </body>
 

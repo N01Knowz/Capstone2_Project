@@ -161,7 +161,8 @@ class mtfTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'item_question' => 'required',
-            'option_1' => 'required',
+            'question_point' => 'required',
+            'explanation_point' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -176,6 +177,7 @@ class mtfTestbankController extends Controller
             'choices_number' => 2,
             'question_answer' => $request->input('question_answer'),
             'question_point' => $request->input('question_point'),
+            'explanation_point' => $request->input('explanation_point'),
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
@@ -226,6 +228,8 @@ class mtfTestbankController extends Controller
         $validator = Validator::make($input, [
             'item_question' => 'required',
             'option_1' => 'required',
+            'question_point' => 'required',
+            'explanation_point' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -240,6 +244,7 @@ class mtfTestbankController extends Controller
             'choices_number' => 2,
             'question_answer' => $request->input('question_answer'),
             'question_point' => $request->input('question_point'),
+            'explanation_point' => $request->input('explanation_point'),
         ]);
 
         for ($i = 1; $i <= 10; $i++) {

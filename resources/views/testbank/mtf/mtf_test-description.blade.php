@@ -106,12 +106,12 @@
                                     </td>
                                     <td>
                                         <div class="questions-table-buttons-column-div">
-                                            <form action="/tf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                            <form action="/mtf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
                                                 <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
                                                     <p>Edit</p>
                                                 </button>
                                             </form>
-                                            <form action="/tf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                            <form action="/mtf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
                                                 @csrf
                                                 @method('delete')
                                                 <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
@@ -155,7 +155,7 @@
             const clickedColumn = event.currentTarget;
             const questionID = clickedColumn.getAttribute('data-question-id');
             const testID = clickedColumn.getAttribute('data-test-id');
-            window.location.href = "/tf/" + testID + "/" + questionID;
+            window.location.href = "/mtf/" + testID + "/" + questionID;
         }
 
         const columns = document.querySelectorAll('.question-description');
