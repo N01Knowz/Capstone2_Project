@@ -94,21 +94,21 @@
                             <tbody>
                                 @foreach($questions as $question)
                                 <tr id="test-question-item-description">
-                                    <td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{ $loop->index + 1}}</p>
                                     </td>
-                                    <td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>@if($question->question_active == 1) Active @else Inactive @endif</p>
                                     </td>
-                                    <td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{$question->item_question}}</p>
                                     </td>
-                                    <td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{$question->question_point}}</p>
                                     </td>
                                     <td>
                                         <div class="questions-table-buttons-column-div">
-                                            <form action="#" method="GET" class="question-table-button-form">
+                                            <form action="/mcq/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
                                                 <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
                                                     <p>Edit</p>
                                                 </button>
@@ -152,6 +152,19 @@
         </div>
     </div>
     <script>
+
+        function handleRowClick(event) {
+            const clickedColumn = event.currentTarget;
+            const questionID = clickedColumn.getAttribute('data-question-id');
+            const testID = clickedColumn.getAttribute('data-test-id');
+            window.location.href = "/mcq/" + testID + "/" + questionID;
+        }
+
+        const columns = document.querySelectorAll('.question-description');
+        columns.forEach(column => {
+            column.addEventListener('click', handleRowClick);
+        });
+
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
                 // User clicked OK, proceed with form submission
@@ -161,6 +174,7 @@
                 return false;
             }
         }
+
         document.getElementById('back-button').addEventListener('click', function() {
             window.history.back();
         });

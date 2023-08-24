@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\testbank;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\questions;
+use DOMDocument;
+use Illuminate\Support\Facades\File;
 
 class mtfTestbankController extends Controller
 {
@@ -72,8 +75,11 @@ class mtfTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        $questions = questions::where('testbank_id', '=', $id)
+            ->get();
         return view('testbank.mtf.mtf_test-description', [
             'test' => $test,
+            'questions' => $questions,
         ]);
     }
 
@@ -127,5 +133,200 @@ class mtfTestbankController extends Controller
         ]);
         
         return back();
+    }
+    public function add_question_index(string $test_id)
+    {
+        $test = testbank::find($test_id);
+        return view('testbank/mtf/mtf_add_question', [
+            'test' => $test,
+        ]);
+    }
+
+    public function add_question_show(string $test_id, string $question_id)
+    {
+        $test = testbank::find($test_id);
+        $question = questions::find($question_id);
+
+        return view('testbank.mtf.mtf_question_description', [
+            'test' => $test,
+            'question' => $question,
+        ]);
+
+        return back();
+    }
+
+    public function add_question_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'item_question' => 'required',
+            'option_1' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $question = questions::create([
+            'testbank_id' => $test_id,
+            'question_active' => 1,
+            'item_question' => $request->input('item_question'),
+            'question_image' => $request->input('question_image', null),
+            'choices_number' => 2,
+            'question_answer' => $request->input('question_answer'),
+            'question_point' => $request->input('question_point'),
+        ]);
+
+        for ($i = 1; $i <= 2; $i++) {
+            $option = $request->input('option_' . $i);
+
+
+            $question->update([
+                'option_' . $i => $option,
+            ]);
+        }
+
+        return redirect('/mtf/' . $test_id);
+
+        // $test = testbank::find($test_id);
+        // return view('testbank/mtf/mtf_add_question', [
+        //     'test' => $test,
+        // ]);
+    }
+
+    public function add_question_destroy(string $id)
+    {
+        $question = questions::find($id);
+
+        $question->update([
+            'question_active' => '0'
+        ]);
+
+        return back();
+    }
+
+    public function add_question_edit(string $test_id, string $question_id)
+    {
+        $test = testbank::find($test_id);
+        $question = questions::find($question_id);
+
+        return view('testbank.mtf.mtf_edit_question', [
+            'test' => $test,
+            'question' => $question,
+        ]);
+
+        return back();
+    }
+
+    public function add_question_update(Request $request, string $test_id, string $question_id)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'item_question' => 'required',
+            'option_1' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $question = questions::find($question_id);
+
+        $question->update([
+            'item_question' => $request->input('item_question'),
+            'question_image' => $request->input('question_image', null),
+            'choices_number' => 2,
+            'question_answer' => $request->input('question_answer'),
+            'question_point' => $request->input('question_point'),
+        ]);
+
+        for ($i = 1; $i <= 10; $i++) {
+            
+            $option = $request->input('option_' . $i);
+            $oldOption = questions::where('id', $question_id)
+                ->value('option_' . $i);
+
+            if ($oldOption) {
+                $oldDom = new DOMDocument();
+                @$oldDom->loadHTML($oldOption);
+                $oldImageFile = $oldDom->getElementsByTagName('img');
+            }
+
+            if ($option) {
+                $dom = new DOMDocument();
+                @$dom->loadHTML($option);
+                $imageFile = $dom->getElementsByTagName('img');
+            }
+
+
+            if ($oldOption) {
+                foreach ($oldImageFile as $oldItem => $oldImage) {
+                    $oldSrc = $oldImage->getAttribute('src');
+                    $oldSrcExist = false;
+                    $oldSrcWithoutLeadingSlash = ltrim($oldSrc, '/');
+                    // $fileName = '1692509280_64e1a460a6004.jpeg';
+                    $filePath = public_path($oldSrcWithoutLeadingSlash);
+                    $src = "";
+                    if ($option) {
+                        foreach ($imageFile as $item => $image) {
+                            $src = $image->getAttribute('src');
+                            if ($oldSrc == $src) {
+                                $oldSrcExist = true;
+                            }
+                        }
+                        // dd($oldSrc, $option, strpos($oldSrc, $option));
+                        if ($oldSrcExist == false) {
+                            // dd($oldSrcWithoutLeadingSlash, $option, strpos($oldSrc, $option), $filePath, File::exists($filePath));
+                            if (File::exists($filePath)) {
+                                File::delete($filePath);
+                            }
+                        }
+                    }
+                    else {
+                        if (File::exists($filePath)) {
+                            File::delete($filePath);
+                        }
+                    }
+                }
+            }
+            if ($option) {
+                foreach ($imageFile as $item => $image) {
+                    $src = $image->getAttribute('src');
+                    $uploadpath = public_path('user_upload_images');
+                    if (strpos($src, 'data:') === 0) {
+                        $dataParts = explode(';', $src);
+                        $mediaTypeParts = explode('/', $dataParts[0]);
+                        $imageType = end($mediaTypeParts);
+                        $dataUriParts = explode(',', $src, 2);
+                        $srcData = $dataUriParts[1];
+                        $imageData = base64_decode($srcData);
+                        $filename = time() . '_' . uniqid() . '.' . $imageType;
+                        file_put_contents($uploadpath . '/' . $filename, $imageData);
+                        $image->setAttribute('src', '/user_upload_images/' . $filename);
+                    }
+                }
+                $bodyContent = '';
+                $bodyElement = $dom->getElementsByTagName('body')->item(0);
+                if ($bodyElement) {
+                    foreach ($bodyElement->childNodes as $node) {
+                        $bodyContent .= $dom->saveHTML($node);
+                    }
+                }
+            }
+
+            if ($option) {
+                $updatedHTML = $bodyContent;
+            } else {
+                $updatedHTML = null;
+            }
+            echo $updatedHTML;
+
+            $question->update([
+                'option_' . $i => $updatedHTML,
+            ]);
+        }
+        return redirect('/mtf/' . $test_id);
     }
 }

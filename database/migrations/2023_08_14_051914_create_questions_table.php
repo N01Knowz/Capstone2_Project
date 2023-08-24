@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('choices_number');
             $table->integer('question_answer');
             $table->integer('question_point');
+            $table->integer('explanation_point')->nullable();
             $table->longText('option_1')->nullable();
             $table->longText('option_2')->nullable();
             $table->longText('option_3')->nullable();

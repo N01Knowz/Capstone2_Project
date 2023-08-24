@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/css/add_page.css">
-    <link rel="stylesheet" href="/css/navigator.css">
-    <link rel="stylesheet" href="/css/body.css">
-    <link rel="stylesheet" href="/css/mcq_add_question.css">
     <!-- include libraries(jQuery, bootstrap) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -16,7 +13,12 @@
     <!-- include summernote css/js -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <link rel="stylesheet" href="/css/add_page.css">
+    <link rel="stylesheet" href="/css/navigator.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/mcq_add_question.css">
 </head>
+
 <body>
     <div class="test-container">
         <div class="navigator">
@@ -71,69 +73,78 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="mcq_add.html" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
-                </a>
+                <div class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">Science T/F</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">Science True or False</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">1.00</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <div class="test-add-question-container">
+                <form method="POST" action="/tf/{{$test->id}}/create_question" class="test-add-question-container">
+                    @csrf
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input">There are 207 bones in the human body.</textarea>
+                    <textarea class="text-input" name="item_question"></textarea>
+                    @error('item_question')
+                    <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                    @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image">
+                        <input type="text" class="text-input-attach-image" name="question_image">
                         <button class="text-input-image-button">Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                    <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
-                    <form method="post">
-                        <textarea class="summernote" name="editordata">True</textarea>
-                    </form>    
-                    <p class="text-input-label">Option 2</p>
-                    <form method="post">
-                        <textarea class="summernote" name="editordata">False</textarea>
-                    </form>      
+                    <div id="optionsContainer">
+                        <p class="text-input-label">Option 1</p>
+                        <textarea class="summernote" name="option_1" id="option_1"><p>True</p></textarea>
+                        @error('option_1')
+                        <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                        @enderror
+                        <p class="text-input-label">Option 2</p>
+                        <textarea class="summernote" name="option_2" id="option_2"><p>False</p></textarea>
+                        @error('option_1')
+                        <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="item-answer-points-container">
                         <div class="correct-answer-container">
                             <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
-                            <select class="select-option">
-                                <option>Option 1</option>
-                                <option>Option 2</option>
+                            <select class="select-option" id="option-select" name="question_answer">
+                                <option value="1">Option 1</option>
+                                <option value="1">Option 2</option>
                             </select>
                         </div>
                         <div class="item-point-container">
                             <p class="text-input-label">Item Point(s) <span class="red-asterisk">*</span></p>
-                            <input type="text" class="point-input" value="1.00">
+                            <input type="text" class="point-input" value="1.00" name="question_point">
                         </div>
                     </div>
                     <button class="save-test-button">Save Quiz Item</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
     <script>
+        document.getElementById('back-button').addEventListener('click', function() {
+            window.history.back();
+        });
+
         $('.summernote').summernote({
             placeholder: 'Enter Option...',
             tabsize: 2,
             height: 100,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
+            toolbar: [],
+            focus: false,
+            disableResizeEditor: true
         });
+        $('#option_1').summernote('disable');
+        $('#option_2').summernote('disable');
+
 
     </script>
 </body>
+
 </html>

@@ -73,7 +73,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div href="/mcq" class="add-test-button-anchor">
+                <div class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
@@ -84,7 +84,7 @@
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <form method="POST" action class="test-add-question-container">
+                <form method="POST" class="test-add-question-container">
                     @csrf
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
                     <textarea class="text-input" name="item_question"></textarea>

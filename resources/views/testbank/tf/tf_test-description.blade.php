@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/test_description.css">
 </head>
+
 <body>
     <div class="test-container">
         <div class="navigator">
@@ -63,9 +65,11 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon"><p>Back</p></button>
-                </a>
+                <div class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                        <p>Back</p>
+                    </button>
+                </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <div class="test-body-content">
@@ -88,24 +92,50 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Active</p></td>
-                                    <td><p>There are 207 bones in the human body.</p></td>
-                                    <td><p>1.00</p></td>
+                                @foreach($questions as $question)
+                                <tr id="test-question-item-description">
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
+                                        <p>{{ $loop->index + 1}}</p>
+                                    </td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
+                                        <p>@if($question->question_active == 1) Active @else Inactive @endif</p>
+                                    </td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
+                                        <p>{{$question->item_question}}</p>
+                                    </td>
+                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
+                                        <p>{{$question->question_point}}</p>
+                                    </td>
                                     <td>
                                         <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-deactivate-button"><img src="/images/unlock-icon.png"><p>Deactivate</p></button>
-                                            <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png"><p>Edit</p></button>
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
+                                            <form action="/tf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                                <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
+                                                    <p>Edit</p>
+                                                </button>
+                                            </form>
+                                            <form action="/tf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                                @csrf
+                                                @method('delete')
+                                                <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
+                                                    <p>Delete</p>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
+                                @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button"><img src="/images/add-test-icon.png"><p>Add Test Item</p></button>
+                        <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
+                            <p>Add Test Item</p>
+                        </button>
                     </div>
                 </div>
+                <script>
+                    document.getElementById('add_item_button').addEventListener('click', function() {
+                        window.location.href = window.location.href + "/create_question";
+                    });
+                </script>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
@@ -121,5 +151,34 @@
             </div>
         </div>
     </div>
+    <script>
+
+        function handleRowClick(event) {
+            const clickedColumn = event.currentTarget;
+            const questionID = clickedColumn.getAttribute('data-question-id');
+            const testID = clickedColumn.getAttribute('data-test-id');
+            window.location.href = "/tf/" + testID + "/" + questionID;
+        }
+
+        const columns = document.querySelectorAll('.question-description');
+        columns.forEach(column => {
+            column.addEventListener('click', handleRowClick);
+        });
+
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
+
+        document.getElementById('back-button').addEventListener('click', function() {
+            window.history.back();
+        });
+    </script>
 </body>
+
 </html>
