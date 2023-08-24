@@ -1,0 +1,134 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+
+.test-profile-container {
+    width: 96%;
+    padding: 1em;
+    border: 1px solid gray;
+    border-radius: 25px;
+    margin-bottom: 2%;
+}
+
+.test-profile-label {
+    font-weight: bold;
+}
+
+.test-profile-value {
+    font-weight: normal;
+}
+
+.test-add-question-container {
+    width: 96%;
+    padding: 1em;
+    border: 1px solid gray;
+    border-radius: 25px;
+    margin-bottom: 1em;
+}/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+
+.test-profile-container {
+    width: 96%;
+    padding: 1em;
+    border: 1px solid gray;
+    border-radius: 25px;
+    margin-bottom: 2%;
+}
+
+.test-profile-label {
+    font-weight: bold;
+}
+
+.test-profile-value {
+    font-weight: normal;
+}
+
+.test-add-question-container {
+    width: 96%;
+    padding: 1em;
+    border: 1px solid gray;
+    border-radius: 25px;
+}
+
+.text-input-label {
+    font-weight: bolder;
+}
+
+.red-asterisk {
+    color: red;
+}
+
+.text-input {
+    width: 95%;
+    resize: none;
+    margin-bottom: 1em;
+    font-size: 1.1em;
+    height: 5em;
+    padding: 0.5%;
+}
+
+.text-input-attach-image {
+    padding: 0.4%;
+    font-size: 1em;
+    width: 90%;
+}
+
+.text-input-image-button {
+    width: 5%;
+    padding: 0.5%;
+    cursor: pointer;
+}
+
+.text-supported-format {
+    color: gray;
+    font-size: 0.7em;
+    margin-bottom: 1%;
+}
+
+.text-input-choices {
+    width: 20%;
+    padding: 0.5%;
+    margin-bottom: 1em;
+}
+
+.summernote {
+    margin-bottom: 1em;
+}
+
+.item-answer-points-container {
+    width: 60%;
+    display: flex;
+    gap: 10%;
+    margin-bottom: 1em;
+}
+
+.correct-answer-container {
+    width: 60%;
+}
+
+.select-option {
+    width: 100%;
+    padding: 0.5em;
+}
+
+.item-point-container {
+    width: 30%;
+}
+
+.point-input {
+    width: 100%;
+    padding: 0.5em;
+}
