@@ -17,6 +17,7 @@ class questions extends Model
         "choices_number",
         "question_answer",
         "question_point",
+        "explanation_point",
         "option_1",
         "option_2",
         "option_3",

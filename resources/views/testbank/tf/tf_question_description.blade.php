@@ -5,11 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/css/add_page.css">
-    <link rel="stylesheet" href="/css/navigator.css">
-    <link rel="stylesheet" href="/css/body.css">
-    <link rel="stylesheet" href="/css/mcq_add_question.css">
-    <link rel="stylesheet" href="/css/mt_add_questions.css">
     <!-- include libraries(jQuery, bootstrap) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -22,7 +17,6 @@
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/mcq_add_question.css">
-    <link rel="stylesheet" href="/css/mt_add_questions.css">
 </head>
 
 <body>
@@ -44,9 +38,9 @@
                     <p>MCQ Tests</p>
                 </a>
             </div>
-            <div class="test-type" id="tf-test" data-icon-id="tf-icon">
+            <div class="test-type chosen-type" id="tf-test" data-icon-id="tf-icon">
                 <a class="test-link" href="/tf" onclick="chosenTestType('tf-test')">
-                    <img src="/images/tf-icon-light.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="tf-icon">
+                    <img src="/images/tf-icon-dark.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="tf-icon">
                     <p>True or False Tests</p>
                 </a>
             </div>
@@ -56,9 +50,9 @@
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type chosen-type" id="matching-test" data-icon-id="matching-icon">
+            <div class="test-type" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
-                    <img src="/images/matching-icon-dark.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
+                    <img src="/images/matching-icon-light.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
                     <p>Matching Type</p>
                 </a>
             </div>
@@ -79,7 +73,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div class="add-test-button-anchor">
+                <div href="/mcq" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
@@ -87,38 +81,47 @@
             <div class="test-body-content">
                 <div class="test-profile-container">
                     <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
                 <div class="test-add-question-container">
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input" readonly>{{$test->test_instruction}}</textarea>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>
-                                    <p class="test-profile-label">Item Text <span class="red-asterisk">*</span></p>
-                                </th>
-                                <th>
-                                    <p class="test-profile-label">Answer <span class="red-asterisk">*</span></p>
-                                </th>
-                                <th>
-                                    <p class="test-profile-label">Point(s) <span class="red-asterisk">*</span></p>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($questions as $question)
-                            <tr>
-                                <td>
-                                    <input class="mt-inputs" readonly type="text" value="{{$question->option_1}}">
-                                </td>
-                                <td><input class="mt-inputs" readonly type="text" value="{{$question->item_question}}"></td>
-                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->question_point}}"></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <button class="save-test-button">Add Answer</button>
+                    <textarea class="text-input" name="item_question" readonly>{{$question->item_question}}</textarea>
+                    @error('item_question')
+                    <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                    @enderror
+                    <p class="text-input-label">Attach an Image(Optional)</p>
+                    <div>
+                        <input type="text" class="text-input-attach-image" name="question_image" value="{{$question->question_image}}" readonly>
+                        <button class="text-input-image-button">Browse</button>
+                    </div>
+                    <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                    <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
+                    @for($i = 1; $i <= $question->choices_number; $i++)
+                        <div id="optionsContainer">
+                            <p class="text-input-label">Option {{$i}}</p>
+                            <textarea class="summernote" readonly disabled name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'option_' . $i )}}</textarea>
+                            @error('option_1')
+                            <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        @endfor
+                        <div class="item-answer-points-container">
+                            <div class="correct-answer-container">
+                                <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
+                                <input class="select-option" type="text" readonly value="Option {{$question->question_answer}}">
+                                <!-- <select class="select-option" id="option-select" name="question_answer" readonly>
+                            @for($i = 1; $i <= $question->choices_number; $i++)
+                                <option value="{{$i}}" @if($i == $question->question_answer) selected @endif>Option {{$i}}</option>
+                            @endfor -->
+                                </select>
+                            </div>
+                            <div class="item-point-container">
+                                <p class="text-input-label">Item Point(s) <span class="red-asterisk">*</span></p>
+                                <input type="text" class="point-input" value="1.00" name="question_point" readonly>
+                            </div>
+                        </div>
+                        <button class="save-test-button" id="edit-quiz-button" data-page="/tf/{{$test->id}}/{{$question->id}}/edit">Edit Quiz Item</button>
                 </div>
             </div>
         </div>
@@ -133,16 +136,17 @@
             tabsize: 2,
             height: 100,
             toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture']],
-                ['view', ['fullscreen', 'codeview', 'help']]
+
             ]
         });
+        for (var i = 1; i <= 10; i++) {
+            $('#option_' + i).summernote('disable');
+        }
+
+        document.getElementById("edit-quiz-button").onclick = function() {
+            const dataPage = this.getAttribute("data-page")
+            window.location.href = dataPage;
+        }
     </script>
 </body>
 

@@ -10,11 +10,21 @@
 
 
 .mt-inputs {
-    width: 100%;
+    width: 90%;
     margin-bottom: 1em;
     padding: 0.3em;
 }
 
 .mt-point-container {
     width: 20%;
+}
+
+table{
+    width: 100%;
+    margin-bottom: 1em;
+    text-align: left;
+}
+
+th {
+    padding-bottom: 0.5em;
 }

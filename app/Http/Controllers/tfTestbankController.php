@@ -226,7 +226,6 @@ class tfTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'item_question' => 'required',
-            'number_of_choices' => 'required|numeric|gte:1|lt:11',
             'option_1' => 'required',
         ]);
 
@@ -239,7 +238,7 @@ class tfTestbankController extends Controller
         $question->update([
             'item_question' => $request->input('item_question'),
             'question_image' => $request->input('question_image', null),
-            'choices_number' => $request->input('number_of_choices'),
+            'choices_number' => 2,
             'question_answer' => $request->input('question_answer'),
             'question_point' => $request->input('question_point'),
         ]);

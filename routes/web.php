@@ -53,15 +53,13 @@ Route::put('/tf/{test_id}/{question_id}/edit', [tfTestbankController::class, 'ad
 Route::get('/tf/{test_id}/{question_id}/edit', [tfTestbankController::class, 'add_question_edit']);
 Route::delete('/tf/{question_id}/delete_question', [tfTestbankController::class, 'add_question_destroy']);
 
-Route::get('/tf/question/add', function () {
-    return view('testbank/tf/tf_add_question');
-});
-
 Route::resource('mtf', mtfTestbankController::class);
-
-Route::get('/mtf/question/add', function () {
-    return view('testbank/mtf/mtf_add_question');
-});
+Route::get('/mtf/{test_id}/create_question', [mtfTestbankController::class, 'add_question_index']);
+Route::post('/mtf/{test_id}/create_question', [mtfTestbankController::class, 'add_question_store']);
+Route::get('/mtf/{test_id}/{question_id}', [mtfTestbankController::class, 'add_question_show']);
+Route::put('/mtf/{test_id}/{question_id}/edit', [mtfTestbankController::class, 'add_question_update']);
+Route::get('/mtf/{test_id}/{question_id}/edit', [mtfTestbankController::class, 'add_question_edit']);
+Route::delete('/mtf/{question_id}/delete_question', [mtfTestbankController::class, 'add_question_destroy']);
 
 Route::resource('matching', matchingTestbankController::class);
 
