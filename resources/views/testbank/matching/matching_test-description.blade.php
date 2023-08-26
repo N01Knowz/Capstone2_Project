@@ -107,20 +107,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- <tr>
-                                <td>
-                                    <input class="mt-inputs" readonly type="text">
-                                </td>
-                                <td><input class="mt-inputs" readonly type="text"></td>
-                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00"></td>
-                            </tr>
+                            @foreach($questions as $question)
                             <tr>
                                 <td>
-                                    <input class="mt-inputs" readonly type="text">
+                                    <input class="mt-inputs" readonly type="text" value="{{$question->option_1}}">
                                 </td>
-                                <td><input class="mt-inputs" readonly type="text"></td>
-                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00"></td>
-                            </tr> -->
+                                <td><input class="mt-inputs" readonly type="text" value="{{$question->item_question}}"></td>
+                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->question_point}}"></td>
+                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                     <button class="save-test-button">Add Answer</button>

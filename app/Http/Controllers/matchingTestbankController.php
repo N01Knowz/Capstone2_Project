@@ -23,8 +23,8 @@ class matchingTestbankController extends Controller
     {
         $currentUserId = Auth::user()->id;
         $tests = testbank::where('test_type', '=', 'matching')
-        ->where('user_id', '=', $currentUserId)
-        ->get();
+            ->where('user_id', '=', $currentUserId)
+            ->get();
         return view('testbank.matching.matching', [
             'tests' => $tests,
         ]);
@@ -48,6 +48,7 @@ class matchingTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'instruction' => 'required',
+            'item_text_1' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -65,6 +66,18 @@ class matchingTestbankController extends Controller
             'test_visible' => $request->has('share'),
             'test_active' => 1,
         ]);
+
+        for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
+            $question = questions::create([
+                'testbank_id' => $testbank->id,
+                'question_active' => 1,
+                'item_question' => $request->input('item_answer_' . $i),
+                'choices_number' => 1,
+                'question_answer' => 1,
+                'option_1' => $request->input('item_text_' . $i),
+                'question_point' => $request->input('item_point_' . $i),
+            ]);
+        }
 
         return redirect('/matching');
     }
@@ -131,7 +144,7 @@ class matchingTestbankController extends Controller
         $test->update([
             'test_active' => '0'
         ]);
-        
+
         return back();
     }
 }
