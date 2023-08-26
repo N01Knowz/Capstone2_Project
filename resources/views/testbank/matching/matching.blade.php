@@ -107,10 +107,7 @@
                             </td>
                             <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
-                                        <p>Add Question</p>
-                                    </button>
-                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
                                     <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
@@ -134,25 +131,29 @@
         </div>
     </div>
     <script>
-        function handleRowClick(event) {
-            const clickedColumn = event.currentTarget;
-            const columnData = clickedColumn.getAttribute('data-id');
-            window.location.href = "matching/" + columnData;
-        }
+        document.addEventListener("DOMContentLoaded", function() {
+            function handleRowClick(event) {
+                const clickedColumn = event.currentTarget;
+                const columnData = clickedColumn.getAttribute('data-id');
+                window.location.href = "matching/" + columnData;
+            }
 
-        const columns = document.querySelectorAll('.test-body-column');
-        columns.forEach(column => {
-            column.addEventListener('click', handleRowClick);
+            function handleEditClick(event) {
+                const clickedButton = event.currentTarget;
+                const dataID = clickedButton.getAttribute('data-id');
+                window.location.href = "matching/" + dataID + "/edit";
+            }
+
+            const editButtons = document.querySelectorAll(".test-edit-button");
+            editButtons.forEach(editButton => {
+                editButton.addEventListener('click', handleEditClick);
+            });
+            
+            const columns = document.querySelectorAll('.test-body-column');
+            columns.forEach(column => {
+                column.addEventListener('click', handleRowClick);
+            });
         });
-
-        document.getElementById("test-add-question").onclick = function() {
-            window.location.href = "matching/question/add";
-        }
-
-        document.getElementById("test-edit-button").onclick = function() {
-            const dataID = this.getAttribute("data-id")
-            window.location.href = "matching/" + dataID + "/edit";
-        }
     </script>
     <!-- <script>
         function chosenTestType(newTestTypeId) {

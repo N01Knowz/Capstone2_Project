@@ -73,6 +73,7 @@
             </div>
             <form method="POST" class="test-body-content">
                 @csrf
+                @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
                 <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}" readonly>
@@ -83,11 +84,7 @@
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                @enderror
-                <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
-                <input type="number" class="text-input-choices" value="{{ old('numChoicesInput') ? old('numChoicesInput') : 1 }}" id="numChoicesInput" name="numChoicesInput">
-                <p class="mt-note">Note: you may add extra choices (distractors) by adding an answer with a blank item text. Blank item test will not be added to the list of answerable items (including points).</p>
-                <table>
+                @enderror <table>
                     <thead>
                         <tr>
                             <th>
@@ -102,12 +99,16 @@
                         </tr>
                     </thead>
                     <tbody id="itemsContainer">
-
+                        <tr>
+                            <td><input class="mt-inputs item_text" type="text" name="item_text" value="{{$question->option_1}}"></td>
+                            <td><input class="mt-inputs item_answer" type="text" name="item_answer" value="{{$question->item_question}}"></td>
+                            <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point" value="{{$question->question_point}}"></td>
+                        </tr>
                     </tbody>
                 </table>
-                @error('item_text_1')
-                <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
-                @enderror
+                @error('instruction')
+                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                @enderror <table>
                 <button class="save-test-button">Save Quiz Item</button>
             </form>
         </div>
@@ -119,47 +120,6 @@
             window.history.back();
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const numChoicesInput = document.getElementById("numChoicesInput");
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            numChoicesInput.addEventListener("input", function() {
-                updateRows();
-            });
-
-            // Initial execution when the page loads
-            const initialNumChoices = parseInt(numChoicesInput.value);
-            putRows(initialNumChoices);
-        });
-
-        function putRows(numChoices) {
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            if (!isNaN(numChoices) && numChoices >= 1 && numChoices <= 10) {
-                for (let i = 1; i <= numChoices; i++) {
-                    const row = `
-                <tr>
-                    <td><input class="mt-inputs item_text" type="text" name="item_text_${i}"></td>
-                    <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}"></td>
-                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}"></td>
-                </tr>
-            `;
-                    itemsContainer.innerHTML += row;
-                }
-            }
-        }
-
-        function updateRows() {
-            const numChoicesInput = document.getElementById("numChoicesInput");
-            const numChoices = parseInt(numChoicesInput.value);
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            // Clear existing options
-            itemsContainer.innerHTML = "";
-
-            // Create components based on the updated numChoices value
-            putRows(numChoices);
-        }
     </script>
 </body>
 

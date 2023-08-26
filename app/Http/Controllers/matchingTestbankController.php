@@ -147,4 +147,87 @@ class matchingTestbankController extends Controller
 
         return back();
     }
+    
+    
+    public function add_question_index(string $test_id)
+    {
+        $test = testbank::find($test_id);
+        return view('testbank/matching/matching_add_question', [
+            'test' => $test,
+        ]);
+    }
+    public function add_question_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'numChoicesInput' => 'required|numeric|gte:1|lt:11',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+
+        for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
+            $question = questions::create([
+                'testbank_id' => $test_id,
+                'question_active' => 1,
+                'item_question' => $request->input('item_answer_' . $i),
+                'choices_number' => 1,
+                'question_answer' => 1,
+                'option_1' => $request->input('item_text_' . $i),
+                'question_point' => $request->input('item_point_' . $i) ? $request->input('item_point_' . $i) : 0,
+            ]);
+        }
+
+        return redirect('/matching/' . $test_id);
+
+        // $test = testbank::find($test_id);
+        // return view('testbank/matching/matching_add_question', [
+        //     'test' => $test,
+        // ]);
+    }
+
+    public function add_question_destroy(string $id)
+    {
+        $question = questions::find($id)->delete();
+        return back();
+    }
+
+    public function add_question_edit(string $test_id, string $question_id)
+    {
+        $test = testbank::find($test_id);
+        $question = questions::find($question_id);
+
+        return view('testbank.matching.matching_edit_question', [
+            'test' => $test,
+            'question' => $question,
+        ]);
+
+        return back();
+    }
+
+    public function add_question_update(Request $request, string $test_id, string $question_id)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'item_answer' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $question = questions::find($question_id);
+
+        $question->update([
+            'item_question' => $request->input('item_answer'),
+            'option_1' => $request->input('item_text'),
+            'question_point' => $request->input('item_point'),
+        ]);
+
+        return redirect('/matching/' . $test_id);
+    }
 }

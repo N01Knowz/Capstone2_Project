@@ -62,14 +62,12 @@ Route::get('/mtf/{test_id}/{question_id}/edit', [mtfTestbankController::class, '
 Route::delete('/mtf/{question_id}/delete_question', [mtfTestbankController::class, 'add_question_destroy']);
 
 Route::resource('matching', matchingTestbankController::class);
-
-Route::get('/matching/{str}/description', function () {
-    return view('testbank/matching/matching_test-description');
-});
-
-Route::get('/matching/question/add', function () {
-    return view('testbank/matching/matching_add_question');
-});
+Route::get('/matching/{test_id}/create_question', [matchingTestbankController::class, 'add_question_index']);
+Route::post('/matching/{test_id}/create_question', [matchingTestbankController::class, 'add_question_store']);
+Route::get('/matching/{test_id}/{question_id}', [matchingTestbankController::class, 'add_question_show']);
+Route::put('/matching/{test_id}/{question_id}/edit', [matchingTestbankController::class, 'add_question_update']);
+Route::get('/matching/{test_id}/{question_id}/edit', [matchingTestbankController::class, 'add_question_edit']);
+Route::delete('/matching/{question_id}/delete_question', [matchingTestbankController::class, 'add_question_destroy']);
 
 Route::resource('enumeration', enumerationTestbankController::class);
 

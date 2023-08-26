@@ -55,3 +55,8 @@
 .test-searchbar:focus {
     border: 2px solid black;
 }
+
+.button-delete-form {
+    flex: 1;
+    display: inline-flex;
+}

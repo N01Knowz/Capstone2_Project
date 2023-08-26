@@ -143,9 +143,9 @@
                 for (let i = 1; i <= numChoices; i++) {
                     const row = `
                 <tr>
-                    <td><input class="mt-inputs" type="text" name="item_text_${i}"></td>
-                    <td><input class="mt-inputs" type="text" name="item_answer_${i}"></td>
-                    <td><input class="mt-inputs" type="text" placeholder="0.00" name="item_point_${i}"></td>
+                    <td><input class="mt-inputs item_text" type="text" name="item_text_${i}"></td>
+                    <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}"></td>
+                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}"></td>
                 </tr>
             `;
                     itemsContainer.innerHTML += row;

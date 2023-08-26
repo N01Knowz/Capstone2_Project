@@ -131,11 +131,6 @@
                         </button>
                     </div>
                 </div>
-                <script>
-                    document.getElementById('add_item_button').addEventListener('click', function() {
-                        window.location.href = window.location.href + "/create_question";
-                    });
-                </script>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
@@ -152,6 +147,9 @@
         </div>
     </div>
     <script>
+        document.getElementById('add_item_button').addEventListener('click', function() {
+            window.location.href = window.location.href + "/create_question";
+        });
 
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;

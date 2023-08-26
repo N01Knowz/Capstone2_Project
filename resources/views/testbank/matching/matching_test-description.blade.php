@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Matching Test</title>
+    <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
@@ -23,6 +24,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/mcq_add_question.css">
     <link rel="stylesheet" href="/css/mt_add_questions.css">
+    <link rel="stylesheet" href="/css/matching_test_description.css">
 </head>
 
 <body>
@@ -91,7 +93,7 @@
                 </div>
                 <div class="test-add-question-container">
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input" readonly>{{$test->test_instruction}}</textarea>
+                    <textarea class="text-input matching-instruction" readonly>{{$test->test_instruction}}</textarea>
                     <table>
                         <thead>
                             <tr>
@@ -114,16 +116,46 @@
                                 </td>
                                 <td><input class="mt-inputs" readonly type="text" value="{{$question->item_question}}"></td>
                                 <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->question_point}}"></td>
+                                <td class="buttons-column">
+                                    <div class="questions-table-buttons-column-div">
+                                        <form action="/matching/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                            <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
+                                                <p>Edit</p>
+                                            </button>
+                                        </form>
+                                        <form action="/matching/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                            @csrf
+                                            @method('delete')
+                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
+                                                <p>Delete</p>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <button class="save-test-button">Add Answer</button>
+                    <button class="save-test-button" id="add_item_button">Add Items</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
+        document.getElementById('add_item_button').addEventListener('click', function() {
+            window.location.href = window.location.href + "/create_question";
+        });
+
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
+
         document.getElementById('back-button').addEventListener('click', function() {
             window.history.back();
         });
