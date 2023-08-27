@@ -72,6 +72,14 @@ class enumerationTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank.enumeration.enumeration_test-description', [
             'test' => $test,
         ]);
@@ -83,6 +91,14 @@ class enumerationTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
+        
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank.enumeration.enumeration_edit', [
             'test' => $test,
         ]);
@@ -105,6 +121,12 @@ class enumerationTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
+        if(is_null($testbank)){
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $testbank->update([
             'test_title' => $request->input('title'),
@@ -121,6 +143,14 @@ class enumerationTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
+        
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $test->update([
             'test_active' => '0'

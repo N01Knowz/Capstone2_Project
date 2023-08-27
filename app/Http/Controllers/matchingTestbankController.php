@@ -88,6 +88,14 @@ class matchingTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $questions = questions::where('testbank_id', '=', $id)
             ->get();
         return view('testbank.matching.matching_test-description', [
@@ -102,6 +110,14 @@ class matchingTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank.matching.matching_edit', [
             'test' => $test,
         ]);
@@ -124,6 +140,12 @@ class matchingTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
+        if (is_null($testbank)) {
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $testbank->update([
             'test_title' => $request->input('title'),
@@ -141,17 +163,33 @@ class matchingTestbankController extends Controller
     {
         $test = testbank::find($id);
 
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
         $test->update([
             'test_active' => '0'
         ]);
 
         return back();
     }
-    
-    
+
+
     public function add_question_index(string $test_id)
     {
         $test = testbank::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank/matching/matching_add_question', [
             'test' => $test,
         ]);
@@ -192,12 +230,27 @@ class matchingTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = questions::find($id)->delete();
+        if(is_null($question)){
+            abort(404); // User does not own the test
+        }
+        $test = $question->testbank_id;
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return back();
     }
 
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $question = questions::find($question_id);
 
         return view('testbank.matching.matching_edit_question', [
@@ -211,6 +264,15 @@ class matchingTestbankController extends Controller
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
         $input = $request->all();
+
+        $test = testbank::find($test_id);
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $validator = Validator::make($input, [
             'item_answer' => 'required',

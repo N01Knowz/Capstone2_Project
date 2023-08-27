@@ -76,6 +76,14 @@ class tfTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $questions = questions::where('testbank_id', '=', $id)
             ->get();
         return view('testbank.tf.tf_test-description', [
@@ -111,7 +119,13 @@ class tfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::find($id);
+        $testbank = testbank::find($id); 
+        if(is_null($testbank)){
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $testbank->update([
             'test_title' => $request->input('title'),
@@ -128,6 +142,14 @@ class tfTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $test->update([
             'test_active' => '0'
@@ -138,6 +160,14 @@ class tfTestbankController extends Controller
     public function add_question_index(string $test_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank/tf/tf_add_question', [
             'test' => $test,
         ]);
@@ -146,6 +176,14 @@ class tfTestbankController extends Controller
     public function add_question_show(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $question = questions::find($question_id);
 
         return view('testbank.tf.tf_question_description', [
@@ -158,6 +196,15 @@ class tfTestbankController extends Controller
 
     public function add_question_store(Request $request, string $test_id)
     {
+        $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $input = $request->all();
 
         $validator = Validator::make($input, [
@@ -199,6 +246,13 @@ class tfTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = questions::find($id);
+        if(is_null($question)){
+            abort(404); // User does not own the test
+        }
+        $test = $question->testbank_id;
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $question->update([
             'question_active' => '0'
@@ -210,6 +264,14 @@ class tfTestbankController extends Controller
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $question = questions::find($question_id);
 
         return view('testbank.tf.tf_edit_question', [
@@ -222,6 +284,18 @@ class tfTestbankController extends Controller
 
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
+        $test = testbank::find($test_id);
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $input = $request->all();
 
         $validator = Validator::make($input, [

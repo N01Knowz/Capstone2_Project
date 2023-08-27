@@ -75,6 +75,14 @@ class mcqTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $questions = questions::where('testbank_id', '=', $id)
             ->get();
         return view('testbank.mcq.mcq_test-description', [
@@ -93,6 +101,14 @@ class mcqTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank.mcq.mcq_edit', [
             'test' => $test,
         ]);
@@ -115,6 +131,12 @@ class mcqTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
+        if(is_null($testbank)){
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $testbank->update([
             'test_title' => $request->input('title'),
@@ -131,6 +153,14 @@ class mcqTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $test->update([
             'test_active' => '0'
@@ -142,6 +172,14 @@ class mcqTestbankController extends Controller
     public function add_question_index(string $test_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         return view('testbank/mcq/mcq_add_question', [
             'test' => $test,
         ]);
@@ -150,6 +188,14 @@ class mcqTestbankController extends Controller
     public function add_question_show(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $question = questions::find($question_id);
 
         return view('testbank.mcq.mcq_question_description', [
@@ -163,6 +209,16 @@ class mcqTestbankController extends Controller
     public function add_question_store(Request $request, string $test_id)
     {
         $input = $request->all();
+
+        $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $validator = Validator::make($input, [
             'item_question' => 'required',
@@ -236,6 +292,13 @@ class mcqTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = questions::find($id);
+        if(is_null($question)){
+            abort(404); // User does not own the test
+        }
+        $test = $question->testbank_id;
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
 
         $question->update([
             'question_active' => '0'
@@ -247,6 +310,14 @@ class mcqTestbankController extends Controller
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $question = questions::find($question_id);
 
         return view('testbank.mcq.mcq_edit_question', [
@@ -259,6 +330,15 @@ class mcqTestbankController extends Controller
 
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
+        $test = testbank::find($test_id);
+        
+        
+        if(is_null($test)){
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
         $input = $request->all();
 
         $validator = Validator::make($input, [
@@ -322,8 +402,7 @@ class mcqTestbankController extends Controller
                                 File::delete($filePath);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if (File::exists($filePath)) {
                             File::delete($filePath);
                         }
