@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\testbank;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\questions;
 
 class enumerationTestbankController extends Controller
 {
@@ -20,8 +21,8 @@ class enumerationTestbankController extends Controller
     {
         $currentUserId = Auth::user()->id;
         $tests = testbank::where('test_type', '=', 'enumeration')
-        ->where('user_id', '=', $currentUserId)
-        ->get();
+            ->where('user_id', '=', $currentUserId)
+            ->get();
         return view('testbank.enumeration.enumeration', [
             'tests' => $tests,
         ]);
@@ -72,16 +73,18 @@ class enumerationTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
-        
+
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        $questions = questions::where('testbank_id', '=', $id)
+            ->get();
         return view('testbank.enumeration.enumeration_test-description', [
             'test' => $test,
+            'questions' => $questions,
         ]);
     }
 
@@ -91,11 +94,11 @@ class enumerationTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
-        
+
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        
+
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
@@ -121,7 +124,7 @@ class enumerationTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
-        if(is_null($testbank)){
+        if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
         if ($testbank->user_id != Auth::id()) {
@@ -143,19 +146,69 @@ class enumerationTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
-        
+
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        
+
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-
-        $test->update([
-            'test_active' => '0'
-        ]);
         
+        questions::where('testbank_id', $id)->delete();
+        $test->delete();
+
+        return back();
+    }
+
+    public function add_question_store(Request $request, string $test_id)
+    {
+        $test = testbank::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'answer_text' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $question = questions::create([
+            'testbank_id' => $test_id,
+            'question_active' => 1,
+            'item_question' => $request->input('answer_text'),
+            'question_image' => null,
+            'choices_number' => 1,
+            'question_answer' => 1,
+            'question_point' => 1,
+            'option_1' => $request->has('case_sensitive_text') ? "1" : "0",
+        ]);
+
+
+
+        return redirect('/enumeration/' . $test_id);
+    }
+
+    public function add_question_destroy(string $id)
+    {
+        $question = questions::find($id);
+        if (is_null($question)) {
+            abort(404); // User does not own the test
+        }
+        $test = testbank::find($question->testbank_id);
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $question->delete();
         return back();
     }
 }

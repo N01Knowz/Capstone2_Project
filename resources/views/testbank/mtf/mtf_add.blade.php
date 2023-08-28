@@ -71,12 +71,12 @@
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title">
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
                 @error('title')
                     <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction"></textarea>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
                     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
@@ -97,7 +97,7 @@
                     </div>
                 </div> -->
                 <div class="add-test-button-anchor">
-                    <button class="save-test-button">Save Changes</button>
+                    <button class="save-test-button">Save Test</button>
                 </div>
             </form>
         </div>

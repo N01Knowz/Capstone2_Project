@@ -70,14 +70,8 @@ Route::get('/matching/{test_id}/{question_id}/edit', [matchingTestbankController
 Route::delete('/matching/{question_id}/delete_question', [matchingTestbankController::class, 'add_question_destroy']);
 
 Route::resource('enumeration', enumerationTestbankController::class);
-
-Route::get('/enumeration/{str}/description', function () {
-    return view('testbank/enumeration/enumeration_test-description');
-});
-
-Route::get('/enumeration/question/add', function () {
-    return view('testbank/enumeration/enumeration_add_question');
-});
+Route::post('/enumeration/{test_id}/create_question', [enumerationTestbankController::class, 'add_question_store']);
+Route::delete('/enumeration/{question_id}/delete_question', [enumerationTestbankController::class, 'add_question_destroy']);
 
 
 

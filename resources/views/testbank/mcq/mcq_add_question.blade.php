@@ -98,7 +98,7 @@
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
-                    <input type="text" class="text-input-choices" id="numChoicesInput" value="1" name="number_of_choices">
+                    <input type="number" class="text-input-choices" id="numChoicesInput" value="1" name="number_of_choices">
                     @error('number_of_choices')
                     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                     @enderror

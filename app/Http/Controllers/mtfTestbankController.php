@@ -158,9 +158,8 @@ class mtfTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $test->update([
-            'test_active' => '0'
-        ]);
+        questions::where('testbank_id', $id)->delete();
+        $test->delete();
         
         return back();
     }
@@ -258,7 +257,7 @@ class mtfTestbankController extends Controller
         if(is_null($question)){
             abort(404); // User does not own the test
         }
-        $test = $question->testbank_id;
+        $test = testbank::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }

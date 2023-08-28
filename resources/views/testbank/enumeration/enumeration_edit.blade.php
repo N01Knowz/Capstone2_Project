@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/navigator.css">
 </head>
+
 <body>
     <div class="test-container">
         <div class="navigator">
@@ -63,9 +65,9 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon"><p>Back</p></button>
-                </a>
+                <div class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <form method="POST" action="/enumeration/{{$test->id}}" class="test-body-content">
@@ -75,17 +77,17 @@
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
                 <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}">
                 @error('title')
-                    <div class="alert alert-dange red-asterisk">{{ $message }}</div>
+                <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
                 @error('instruction')
-                    <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <div class="share-container">
                     <input type="checkbox" @if($test->test_visible == '1') checked="true" @endif class="share-checkbox" name="share" >
                     <p class="text-input-label">Share with other faculties</p>
-                </div>  
+                </div>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
@@ -104,5 +106,14 @@
             </form>
         </div>
     </div>
+    <script>
+        
+
+        document.getElementById('back-button').addEventListener('click', function() {
+                        window.history.back();
+                    });
+
+    </script>
 </body>
+
 </html>

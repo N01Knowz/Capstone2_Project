@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,35 @@
     <link rel="stylesheet" href="/css/test_description.css">
     <link rel="stylesheet" href="/css/enumeration-test_description.css">
 </head>
+
 <body>
+
+    <div class="add-item-container" id="add_item_container">
+        <div class="add-item-sub-container" id="add_item_sub_container">
+            <div class="add-item-modal-header">
+                <p class="add-item-enter-answer">Enter Answer</p>
+                <button class="add-item-modal-header-close" id="add_item_modal_header_close">x</button>
+            </div>
+            <div class="add-item-modal-body">
+                <form action="/enumeration/{{$test->id}}/create_question" method="POST" id="add_item_form">
+                    @csrf
+                    <p class="add-item-form-answer-label">Answer</p>
+                    <input type="text" name="answer_text" class="add-item-text-input" required>
+                    <br>
+                    <div class="case-sensitive-container">
+                        <input type="checkbox" name="case_sensitive_text">
+                        <p class="add-item-form-answer-label">This answer is case sensetive</p>
+                    </div>
+                </form>
+            </div>
+            <div class="add-item-modal-footer">
+                <div class="add-item-buttons-container">
+                    <button form="add_item_form" class="add-item-save-button add-item-modal-button">Save</button>
+                    <button id="add_item_close_button" class="add-item-close-button add-item-modal-button">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="test-container">
         <div class="navigator">
             <div id="logo-container">
@@ -64,9 +93,9 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon"><p>Back</p></button>
-                </a>
+                <div class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                </div>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <div class="test-body-content">
@@ -88,59 +117,38 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($questions as $question)
                                 <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Touch</p></td>
-                                    <td><p>No</p></td>
                                     <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
-                                        </div>
+                                        <p>{{$loop->iteration}}</p>
+                                    </td>
+                                    <td>
+                                        <p>{{$question->item_question}}</p>
+                                    </td>
+                                    <td>
+                                        <p>@if($question->option_1 == "0")
+                                            No
+                                            @else
+                                            Yes
+                                            @endif
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <form action="/enumeration/{{$question->id}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
+                                            @csrf
+                                            @method('delete')
+                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
+                                                <p>Delete</p>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Taste</p></td>
-                                    <td><p>No</p></td>
-                                    <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Vision</p></td>
-                                    <td><p>No</p></td>
-                                    <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Hearing</p></td>
-                                    <td><p>No</p></td>
-                                    <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><p>1</p></td>
-                                    <td><p>Smell</p></td>
-                                    <td><p>No</p></td>
-                                    <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png"><p>Delete</p></button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button"><img src="/images/add-test-icon.png"><p>Add Answer</p></button>
+                        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                            <p>Add Answer</p>
+                        </button>
                     </div>
                 </div>
                 <!-- <div class="criteria-point-container">
@@ -158,5 +166,39 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('back-button').addEventListener('click', function() {
+            window.location.href = "/enumeration";
+        });
+
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
+        const add_item_container = document.getElementById('add_item_container');
+        const add_item_sub_container = document.getElementById('add_item_sub_container');
+        const add_item_modal_header_close = document.getElementById('add_item_modal_header_close');
+        const add_item_close_button = document.getElementById('add_item_close_button');
+        document.getElementById('add-test-button').addEventListener('click', function() {
+            add_item_container.style.display = "flex";
+            setTimeout(() => {
+                add_item_sub_container.classList.add("show");
+            }, 10);
+        });
+
+        add_item_container.addEventListener("click", function(event) {
+            if (event.target === add_item_container || event.target === add_item_modal_header_close || event.target === add_item_close_button) {
+                add_item_container.style.display = "none";
+                add_item_sub_container.classList.remove("show");
+            }
+        });
+    </script>
+
 </body>
+
 </html>

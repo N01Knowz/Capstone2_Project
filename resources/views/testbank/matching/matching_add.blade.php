@@ -75,12 +75,12 @@
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title">
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction"></textarea>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
@@ -109,10 +109,10 @@
 
                     </tbody>
                 </table>
-                @error('item_text_1')
+                @error('no_item')
                 <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
                 @enderror
-                <button class="save-test-button">Save Quiz Item</button>
+                <button class="save-test-button">Save Test</button>
             </form>
         </div>
     </div>
@@ -144,8 +144,8 @@
                     const row = `
                 <tr>
                     <td><input class="mt-inputs item_text" type="text" name="item_text_${i}"></td>
-                    <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}"></td>
-                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}"></td>
+                    <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}" required></td>
+                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}" required></td>
                 </tr>
             `;
                     itemsContainer.innerHTML += row;

@@ -113,7 +113,7 @@
                                     <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
                                         <p>Print</p>
                                     </button>
-                                    <form method="POST" action="/mactching/{{$test->id}}" class="button-delete-form">
+                                    <form method="POST" action="/matching/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
                                         <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
@@ -131,6 +131,15 @@
         </div>
     </div>
     <script>
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
         document.addEventListener("DOMContentLoaded", function() {
             function handleRowClick(event) {
                 const clickedColumn = event.currentTarget;
@@ -148,7 +157,7 @@
             editButtons.forEach(editButton => {
                 editButton.addEventListener('click', handleEditClick);
             });
-            
+
             const columns = document.querySelectorAll('.test-body-column');
             columns.forEach(column => {
                 column.addEventListener('click', handleRowClick);

@@ -7,8 +7,6 @@ use App\Models\testbank;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\questions;
-use DOMDocument;
-use Illuminate\Support\Facades\File;
 
 class matchingTestbankController extends Controller
 {
@@ -48,8 +46,20 @@ class matchingTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'instruction' => 'required',
-            'item_text_1' => 'required',
         ]);
+
+        $hasAtLeastOneItemText = false;
+
+        for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
+            if ($request->input('item_text_' . $i)) {
+                $hasAtLeastOneItemText = true;
+                break;
+            }
+        }
+        
+        if (!$hasAtLeastOneItemText) {
+            return redirect()->back()->withErrors(['no_item' => 'There should be at least 1 text item'])->withInput();
+        }
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -171,10 +181,10 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $test->update([
-            'test_active' => '0'
-        ]);
-
+        
+        questions::where('testbank_id', $id)->delete();
+        $test->delete();
+        
         return back();
     }
 
@@ -233,7 +243,7 @@ class matchingTestbankController extends Controller
         if(is_null($question)){
             abort(404); // User does not own the test
         }
-        $test = $question->testbank_id;
+        $test = testbank::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
