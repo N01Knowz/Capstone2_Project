@@ -23,8 +23,8 @@ class mtfTestbankController extends Controller
     {
         $currentUserId = Auth::user()->id;
         $tests = testbank::where('test_type', '=', 'mtf')
-        ->where('user_id', '=', $currentUserId)
-        ->get();
+            ->where('user_id', '=', $currentUserId)
+            ->get();
         return view('testbank.mtf.mtf', [
             'tests' => $tests,
         ]);
@@ -55,7 +55,7 @@ class mtfTestbankController extends Controller
         }
 
         $testbank = testbank::create([
-            'user_id' => $request->input('id'),
+            'user_id' => Auth::id(),
             'test_type' => 'mtf',
             'test_title' => $request->input('title'),
             'test_question' => '',
@@ -75,9 +75,9 @@ class mtfTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -97,9 +97,9 @@ class mtfTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -127,7 +127,7 @@ class mtfTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
-        if(is_null($testbank)){
+        if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
         if ($testbank->user_id != Auth::id()) {
@@ -149,9 +149,9 @@ class mtfTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -160,15 +160,15 @@ class mtfTestbankController extends Controller
 
         questions::where('testbank_id', $id)->delete();
         $test->delete();
-        
+
         return back();
     }
     public function add_question_index(string $test_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -182,9 +182,9 @@ class mtfTestbankController extends Controller
     public function add_question_show(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -204,9 +204,9 @@ class mtfTestbankController extends Controller
     {
         $input = $request->all();
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -243,6 +243,18 @@ class mtfTestbankController extends Controller
             ]);
         }
 
+        $questions = questions::where("testbank_id", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return redirect('/mtf/' . $test_id);
 
         // $test = testbank::find($test_id);
@@ -254,7 +266,7 @@ class mtfTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = questions::find($id);
-        if(is_null($question)){
+        if (is_null($question)) {
             abort(404); // User does not own the test
         }
         $test = testbank::find($question->testbank_id);
@@ -262,8 +274,18 @@ class mtfTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $question->update([
-            'question_active' => '0'
+        $question->delete();
+
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
         ]);
 
         return back();
@@ -272,9 +294,9 @@ class mtfTestbankController extends Controller
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -294,9 +316,9 @@ class mtfTestbankController extends Controller
     {
         $input = $request->all();
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -325,91 +347,18 @@ class mtfTestbankController extends Controller
             'explanation_point' => $request->input('explanation_point'),
         ]);
 
-        for ($i = 1; $i <= 10; $i++) {
-            
-            $option = $request->input('option_' . $i);
-            $oldOption = questions::where('id', $question_id)
-                ->value('option_' . $i);
+        $questions = questions::where("testbank_id", "=", $test_id)->get();
 
-            if ($oldOption) {
-                $oldDom = new DOMDocument();
-                @$oldDom->loadHTML($oldOption);
-                $oldImageFile = $oldDom->getElementsByTagName('img');
-            }
+        $total_points = 0;
 
-            if ($option) {
-                $dom = new DOMDocument();
-                @$dom->loadHTML($option);
-                $imageFile = $dom->getElementsByTagName('img');
-            }
-
-
-            if ($oldOption) {
-                foreach ($oldImageFile as $oldItem => $oldImage) {
-                    $oldSrc = $oldImage->getAttribute('src');
-                    $oldSrcExist = false;
-                    $oldSrcWithoutLeadingSlash = ltrim($oldSrc, '/');
-                    // $fileName = '1692509280_64e1a460a6004.jpeg';
-                    $filePath = public_path($oldSrcWithoutLeadingSlash);
-                    $src = "";
-                    if ($option) {
-                        foreach ($imageFile as $item => $image) {
-                            $src = $image->getAttribute('src');
-                            if ($oldSrc == $src) {
-                                $oldSrcExist = true;
-                            }
-                        }
-                        // dd($oldSrc, $option, strpos($oldSrc, $option));
-                        if ($oldSrcExist == false) {
-                            // dd($oldSrcWithoutLeadingSlash, $option, strpos($oldSrc, $option), $filePath, File::exists($filePath));
-                            if (File::exists($filePath)) {
-                                File::delete($filePath);
-                            }
-                        }
-                    }
-                    else {
-                        if (File::exists($filePath)) {
-                            File::delete($filePath);
-                        }
-                    }
-                }
-            }
-            if ($option) {
-                foreach ($imageFile as $item => $image) {
-                    $src = $image->getAttribute('src');
-                    $uploadpath = public_path('user_upload_images');
-                    if (strpos($src, 'data:') === 0) {
-                        $dataParts = explode(';', $src);
-                        $mediaTypeParts = explode('/', $dataParts[0]);
-                        $imageType = end($mediaTypeParts);
-                        $dataUriParts = explode(',', $src, 2);
-                        $srcData = $dataUriParts[1];
-                        $imageData = base64_decode($srcData);
-                        $filename = time() . '_' . uniqid() . '.' . $imageType;
-                        file_put_contents($uploadpath . '/' . $filename, $imageData);
-                        $image->setAttribute('src', '/user_upload_images/' . $filename);
-                    }
-                }
-                $bodyContent = '';
-                $bodyElement = $dom->getElementsByTagName('body')->item(0);
-                if ($bodyElement) {
-                    foreach ($bodyElement->childNodes as $node) {
-                        $bodyContent .= $dom->saveHTML($node);
-                    }
-                }
-            }
-
-            if ($option) {
-                $updatedHTML = $bodyContent;
-            } else {
-                $updatedHTML = null;
-            }
-            echo $updatedHTML;
-
-            $question->update([
-                'option_' . $i => $updatedHTML,
-            ]);
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
         }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return redirect('/mtf/' . $test_id);
     }
 }

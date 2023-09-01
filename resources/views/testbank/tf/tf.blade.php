@@ -107,7 +107,7 @@
                             </td>
                             <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
                                         <p>Add Question</p>
                                     </button>
                                     <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
@@ -142,6 +142,11 @@
                 // User clicked Cancel, prevent form submission
                 return false;
             }
+        }
+
+        document.getElementById("test-add-question").onclick = function() {
+            const dataID = this.getAttribute("data-id")
+            window.location.href = "tf/" + dataID + "/create_question";
         }
 
         function handleRowClick(event) {

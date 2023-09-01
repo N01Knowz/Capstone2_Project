@@ -53,7 +53,7 @@ class enumerationTestbankController extends Controller
         }
 
         $testbank = testbank::create([
-            'user_id' => $request->input('id'),
+            'user_id' => Auth::id(),
             'test_type' => 'enumeration',
             'test_title' => $request->input('title'),
             'test_question' => '',
@@ -182,7 +182,7 @@ class enumerationTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $question = questions::create([
+        questions::create([
             'testbank_id' => $test_id,
             'question_active' => 1,
             'item_question' => $request->input('answer_text'),
@@ -191,6 +191,19 @@ class enumerationTestbankController extends Controller
             'question_answer' => 1,
             'question_point' => 1,
             'option_1' => $request->has('case_sensitive_text') ? "1" : "0",
+        ]);
+
+        
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
         ]);
 
 
@@ -209,6 +222,19 @@ class enumerationTestbankController extends Controller
             abort(403); // User does not own the test
         }
         $question->delete();
+
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return back();
     }
 }

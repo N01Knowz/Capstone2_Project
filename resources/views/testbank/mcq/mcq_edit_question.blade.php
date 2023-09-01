@@ -117,13 +117,13 @@
                             <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
                             <select class="select-option" id="option-select" name="question_answer">
                                 @for($i = 1; $i <= $question->choices_number; $i++)
-                                    <option value="{{$i}}" @if($i==$question->question_answer) selected @endif>Option {{$i}}</option>
+                                    <option value="{{$i}}" @if($i == $question->question_answer) selected @endif>Option {{$i}}</option>
                                     @endfor
                             </select>
                         </div>
                         <div class="item-point-container">
                             <p class="text-input-label">Item Point(s) <span class="red-asterisk">*</span></p>
-                            <input type="text" class="point-input" value="1.00" name="question_point">
+                            <input type="text" class="point-input" value="{{$question->question_point}}" name="question_point">
                         </div>
                     </div>
                     <button class="save-test-button">Save Quiz Item</button>

@@ -141,7 +141,7 @@
                 <tr>
                     <td><input class="mt-inputs item_text" type="text" name="item_text_${i}"></td>
                     <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}"></td>
-                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}"></td>
+                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}" value="0"></td>
                 </tr>
             `;
                     itemsContainer.innerHTML += row;

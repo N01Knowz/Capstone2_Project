@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\testbank;
+use App\Models\questions;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,8 +21,8 @@ class essayTestbankController extends Controller
     {
         $currentUserId = Auth::user()->id;
         $tests = testbank::where('test_type', '=', 'essay')
-        ->where('user_id', '=', $currentUserId)
-        ->get();
+            ->where('user_id', '=', $currentUserId)
+            ->get();
         return view('testbank.essay.essay', [
             'tests' => $tests,
         ]);
@@ -45,6 +46,8 @@ class essayTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'question' => 'required',
+            'criteria_1' => 'required',
+            'criteria_point_1' => 'required',
         ]);
 
         $instruction = $input['instruction'] ?? '';
@@ -55,16 +58,35 @@ class essayTestbankController extends Controller
         }
 
         $testbank = testbank::create([
-            'user_id' => $request->input('id'),
+            'user_id' => Auth::id(),
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
             'test_instruction' => $instruction,
             'test_image' => $image,
-            'test_total_points' => 0,
+            'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,
         ]);
+
+        $question = questions::create([
+            'testbank_id' => $testbank->id,
+            'question_active' => 1,
+            'item_question' => $request->input('criteria_1'),
+            'question_image' => $request->input('question_image', null),
+            'choices_number' => 2,
+            'question_answer' => 0,
+            'question_point' => $request->input('criteria_point_1'),
+            'option_1' => $request->input('criteria_2'),
+            'option_2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
+            'option_3' => $request->input('criteria_3'),
+            'option_4' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
+            'option_5' => $request->input('criteria_4'),
+            'option_6' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
+            'option_7' => $request->input('criteria_5'),
+            'option_8' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
+        ]);
+        
 
         return redirect('/essay');
     }
@@ -74,7 +96,20 @@ class essayTestbankController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $question = questions::where('testbank_id', '=', $id)->first();
+        return view('testbank.essay.essay_test-description', [
+            'test' => $test,
+            'question' => $question,
+        ]);
     }
 
     /**
@@ -82,7 +117,18 @@ class essayTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $test = testbank::find($id);
+        $question = questions::where('testbank_id', '=', $id)->first();
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        return view('testbank.essay.essay_edit', [
+            'test' => $test,
+            'question' => $question,
+        ]);
     }
 
     /**
@@ -90,7 +136,57 @@ class essayTestbankController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'title' => 'required',
+            'question' => 'required',
+            'criteria_1' => 'required',
+            'criteria_point_1' => 'required',
+        ]);
+
+        $instruction = $input['instruction'] ?? '';
+        $image = $input['image'] ?? '';
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $testbank = testbank::find($id);
+
+        $testbank->update([
+            'user_id' => $request->input('id'),
+            'test_type' => 'essay',
+            'test_title' => $request->input('title'),
+            'test_question' => $request->input('question'),
+            'test_instruction' => $instruction,
+            'test_image' => $image,
+            'test_total_points' => $request->input('total_points'),
+            'test_visible' => $request->has('share'),
+            'test_active' => 1,
+        ]);
+
+
+        $question = questions::where('testbank_id', '=', $id)->first();
+
+        $question->update([
+            'question_active' => 1,
+            'item_question' => $request->input('criteria_1'),
+            'question_image' => $request->input('question_image', null),
+            'choices_number' => 2,
+            'question_answer' => 0,
+            'question_point' => $request->input('criteria_point_1'),
+            'option_1' => $request->input('criteria_2'),
+            'option_2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
+            'option_3' => $request->input('criteria_3'),
+            'option_4' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
+            'option_5' => $request->input('criteria_4'),
+            'option_6' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
+            'option_7' => $request->input('criteria_5'),
+            'option_8' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
+        ]);
+
+        return redirect('/essay');
     }
 
     /**
@@ -98,6 +194,18 @@ class essayTestbankController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        questions::where('testbank_id', $id)->delete();
+        $test->delete();
+
+        return back();
     }
 }

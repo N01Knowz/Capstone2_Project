@@ -56,7 +56,7 @@ class matchingTestbankController extends Controller
                 break;
             }
         }
-        
+
         if (!$hasAtLeastOneItemText) {
             return redirect()->back()->withErrors(['no_item' => 'There should be at least 1 text item'])->withInput();
         }
@@ -66,7 +66,7 @@ class matchingTestbankController extends Controller
         }
 
         $testbank = testbank::create([
-            'user_id' => $request->input('id'),
+            'user_id' => Auth::id(),
             'test_type' => 'matching',
             'test_title' => $request->input('title'),
             'test_question' => '',
@@ -88,6 +88,18 @@ class matchingTestbankController extends Controller
                 'question_point' => $request->input('item_point_' . $i),
             ]);
         }
+
+        $questions = questions::where("testbank_id", "=", $testbank->id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
+        }
+
+        $testbank->update([
+            'test_total_points' => $total_points,
+        ]);
 
         return redirect('/matching');
     }
@@ -181,10 +193,10 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        
+
         questions::where('testbank_id', $id)->delete();
         $test->delete();
-        
+
         return back();
     }
 
@@ -216,6 +228,11 @@ class matchingTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $test = testbank::find($test_id);
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
 
         for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
             $question = questions::create([
@@ -229,6 +246,19 @@ class matchingTestbankController extends Controller
             ]);
         }
 
+
+        $questions = questions::where("testbank_id", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return redirect('/matching/' . $test_id);
 
         // $test = testbank::find($test_id);
@@ -239,14 +269,29 @@ class matchingTestbankController extends Controller
 
     public function add_question_destroy(string $id)
     {
-        $question = questions::find($id)->delete();
-        if(is_null($question)){
+        $question = questions::find($id);
+        if (is_null($question)) {
             abort(404); // User does not own the test
         }
         $test = testbank::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $question->delete();
+
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+        
         return back();
     }
 
@@ -298,6 +343,18 @@ class matchingTestbankController extends Controller
             'item_question' => $request->input('item_answer'),
             'option_1' => $request->input('item_text'),
             'question_point' => $request->input('item_point'),
+        ]);
+
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
         ]);
 
         return redirect('/matching/' . $test_id);

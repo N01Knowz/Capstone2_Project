@@ -55,7 +55,7 @@ class mcqTestbankController extends Controller
         }
 
         $testbank = testbank::create([
-            'user_id' => $request->input('id'),
+            'user_id' => Auth::id(),
             'test_type' => 'mcq',
             'test_title' => $request->input('title'),
             'test_question' => '',
@@ -280,6 +280,18 @@ class mcqTestbankController extends Controller
             ]);
         }
 
+        $questions = questions::where("testbank_id", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return redirect('/mcq/' . $test_id);
 
         // $test = testbank::find($test_id);
@@ -299,8 +311,19 @@ class mcqTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $question->update([
-            'question_active' => '0'
+        $question->delete();
+        
+
+        $questions = questions::where("testbank_id", "=", $test->id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
         ]);
 
         return back();
@@ -444,6 +467,19 @@ class mcqTestbankController extends Controller
                 'option_' . $i => $updatedHTML,
             ]);
         }
+
+        $questions = questions::where("testbank_id", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach($questions as $question){
+            $total_points += $question->question_point;
+        }
+
+        $test->update([
+            'test_total_points' => $total_points,
+        ]);
+
         return redirect('/mcq/' . $test_id);
     }
 }

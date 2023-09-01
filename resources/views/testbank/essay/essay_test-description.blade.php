@@ -72,29 +72,28 @@
                 </a>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
-            <form method="POST" action="/essay" class="test-body-content">
-                @csrf
+            <form method="GET" action="/essay/{{$test->id}}/edit" class="test-body-content">
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required value="{{$test->test_title}}" readonly>
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="question" required></textarea>
+                <textarea class="textinput-base textarea-question text-input-background" name="question" required readonly>{{$test->test_question}}</textarea>
                 @error('question')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Instructions</p>
-                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction"></textarea>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" value="{{$test->test_instruction}}" readonly></textarea>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
-                    <input type="text" class="text-input-background text-input-attach-image" name="image">
+                    <input type="text" class="text-input-background text-input-attach-image" name="image" value="{{$test->test_image}}" readonly>
                     <button class="text-input-image-button">Browse</button>
                 </div>
                 <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
                 <div class="share-container">
-                    <input type="checkbox" class="share-checkbox" name="share">
+                    <input type="checkbox" class="share-checkbox" name="share" disabled>
                     <p class="text-input-label">Share with other faculties</p>
                 </div>
                 <table class="criteria-points-table">
@@ -112,60 +111,60 @@
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" required placeholder="E.g Content" id="criteria_1" name="criteria_1">
+                                    <input readonly type="text" class="criteria-point-input criteria-input" required placeholder="E.g Content" name="criteria_1" value="{{$question->item_question}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" required value="0" id="criteria_point_1" min="0" name="criteria_point_1">
+                                    <input readonly type="number" class="criteria-point-input point-input" required min="0" name="criteria_point_1" value="{{$question->question_point}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" id="criteria_2" name="criteria_2">
+                                    <input readonly type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_2" value="{{$question->option_1}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" value="0" id="criteria_point_2" min="0" name="criteria_point_2" readonly>
+                                    <input readonly type="number" class="criteria-point-input point-input" min="0" name="criteria_point_2" value="{{$question->option_2}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" id="criteria_3" name="criteria_3">
+                                    <input readonly type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_3" value="{{$question->option_3}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" value="0" id="criteria_point_3" min="0" name="criteria_point_3" readonly>
+                                    <input readonly type="number" class="criteria-point-input point-input" min="0" name="criteria_point_3" value="{{$question->option_4}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" id="criteria_4" name="criteria_4">
+                                    <input readonly type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_4" value="{{$question->option_5}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" value="0" id="criteria_point_4" min="0" name="criteria_point_4" readonly>
+                                    <input readonly type="number" class="criteria-point-input point-input" min="0" name="criteria_point_4" value="{{$question->option_6}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" id="criteria_5" name="criteria_5">
+                                    <input readonly type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_5" value="{{$question->option_7}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" value="0" id="criteria_point_5" min="0" name="criteria_point_5" readonly>
+                                    <input readonly type="number" class="criteria-point-input point-input" min="0" name="criteria_point_5" value="{{$question->option_8}}">
                                 </div>
                             </td>
                         </tr>
@@ -175,7 +174,7 @@
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" id="total_points" value="0" id="criteria_point_1" min="0" name="total_points" readonly>
+                                    <input readonly type="number" class="criteria-point-input point-input" min="0" name="criteria_point_5" value="{{$test->test_total_points}}" readonly>
                                 </div>
                             </td>
                         </tr>
@@ -183,7 +182,7 @@
                 </table>
 
                 <div class="add-test-button-anchor">
-                    <button class="save-test-button">Save Test</button>
+                    <button class="save-test-button">Edit Test</button>
                 </div>
             </form>
         </div>
@@ -193,36 +192,6 @@
         pointInputs.forEach(pointInput => {
             pointInput.addEventListener('input', handleTotalPoints);
         });
-
-        for (let i = 2; i <= 5; i++) {
-            const criteriaInput = document.getElementById(`criteria_${i}`);
-            const criteriaPointInput = document.getElementById(`criteria_point_${i}`);
-
-            criteriaInput.addEventListener("input", function() {
-                if (criteriaInput.value === "") {
-                    criteriaPointInput.value = 0;
-                    criteriaPointInput.setAttribute("readonly", "readonly");
-                } else {
-                    criteriaPointInput.removeAttribute("readonly");
-                }
-
-                // Calculate total points whenever any input changes
-                calculateTotalPoints();
-            });
-        }
-
-        function calculateTotalPoints() {
-            let total = 0;
-
-            for (let i = 2; i <= 5; i++) {
-                const criteriaPointInput = document.getElementById(`criteria_point_${i}`);
-                total += parseInt(criteriaPointInput.value) || 0;
-            }
-
-            totalPointsInput.value = total;
-        }
-
-
 
         function handleTotalPoints() {
             var total_points = document.getElementById("total_points");
@@ -234,6 +203,8 @@
             });
             total_points.value = sum;
         }
+
+        
     </script>
 </body>
 

@@ -107,9 +107,6 @@
                             </td>
                             <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
-                                        <p>Add Question</p>
-                                    </button>
                                     <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
@@ -143,6 +140,7 @@
                 return false;
             }
         }
+
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const columnData = clickedColumn.getAttribute('data-id');
@@ -153,10 +151,6 @@
         columns.forEach(column => {
             column.addEventListener('click', handleRowClick);
         });
-
-        document.getElementById("test-add-question").onclick = function() {
-            window.location.href = "enumeration/question/add";
-        }
 
         document.getElementById("test-edit-button").onclick = function() {
             const dataID = this.getAttribute("data-id")

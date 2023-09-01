@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="/css/essay.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- <h1>Your id is: {{auth()->user()->id;}}</h1> -->
     <div class="test-container">
@@ -66,7 +68,9 @@
         <div class="test-body">
             <div class="test-body-header">
                 <form method="get" action="/essay/create" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon"><p>Add New Test</p></button>
+                    <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+                        <p>Add New Test</p>
+                    </button>
                 </form>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
@@ -83,70 +87,114 @@
                     </thead>
                     <tbody>
                         <!-- Table content goes here -->
-                        @foreach ($tests as $test) 
-                            <tr>
-                                <td class="test-body-column test-body-title"><p>{{$test->test_title}}</p></td>
-                                <td class="test-body-column test-body-instruction"><p>{{$test->test_instruction}}</p></td>
-                                <td class="test-body-column test-body-status"><div><p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon"></div></td>
-                                <td class="test-body-column test-body-points"><div><p>{{$test->test_total_points}}</p></div></td>
-                                <td class="test-body-buttons-column">
-                                    <div class="test-body-buttons-column-div">
-                                        <button class="test-body-buttons buttons-edit-button"><img src="/images/edit-icon.png" class="test-body-buttons-icons"><p>Edit</p></button>
-                                        <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons"><p>Print</p></button>
-                                        <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons"><p>Delete</p></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        <!-- <tr>
-                            <td class="test-body-column test-body-title"><p>Science Essay</p></td>
-                            <td class="test-body-column test-body-instruction"><p>Describe your favorite planet and why</p></td>
-                            <td class="test-body-column test-body-status"><div><p class="test-status-word">Private</p><img src="/images/eye-icon-light.png" class="test-status-icon"></div></td>
-                            <td class="test-body-column test-body-points"><div><p>5.00</p></div></td>
-                            <td class="test-body-buttons-column">
-                                <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-edit-button"><img src="/images/edit-icon.png" class="test-body-buttons-icons"><p>Edit</p></button>
-                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons"><p>Print</p></button>
-                                    <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons"><p>Delete</p></button>
+                        @foreach ($tests as $test)
+                        <tr>
+                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
+                                <p>{{$test->test_title}}</p>
+                            </td>
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
+                                <p>{{$test->test_instruction}}</p>
+                            </td>
+                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                                <div>
+                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
                                 </div>
                             </td>
-                        </tr> -->
+                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
+                                <div>
+                                    <p>{{$test->test_total_points}}</p>
+                                </div>
+                            </td>
+                            <td class="test-body-buttons-column">
+                                <div class="test-body-buttons-column-div">
+                                    <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                        <p>Edit</p>
+                                    </button>
+                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
+                                        <p>Print</p>
+                                    </button>
+                                    <form method="POST" action="/tf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                                            <p>Delete</p>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
     <script>
-        function chosenTestType(newTestTypeId) {
-            const oldDivElement = document.querySelector('.chosen-type');
-            if (oldDivElement) {
-                oldDivElement.classList.remove('chosen-type');
-                flipIconColor(oldDivElement);
-            }
-
-            console.log(newTestTypeId);
-            const newDivElement = document.getElementById(newTestTypeId);
-            newDivElement.classList.add('chosen-type');
-            flipIconColor(newDivElement);
-        }
-
-        function flipIconColor(divElement) {
-            if (divElement) {
-                const testIconId = divElement.getAttribute('data-icon-id');
-                const iconElement = document.getElementById(testIconId);
-
-                const getIconLight = iconElement.getAttribute('data-icon-light');
-                const getIconDark = iconElement.getAttribute('data-icon-dark');
-
-                if (divElement.classList.contains('chosen-type')) {
-                    iconElement.src = getIconDark;
-                }
-                else {
-                    iconElement.src = getIconLight;
-                }
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            function handleRowClick(event) {
+                const clickedColumn = event.currentTarget;
+                const columnData = clickedColumn.getAttribute('data-id');
+                window.location.href = "essay/" + columnData;
+            }
+
+            function handleEditClick(event) {
+                const clickedButton = event.currentTarget;
+                const dataID = clickedButton.getAttribute('data-id');
+                window.location.href = "essay/" + dataID + "/edit";
+            }
+
+            const editButtons = document.querySelectorAll(".test-edit-button");
+            editButtons.forEach(editButton => {
+                editButton.addEventListener('click', handleEditClick);
+            });
+
+            const columns = document.querySelectorAll('.test-body-column');
+            columns.forEach(column => {
+                column.addEventListener('click', handleRowClick);
+            });
+        });
+
+        // function chosenTestType(newTestTypeId) {
+        //     const oldDivElement = document.querySelector('.chosen-type');
+        //     if (oldDivElement) {
+        //         oldDivElement.classList.remove('chosen-type');
+        //         flipIconColor(oldDivElement);
+        //     }
+
+        //     console.log(newTestTypeId);
+        //     const newDivElement = document.getElementById(newTestTypeId);
+        //     newDivElement.classList.add('chosen-type');
+        //     flipIconColor(newDivElement);
+        // }
+
+        // function flipIconColor(divElement) {
+        //     if (divElement) {
+        //         const testIconId = divElement.getAttribute('data-icon-id');
+        //         const iconElement = document.getElementById(testIconId);
+
+        //         const getIconLight = iconElement.getAttribute('data-icon-light');
+        //         const getIconDark = iconElement.getAttribute('data-icon-dark');
+
+        //         if (divElement.classList.contains('chosen-type')) {
+        //             iconElement.src = getIconDark;
+        //         } else {
+        //             iconElement.src = getIconLight;
+        //         }
+        //     }
+        // }
     </script>
     <!-- <script src="/javascript/index.js"></script> -->
 </body>
+
 </html>
