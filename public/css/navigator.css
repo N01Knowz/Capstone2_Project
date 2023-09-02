@@ -20,6 +20,7 @@ body {
   width: 100%;
   height: 100%;
   font-family: "Source Sans Pro", sans-serif;
+  position: relative;
 }
 
 .test-container {
@@ -91,9 +92,9 @@ body {
     margin-top: auto;
     border-top: 1px solid var(--color2);
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 2%;
-    overflow: hidden;
 }
 
 #profile-pic {
@@ -113,4 +114,50 @@ body {
 #profile-setting-icon {
     height: 1.5em;
     width: 1.5em;
+    margin-right: 1em;
+}
+
+.setting-container {
+    display: flex;
+    position: relative;
+}
+
+.setting-dropdown-menu {
+    display: none;
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+    background-color: white;
+    flex-direction: column;
+    align-items: center;
+    width: 8em;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1;
+    text-align: center;
+}
+
+.setting-profile {
+    border: none;
+    border-bottom: 1px solid black;
+    width: 100%;
+    background-color: transparent;
+    font-size: 1.3em;
+}
+
+.setting-logout {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 1.3em;
+}
+
+.setting-dropdown-menu > *:hover {
+    background-color: var(--color1);
+    width: 100%;
+    cursor: pointer;
+}
+
+.setting-logout {
+    cursor: pointer;
 }

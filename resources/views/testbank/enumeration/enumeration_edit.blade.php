@@ -60,7 +60,16 @@
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
-                <img src="/images/icons8-gear-50.png" id="profile-setting-icon">
+                <div class="setting-container">
+                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <div class="setting-dropdown-menu" id="dropdown-menu">
+                        <button class="setting-profile">Profile</button>
+                        <form action="/logout" method="POST" class="setting-logout-form">
+                            @csrf
+                            <button class="setting-logout">Log Out</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="test-body">
@@ -107,7 +116,14 @@
         </div>
     </div>
     <script>
-        
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
 
         document.getElementById('back-button').addEventListener('click', function() {
                         window.history.back();

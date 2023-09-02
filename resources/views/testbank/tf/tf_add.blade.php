@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/navigator.css">
 </head>
+
 <body>
     <div class="test-container">
         <div class="navigator">
@@ -57,13 +59,24 @@
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
-                <img src="/images/icons8-gear-50.png" id="profile-setting-icon">
+                <div class="setting-container">
+                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <div class="setting-dropdown-menu" id="dropdown-menu">
+                        <button class="setting-profile">Profile</button>
+                        <form action="/logout" method="POST" class="setting-logout-form">
+                            @csrf
+                            <button class="setting-logout">Log Out</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="test-body">
             <div class="test-body-header">
                 <a href="/tf" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon"><p>Back</p></button>
+                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                        <p>Back</p>
+                    </button>
                 </a>
                 <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
@@ -73,12 +86,12 @@
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
                 <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
                 @error('title')
-                    <div class="alert alert-dange red-asterisk">{{ $message }}</div>
+                <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
-                    <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
@@ -102,5 +115,16 @@
             </form>
         </div>
     </div>
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
+    </script>
 </body>
+
 </html>

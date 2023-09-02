@@ -50,8 +50,6 @@ class essayTestbankController extends Controller
             'criteria_point_1' => 'required',
         ]);
 
-        $instruction = $input['instruction'] ?? '';
-        $image = $input['image'] ?? '';
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -62,8 +60,8 @@ class essayTestbankController extends Controller
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $instruction,
-            'test_image' => $image,
+            'test_instruction' => $request->input('instruction'),
+            'test_image' => $request->input('image'),
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,
@@ -145,22 +143,18 @@ class essayTestbankController extends Controller
             'criteria_point_1' => 'required',
         ]);
 
-        $instruction = $input['instruction'] ?? '';
-        $image = $input['image'] ?? '';
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $testbank = testbank::find($id);
-
         $testbank->update([
             'user_id' => $request->input('id'),
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $instruction,
-            'test_image' => $image,
+            'test_instruction' => $request->input('instruction'),
+            'test_image' => $request->input('image'),
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,

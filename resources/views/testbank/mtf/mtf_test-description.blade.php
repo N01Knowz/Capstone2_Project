@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/test_description.css">
 </head>
+
 <body>
     <div class="test-container">
         <div class="navigator">
@@ -58,7 +60,16 @@
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
-                <img src="/images/icons8-gear-50.png" id="profile-setting-icon">
+                <div class="setting-container">
+                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <div class="setting-dropdown-menu" id="dropdown-menu">
+                        <button class="setting-profile">Profile</button>
+                        <form action="/logout" method="POST" class="setting-logout-form">
+                            @csrf
+                            <button class="setting-logout">Log Out</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="test-body">
@@ -102,7 +113,7 @@
                                         <p>{{$question->item_question}}</p>
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->question_point}}</p>
+                                        <p>{{$question->question_point + $question->explanation_point}}</p>
                                     </td>
                                     <td>
                                         <div class="questions-table-buttons-column-div">
@@ -150,6 +161,14 @@
         </div>
     </div>
     <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
 
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;

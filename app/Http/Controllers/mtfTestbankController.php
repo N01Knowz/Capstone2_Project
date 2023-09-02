@@ -248,7 +248,8 @@ class mtfTestbankController extends Controller
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_points += $total_question_points;
         }
 
         $test->update([
@@ -281,7 +282,8 @@ class mtfTestbankController extends Controller
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_points += $total_question_points;
         }
 
         $test->update([
@@ -352,7 +354,8 @@ class mtfTestbankController extends Controller
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_points += $total_question_points;
         }
 
         $test->update([
