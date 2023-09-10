@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Multiple Choices</title>
+    <link rel="icon" href="/images/logo.png">
     <!-- include libraries(jQuery, bootstrap) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -83,9 +84,10 @@
         <div class="test-body">
             <div class="test-body-header">
                 <div href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                    <button class="add-test-button" id="back-button" data-id="{{$test->id}}"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+                <div class="searchbar-container">
+                </div>
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
@@ -101,10 +103,13 @@
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image" value="{{$question->question_image}}" readonly>
-                        <button class="text-input-image-button">Browse</button>
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
+                        <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                    <div id="imageContainer" style="display: flex;" class="image-preview-container">
+                        <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
+                    </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                     <input type="text" class="text-input-choices" id="numChoicesInput" value="{{$question->choices_number}}" name="number_of_choices" readonly>
                     @error('number_of_choices')
@@ -149,7 +154,11 @@
             }
         }
         document.getElementById('back-button').addEventListener('click', function() {
-            window.history.back();
+            // Get the data-id attribute value
+            var dataId = this.getAttribute('data-id');
+
+            // Navigate to a new URL using the data-id value
+            window.location.href = "/mcq/" + dataId;
         });
 
         $('.summernote').summernote({

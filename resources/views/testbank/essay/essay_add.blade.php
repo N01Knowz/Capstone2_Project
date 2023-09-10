@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Essay</title>
+    <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/essay_add_page.css">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/body.css">
@@ -79,7 +80,8 @@
                         <p>Back</p>
                     </button>
                 </a>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+                <div class="searchbar-container">
+                </div>
             </div>
             <form method="POST" action="/essay" class="test-body-content">
                 @csrf
@@ -95,7 +97,7 @@
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Instructions</p>
-                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction"></textarea>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" required></textarea>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
                     <input type="text" class="text-input-background text-input-attach-image" name="image">

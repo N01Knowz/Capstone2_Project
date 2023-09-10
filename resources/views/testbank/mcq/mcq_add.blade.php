@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Multiple Choices</title>
+    <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/navigator.css">
@@ -73,10 +74,11 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div href="/mcq" class="add-test-button-anchor">
+                <a href="/mcq" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                </a>
+                <div class="searchbar-container">
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <form method="POST" action="/mcq" class="test-body-content">
                 @csrf
@@ -122,9 +124,6 @@
                 dropdown.style.display = "none";
             }
         }
-        document.getElementById('back-button').addEventListener('click', function() {
-            window.history.back();
-        });
     </script>
 </body>
 

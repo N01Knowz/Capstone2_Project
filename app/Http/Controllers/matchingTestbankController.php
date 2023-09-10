@@ -17,12 +17,23 @@ class matchingTestbankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $currentUserId = Auth::user()->id;
-        $tests = testbank::where('test_type', '=', 'matching')
-            ->where('user_id', '=', $currentUserId)
-            ->get();
+        $testsQuery = testbank::where('test_type', '=', 'matching')
+            ->where('user_id', '=', $currentUserId);
+
+        if (!empty($search)) {
+            $testsQuery->where(function ($query) use ($search) {
+                $query->where('test_title', 'LIKE', "%$search%")
+                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+            });
+        }
+
+        $tests = $testsQuery->orderBy('id', 'desc')
+        ->get();
         return view('testbank.matching.matching', [
             'tests' => $tests,
         ]);
@@ -291,7 +302,7 @@ class matchingTestbankController extends Controller
         $test->update([
             'test_total_points' => $total_points,
         ]);
-        
+
         return back();
     }
 
@@ -349,7 +360,7 @@ class matchingTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 

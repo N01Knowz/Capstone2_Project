@@ -19,12 +19,24 @@ class mtfTestbankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $currentUserId = Auth::user()->id;
-        $tests = testbank::where('test_type', '=', 'mtf')
-            ->where('user_id', '=', $currentUserId)
+        $testsQuery = testbank::where('test_type', '=', 'mtf')
+            ->where('user_id', '=', $currentUserId);
+
+        if (!empty($search)) {
+            $testsQuery->where(function ($query) use ($search) {
+                $query->where('test_title', 'LIKE', "%$search%")
+                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+            });
+        }
+
+        $tests = $testsQuery->orderBy('id', 'desc')
             ->get();
+            
         return view('testbank.mtf.mtf', [
             'tests' => $tests,
         ]);

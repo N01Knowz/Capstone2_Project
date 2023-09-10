@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Multiple Choices</title>
+    <link rel="icon" href="/images/logo.png">
     <!-- include libraries(jQuery, bootstrap) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -83,9 +84,11 @@
         <div class="test-body">
             <div class="test-body-header">
                 <div href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                    <button class="add-test-button" id="back-button" data-id="{{$test->id}}"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+
+                <div class="searchbar-container">
+                </div>
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
@@ -103,10 +106,20 @@
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image" value="{{$question->question_image}}">
-                        <button class="text-input-image-button">Browse</button>
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
+                        <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $question->question_image }}">
+                        <input type="hidden" name="imageChanged" id="imageChanged" value="0">
+                        <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($question->question_image))
+                            style="display: none;"
+                            @endunless>Clear</button>
+                        <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($question->question_image))
+                            style="display: none;"
+                            @endunless>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                    <div id="imageContainer" style="display: flex;" class="image-preview-container">
+                        <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
+                    </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                     <input type="number" class="text-input-choices" id="numChoicesInput" value="{{$question->choices_number}}" name="number_of_choices">
                     @error('number_of_choices')
@@ -126,7 +139,7 @@
                             <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
                             <select class="select-option" id="option-select" name="question_answer">
                                 @for($i = 1; $i <= $question->choices_number; $i++)
-                                    <option value="{{$i}}" @if($i == $question->question_answer) selected @endif>Option {{$i}}</option>
+                                    <option value="{{$i}}" @if($i==$question->question_answer) selected @endif>Option {{$i}}</option>
                                     @endfor
                             </select>
                         </div>
@@ -141,36 +154,109 @@
         </div>
     </div>
     <script>
-        function toggleDropdown() {
-            var dropdown = document.getElementById("dropdown-menu");
-            if (dropdown.style.display === "none" || dropdown.style.display === "") {
-                dropdown.style.display = "block";
-            } else {
-                dropdown.style.display = "none";
-            }
-        }
-        document.getElementById('back-button').addEventListener('click', function() {
-            window.history.back();
-        });
-
-        $('.summernote').summernote({
-            placeholder: 'Enter Option...',
-            tabsize: 2,
-            height: 100,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
-
-        // JavaScript Code
         document.addEventListener("DOMContentLoaded", function() {
+
+            function toggleDropdown() {
+                var dropdown = document.getElementById("dropdown-menu");
+                if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                    dropdown.style.display = "block";
+                } else {
+                    dropdown.style.display = "none";
+                }
+            }
+            document.getElementById('back-button').addEventListener('click', function() {
+                // Get the data-id attribute value
+                var dataId = this.getAttribute('data-id');
+
+                // Navigate to a new URL using the data-id value
+                window.location.href = "/mcq/" + dataId;
+            });
+
+            $('.summernote').summernote({
+                placeholder: 'Enter Option...',
+                tabsize: 2,
+                height: 100,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+
+            // JavaScript Code
+
+            // Get references to the text input, button, and file input
+            const photoNameInput = document.getElementById('photoName');
+            const choosePhotoButton = document.getElementById('browseButton');
+            const imageInput = document.getElementById('imageInput');
+            const selectedImage = document.getElementById('selectedImage');
+            const imageContainer = document.getElementById('imageContainer');
+            const imageChangedInput = document.getElementById('imageChanged');
+            const clearButton = document.getElementById('clearButton');
+
+            clearButton.addEventListener('click', () => {
+                photoNameInput.value = '';
+                imageInput.value = '';
+                selectedImage.src = '';
+                imageContainer.style.display = 'none';
+                imageChangedInput.value = '1';
+
+                clearButton.style.display = 'none';
+                choosePhotoButton.style.display = 'inline-block';
+            });
+
+            // Add a click event listener to the button
+            choosePhotoButton.addEventListener('click', () => {
+                // Trigger a click event on the file input
+                imageChangedInput.value = '1';
+                imageInput.click();
+            });
+
+            // Listen for changes in the file input
+            imageInput.addEventListener('change', () => {
+                const selectedFile = imageInput.files[0];
+
+                // Check if a file was selected
+                if (selectedFile) {
+                    // Check the file extension
+                    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+                    if (['gif', 'png', 'jpeg', 'jpg'].includes(fileExtension)) {
+                        // Update the text input with the selected file's name
+                        photoNameInput.value = selectedFile.name;
+
+                        // Display the selected image
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            selectedImage.src = e.target.result;
+                            imageContainer.style.display = 'flex';
+                        };
+                        reader.readAsDataURL(selectedFile);
+
+                        clearButton.style.display = 'inline-block';
+                        choosePhotoButton.style.display = 'none';
+
+                        // Set the imageChanged input to 1 when a new file is selected
+                    } else {
+                        // Display an error message or take appropriate action
+                        alert('Please select a GIF, PNG, or JPEG image.');
+                        imageInput.value = ''; // Clear the file input
+                    }
+                } else {
+                    // Clear the text input and hide the image container if no file is selected
+                    photoNameInput.value = '';
+                    imageInput.value = '';
+                    selectedImage.src = '';
+                    imageContainer.style.display = 'none';
+                }
+            });
+
+
             const numChoicesInput = document.getElementById("numChoicesInput");
             const optionsContainer = document.getElementById("optionsContainer");
             const optionSelect = document.getElementById("option-select");
@@ -179,7 +265,7 @@
 
             numChoicesInput.addEventListener("input", function() {
                 const numChoices = parseInt(numChoicesInput.value);
-                
+
                 optionsContainer.querySelectorAll(".summernote").forEach((textarea, index) => {
                     textareaValues[`option_${index + 1}`] = textarea.value;
                 });
@@ -200,7 +286,7 @@
 
                         const textarea = document.createElement("textarea");
                         textarea.className = "summernote";
-                        textarea.name = `option_${i}`; 
+                        textarea.name = `option_${i}`;
                         textarea.value = textareaValues[`option_${i}`] || ""; // Restore old value if available
 
                         const optionElement = document.createElement("option");

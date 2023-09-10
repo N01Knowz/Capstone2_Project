@@ -19,12 +19,24 @@ class mcqTestbankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $currentUserId = Auth::user()->id;
-        $tests = testbank::where('test_type', '=', 'mcq')
-            ->where('user_id', '=', $currentUserId)
+        $testsQuery = testbank::where('test_type', '=', 'mcq')
+            ->where('user_id', '=', $currentUserId);
+
+        if (!empty($search)) {
+            $testsQuery->where(function ($query) use ($search) {
+                $query->where('test_title', 'LIKE', "%$search%")
+                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+            });
+        }
+
+        $tests = $testsQuery->orderBy('id', 'desc')
             ->get();
+
         return view('testbank.mcq.mcq', [
             'tests' => $tests,
         ]);
@@ -75,9 +87,9 @@ class mcqTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -101,9 +113,9 @@ class mcqTestbankController extends Controller
     public function edit(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -131,7 +143,7 @@ class mcqTestbankController extends Controller
         }
 
         $testbank = testbank::find($id);
-        if(is_null($testbank)){
+        if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
         if ($testbank->user_id != Auth::id()) {
@@ -153,27 +165,27 @@ class mcqTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        
+
         questions::where('testbank_id', $id)->delete();
         $test->delete();
-        
+
         return back();
     }
 
     public function add_question_index(string $test_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -187,9 +199,9 @@ class mcqTestbankController extends Controller
     public function add_question_show(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -210,9 +222,9 @@ class mcqTestbankController extends Controller
         $input = $request->all();
 
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -223,10 +235,20 @@ class mcqTestbankController extends Controller
             'item_question' => 'required',
             'number_of_choices' => 'required|numeric|gte:1|lt:11',
             'option_1' => 'required',
+            'imageInput' => 'image|mimes:jpeg,png,jpg,gif', // Adjust the file types and size as needed
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $randomName = "";
+        if ($request->hasFile('imageInput')) {
+            do {
+                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = questions::where('question_image', $randomName)->first();
+            } while ($existingImage);
+            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
 
 
@@ -234,7 +256,7 @@ class mcqTestbankController extends Controller
             'testbank_id' => $test_id,
             'question_active' => 1,
             'item_question' => $request->input('item_question'),
-            'question_image' => $request->input('question_image', null),
+            'question_image' => $request->hasFile('imageInput') ? $randomName : null,
             'choices_number' => $request->input('number_of_choices'),
             'question_answer' => $request->input('question_answer'),
             'question_point' => $request->input('question_point'),
@@ -284,7 +306,7 @@ class mcqTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 
@@ -303,7 +325,7 @@ class mcqTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = questions::find($id);
-        if(is_null($question)){
+        if (is_null($question)) {
             abort(404); // User does not own the test
         }
         $test = testbank::find($question->testbank_id);
@@ -312,13 +334,13 @@ class mcqTestbankController extends Controller
         }
 
         $question->delete();
-        
+
 
         $questions = questions::where("testbank_id", "=", $test->id)->get();
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 
@@ -332,9 +354,9 @@ class mcqTestbankController extends Controller
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -353,24 +375,36 @@ class mcqTestbankController extends Controller
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
         $test = testbank::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
         $input = $request->all();
+        dd($request->input('imageChanged'));
 
         $validator = Validator::make($input, [
             'item_question' => 'required',
             'number_of_choices' => 'required|numeric|gte:1|lt:11',
-            'option_1' => 'required',
+            'option_1' => 'required', 
+            'imageInput' => 'image|mimes:jpeg,png,jpg,gif', // Adjust the file types and size as needed
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $randomName = "";
+
+        if ($request->hasFile('imageInput')) {
+            do {
+                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = questions::where('question_image', $randomName)->first();
+            } while ($existingImage);
+            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
 
         $question = questions::find($question_id);
@@ -472,7 +506,7 @@ class mcqTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 

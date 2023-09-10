@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Modified True or False</title>
+    <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/front_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
@@ -80,7 +81,10 @@
                     <p>Add New Test</p>
                 </button>
             </form>
-            <input type="text" placeholder="Search tests here..." class="test-searchbar">
+                <form method="GET" action="" class="searchbar-container">
+                    <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
+                    <button class="search-button">Search</button>
+                </form>
         </div>
         <div class="test-body-content">
             <table class="test-body-table">

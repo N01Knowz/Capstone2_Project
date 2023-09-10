@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Essay</title>
+    <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/essay_add_page.css">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/body.css">
@@ -79,7 +80,8 @@
                         <p>Back</p>
                     </button>
                 </a>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+                <div class="searchbar-container">
+                </div>
             </div>
             <form method="GET" action="/essay/{{$test->id}}/edit" class="test-body-content">
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">

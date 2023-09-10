@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Multiple Choices</title>
+    <link rel="icon" href="/images/logo.png">
     <!-- include libraries(jQuery, bootstrap) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -83,9 +84,11 @@
         <div class="test-body">
             <div class="test-body-header">
                 <div class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                    <button class="add-test-button" id="back-button" data-id="{{$test->id}}"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+
+                <div class="searchbar-container">
+                </div>
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
@@ -93,7 +96,7 @@
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <form method="POST" class="test-add-question-container">
+                <form method="POST" class="test-add-question-container" enctype="multipart/form-data">
                     @csrf
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
                     <textarea class="text-input" name="item_question"></textarea>
@@ -102,10 +105,14 @@
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image">
-                        <button class="text-input-image-button">Browse</button>
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" readonly>
+                        <input type="file" id="imageInput" style="display:none;" name="imageInput">
+                        <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
                     </div>
-                    <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                    <p class="text-supported-format">Supported formats: .jpg, .png, .gif | Select no file to clear the input.</p>
+                    <div id="imageContainer" style="display: none;" class="image-preview-container">
+                        <img id="selectedImage" src="#" alt="Selected Image" class="image-preview">
+                    </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                     <input type="number" class="text-input-choices" id="numChoicesInput" value="1" name="number_of_choices">
                     @error('number_of_choices')
@@ -130,6 +137,15 @@
                             <input type="text" class="point-input" value="1.00" name="question_point">
                         </div>
                     </div>
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <button class="save-test-button">Save Quiz Item</button>
                 </form>
             </div>
@@ -145,7 +161,11 @@
             }
         }
         document.getElementById('back-button').addEventListener('click', function() {
-            window.history.back();
+            // Get the data-id attribute value
+            var dataId = this.getAttribute('data-id');
+
+            // Navigate to a new URL using the data-id value
+            window.location.href = "/mcq/" + dataId;
         });
 
         $('.summernote').summernote({
@@ -166,6 +186,55 @@
 
         // JavaScript Code
         document.addEventListener("DOMContentLoaded", function() {
+
+            // Get references to the text input, button, and file input
+            const photoNameInput = document.getElementById('photoName');
+            const choosePhotoButton = document.getElementById('browseButton');
+            const imageInput = document.getElementById('imageInput');
+            const selectedImage = document.getElementById('selectedImage');
+            const imageContainer = document.getElementById('imageContainer');
+
+            // Add a click event listener to the button
+            choosePhotoButton.addEventListener('click', () => {
+                // Trigger a click event on the file input
+                imageInput.click();
+            });
+
+            // Listen for changes in the file input
+            imageInput.addEventListener('change', () => {
+                console.log("There was a change");
+                const selectedFile = imageInput.files[0];
+
+                // Check if a file was selected
+                if (selectedFile) {
+                    // Check the file extension
+                    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+                    if (['gif', 'png', 'jpeg', 'jpg'].includes(fileExtension)) {
+                        // Update the text input with the selected file's name
+                        photoNameInput.value = selectedFile.name;
+
+                        // Display the selected image
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            selectedImage.src = e.target.result;
+                            imageContainer.style.display = 'flex';
+                        };
+                        reader.readAsDataURL(selectedFile);
+                    } else {
+                        // Display an error message or take appropriate action
+                        alert('Please select a GIF, PNG, or JPEG image.');
+                        imageInput.value = ''; // Clear the file input
+                    }
+                } else {
+                    // Clear the text input and hide the image container if no file is selected
+                    photoNameInput.value = '';
+                    imageInput.value = '';
+                    selectedImage.src = '';
+                    imageContainer.style.display = 'none';
+                }
+            });
+
             const numChoicesInput = document.getElementById("numChoicesInput");
             const optionsContainer = document.getElementById("optionsContainer");
             const optionSelect = document.getElementById("option-select");

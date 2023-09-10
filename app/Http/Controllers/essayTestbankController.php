@@ -17,12 +17,23 @@ class essayTestbankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $currentUserId = Auth::user()->id;
-        $tests = testbank::where('test_type', '=', 'essay')
-            ->where('user_id', '=', $currentUserId)
-            ->get();
+        $testsQuery = testbank::where('test_type', '=', 'essay')
+            ->where('user_id', '=', $currentUserId);
+
+        if (!empty($search)) {
+            $testsQuery->where(function ($query) use ($search) {
+                $query->where('test_title', 'LIKE', "%$search%")
+                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+            });
+        }
+
+        $tests = $testsQuery->orderBy('id', 'desc')
+        ->get();
         return view('testbank.essay.essay', [
             'tests' => $tests,
         ]);
@@ -84,7 +95,7 @@ class essayTestbankController extends Controller
             'option_7' => $request->input('criteria_5'),
             'option_8' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
         ]);
-        
+
 
         return redirect('/essay');
     }

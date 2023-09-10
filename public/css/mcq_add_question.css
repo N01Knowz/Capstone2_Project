@@ -80,6 +80,7 @@
     padding: 0.5%;
 }
 
+
 .text-input-attach-image {
     padding: 0.4%;
     font-size: 1em;
@@ -131,4 +132,16 @@
 .point-input {
     width: 100%;
     padding: 0.5em;
+}
+
+.image-preview-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview {
+    height: 500px;
+    width: 500px;
 }

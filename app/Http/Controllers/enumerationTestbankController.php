@@ -17,12 +17,24 @@ class enumerationTestbankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $currentUserId = Auth::user()->id;
-        $tests = testbank::where('test_type', '=', 'enumeration')
-            ->where('user_id', '=', $currentUserId)
+        $testsQuery = testbank::where('test_type', '=', 'enumeration')
+            ->where('user_id', '=', $currentUserId);
+
+        if (!empty($search)) {
+            $testsQuery->where(function ($query) use ($search) {
+                $query->where('test_title', 'LIKE', "%$search%")
+                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+            });
+        }
+
+        $tests = $testsQuery->orderBy('id', 'desc')
             ->get();
+
         return view('testbank.enumeration.enumeration', [
             'tests' => $tests,
         ]);
@@ -154,7 +166,7 @@ class enumerationTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        
+
         questions::where('testbank_id', $id)->delete();
         $test->delete();
 
@@ -193,12 +205,12 @@ class enumerationTestbankController extends Controller
             'option_1' => $request->has('case_sensitive_text') ? "1" : "0",
         ]);
 
-        
+
         $questions = questions::where("testbank_id", "=", $test->id)->get();
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 
@@ -227,7 +239,7 @@ class enumerationTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->question_point;
         }
 
