@@ -115,6 +115,7 @@ body {
     height: 1.5em;
     width: 1.5em;
     margin-right: 1em;
+    cursor: pointer;
 }
 
 .setting-container {

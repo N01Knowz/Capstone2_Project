@@ -103,6 +103,13 @@
                     <button class="text-input-image-button">Browse</button>
                 </div>
                 <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                <div id="imageContainer" @if(is_null($test->test_image) || empty($test->test_image))
+                        style="display: none;"
+                        @else
+                        style="display: flex;"
+                        @endif class="image-preview-container">
+                        <img id="selectedImage" src="/user_upload_images/{{$test->test_image}}" alt="Selected Image" class="image-preview">
+                    </div>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share" disabled>
                     <p class="text-input-label">Share with other faculties</p>

@@ -59,11 +59,21 @@ class essayTestbankController extends Controller
             'question' => 'required',
             'criteria_1' => 'required',
             'criteria_point_1' => 'required',
+            'imageInput' => 'image|mimes:jpeg,png,jpg,gif', // Adjust the file types and size as needed
         ]);
 
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $randomName = "";
+        if ($request->hasFile('imageInput')) {
+            do {
+                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = questions::where('question_image', $randomName)->first();
+            } while ($existingImage);
+            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
 
         $testbank = testbank::create([
@@ -72,7 +82,7 @@ class essayTestbankController extends Controller
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
-            'test_image' => $request->input('image'),
+            'test_image' => $request->hasFile('imageInput') ? $randomName : null,
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,
@@ -82,7 +92,7 @@ class essayTestbankController extends Controller
             'testbank_id' => $testbank->id,
             'question_active' => 1,
             'item_question' => $request->input('criteria_1'),
-            'question_image' => $request->input('question_image', null),
+            'question_image' => null,
             'choices_number' => 2,
             'question_answer' => 0,
             'question_point' => $request->input('criteria_point_1'),

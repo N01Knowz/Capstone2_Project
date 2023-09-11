@@ -107,7 +107,11 @@
                         <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                    <div id="imageContainer" style="display: flex;" class="image-preview-container">
+                    <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
+                        style="display: none;"
+                        @else
+                        style="display: flex;"
+                        @endif class="image-preview-container">
                         <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
                     </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>

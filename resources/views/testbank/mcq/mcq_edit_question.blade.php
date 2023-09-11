@@ -96,7 +96,7 @@
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <form method="POST" class="test-add-question-container">
+                <form method="POST" class="test-add-question-container" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
@@ -117,7 +117,11 @@
                             @endunless>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                    <div id="imageContainer" style="display: flex;" class="image-preview-container">
+                    <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
+                        style="display: none;"
+                        @else
+                        style="display: flex;"
+                        @endif class="image-preview-container">
                         <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
                     </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
@@ -148,22 +152,32 @@
                             <input type="text" class="point-input" value="{{$question->question_point}}" name="question_point">
                         </div>
                     </div>
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <button class="save-test-button">Save Quiz Item</button>
                 </form>
             </div>
         </div>
     </div>
     <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
         document.addEventListener("DOMContentLoaded", function() {
 
-            function toggleDropdown() {
-                var dropdown = document.getElementById("dropdown-menu");
-                if (dropdown.style.display === "none" || dropdown.style.display === "") {
-                    dropdown.style.display = "block";
-                } else {
-                    dropdown.style.display = "none";
-                }
-            }
+
             document.getElementById('back-button').addEventListener('click', function() {
                 // Get the data-id attribute value
                 var dataId = this.getAttribute('data-id');
@@ -205,7 +219,6 @@
                 selectedImage.src = '';
                 imageContainer.style.display = 'none';
                 imageChangedInput.value = '1';
-
                 clearButton.style.display = 'none';
                 choosePhotoButton.style.display = 'inline-block';
             });

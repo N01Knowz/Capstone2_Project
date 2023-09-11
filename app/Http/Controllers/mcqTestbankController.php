@@ -384,38 +384,52 @@ class mcqTestbankController extends Controller
             abort(403); // User does not own the test
         }
         $input = $request->all();
-        dd($request->input('imageChanged'));
+        // dd($request->input('imageChanged'));
 
         $validator = Validator::make($input, [
             'item_question' => 'required',
             'number_of_choices' => 'required|numeric|gte:1|lt:11',
-            'option_1' => 'required', 
+            'option_1' => 'required',
             'imageInput' => 'image|mimes:jpeg,png,jpg,gif', // Adjust the file types and size as needed
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
-        $randomName = "";
-
-        if ($request->hasFile('imageInput')) {
-            do {
-                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
-                $existingImage = questions::where('question_image', $randomName)->first();
-            } while ($existingImage);
-            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
-        }
-
         $question = questions::find($question_id);
 
-        $question->update([
+        $randomName = "";
+        if ($request->input('imageChanged')) {
+            $questionImage = $question->question_image;
+            $imagePath = public_path('user_upload_images/' . $questionImage);
+            if (File::exists($imagePath)) {
+                // Delete the image file
+                File::delete($imagePath);
+
+                // Optionally, you can also remove the image filename from the database or update the question record here
+            }
+            if ($request->hasFile('imageInput')) {
+                do {
+                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                    $existingImage = questions::where('question_image', $randomName)->first();
+                } while ($existingImage);
+                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            }
+        }
+
+        $dataToUpdate = [
             'item_question' => $request->input('item_question'),
-            'question_image' => $request->input('question_image', null),
             'choices_number' => $request->input('number_of_choices'),
             'question_answer' => $request->input('question_answer'),
             'question_point' => $request->input('question_point'),
-        ]);
+        ];
+
+
+        if ($request->input('imageChanged')) {
+            $dataToUpdate['question_image'] = $request->hasFile('imageInput') ? $randomName : null;
+        }
+
+        $question->update($dataToUpdate);
 
         for ($i = 1; $i <= 10; $i++) {
 

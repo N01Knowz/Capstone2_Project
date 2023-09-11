@@ -93,3 +93,16 @@
     cursor: pointer;
     margin-bottom: 2em;
 }
+
+.image-preview-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview {
+    height: 500px;
+    width: 500px;
+    margin-bottom: 10px;
+}

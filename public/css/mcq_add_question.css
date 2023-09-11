@@ -133,15 +133,3 @@
     width: 100%;
     padding: 0.5em;
 }
-
-.image-preview-container {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-preview {
-    height: 500px;
-    width: 500px;
-}
