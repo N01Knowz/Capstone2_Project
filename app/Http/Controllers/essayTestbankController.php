@@ -7,6 +7,7 @@ use App\Models\testbank;
 use App\Models\questions;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class essayTestbankController extends Controller
 {
@@ -33,7 +34,7 @@ class essayTestbankController extends Controller
         }
 
         $tests = $testsQuery->orderBy('id', 'desc')
-        ->get();
+            ->get();
         return view('testbank.essay.essay', [
             'tests' => $tests,
         ]);
@@ -70,8 +71,8 @@ class essayTestbankController extends Controller
         $randomName = "";
         if ($request->hasFile('imageInput')) {
             do {
-                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
-                $existingImage = questions::where('question_image', $randomName)->first();
+                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = testbank::where('test_image', $randomName)->first();
             } while ($existingImage);
             $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
@@ -156,30 +157,63 @@ class essayTestbankController extends Controller
     public function update(Request $request, string $id)
     {
         $input = $request->all();
+        $testbank = testbank::find($id);
+        if (is_null($testbank)) {
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        // dd($request->input('imageChanged'));
 
         $validator = Validator::make($input, [
             'title' => 'required',
             'question' => 'required',
             'criteria_1' => 'required',
             'criteria_point_1' => 'required',
+            'imageInput' => 'image|mimes:jpeg,png,jpg,gif', // Adjust the file types and size as needed
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        
+        $randomName = "";
+        if ($request->input('imageChanged')) {
+            $testImage = $testbank->test_image;
+            $imagePath = public_path('user_upload_images/' . $testImage);
+            if (File::exists($imagePath)) {
+                // Delete the image file
+                File::delete($imagePath);
 
-        $testbank = testbank::find($id);
-        $testbank->update([
+                // Optionally, you can also remove the image filename from the database or update the test record here
+            }
+            if ($request->hasFile('imageInput')) {
+                do {
+                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
+                    $existingImage = testbank::where('test_image', $randomName)->first();
+                } while ($existingImage);
+                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            }
+        }
+
+        $dataToUpdate = [
             'user_id' => $request->input('id'),
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
-            'test_image' => $request->input('image'),
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,
-        ]);
+        ];
+
+        
+        if ($request->input('imageChanged')) {
+            $dataToUpdate['test_image'] = $request->hasFile('imageInput') ? $randomName : null;
+        }
+
+        $testbank->update($dataToUpdate);
 
 
         $question = questions::where('testbank_id', '=', $id)->first();

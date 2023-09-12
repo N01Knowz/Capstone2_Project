@@ -83,7 +83,7 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" action="/essay/{{$test->id}}" class="test-body-content">
+            <form method="POST" action="/essay/{{$test->id}}" class="test-body-content" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
@@ -101,10 +101,24 @@
                 <textarea class="textinput-base textarea-instruction text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
-                    <input type="text" class="text-input-background text-input-attach-image" name="image" value="{{$test->test_image}}">
-                    <button class="text-input-image-button">Browse</button>
+                    <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" value="{{$test->test_image}}" readonly>
+                    <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $test->test_image }}">
+                    <input type="hidden" name="imageChanged" id="imageChanged" value="0">
+                    <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($test->test_image))
+                        style="display: none;"
+                        @endunless>Clear</button>
+                    <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($test->test_image))
+                        style="display: none;"
+                        @endunless>Browse</button>
                 </div>
                 <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                <div id="imageContainer" @if(is_null($test->test_image) || empty($test->test_image))
+                    style="display: none;"
+                    @else
+                    style="display: flex;"
+                    @endif class="image-preview-container">
+                    <img id="selectedImage" src="/user_upload_images/{{$test->test_image}}" alt="Selected Image" class="image-preview">
+                </div>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
                     <p class="text-input-label">Share with other faculties</p>
@@ -201,6 +215,71 @@
         </div>
     </div>
     <script>
+        // Get references to the text input, button, and file input
+        const photoNameInput = document.getElementById('photoName');
+        const choosePhotoButton = document.getElementById('browseButton');
+        const imageInput = document.getElementById('imageInput');
+        const selectedImage = document.getElementById('selectedImage');
+        const imageContainer = document.getElementById('imageContainer');
+        const imageChangedInput = document.getElementById('imageChanged');
+        const clearButton = document.getElementById('clearButton');
+
+        clearButton.addEventListener('click', () => {
+            photoNameInput.value = '';
+            imageInput.value = '';
+            selectedImage.src = '';
+            imageContainer.style.display = 'none';
+            imageChangedInput.value = '1';
+            clearButton.style.display = 'none';
+            choosePhotoButton.style.display = 'inline-block';
+        });
+
+        // Add a click event listener to the button
+        choosePhotoButton.addEventListener('click', () => {
+            // Trigger a click event on the file input
+            imageChangedInput.value = '1';
+            imageInput.click();
+        });
+
+        // Listen for changes in the file input
+        imageInput.addEventListener('change', () => {
+            const selectedFile = imageInput.files[0];
+
+            // Check if a file was selected
+            if (selectedFile) {
+                // Check the file extension
+                const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+                if (['gif', 'png', 'jpeg', 'jpg'].includes(fileExtension)) {
+                    // Update the text input with the selected file's name
+                    photoNameInput.value = selectedFile.name;
+
+                    // Display the selected image
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        selectedImage.src = e.target.result;
+                        imageContainer.style.display = 'flex';
+                    };
+                    reader.readAsDataURL(selectedFile);
+
+                    clearButton.style.display = 'inline-block';
+                    choosePhotoButton.style.display = 'none';
+
+                    // Set the imageChanged input to 1 when a new file is selected
+                } else {
+                    // Display an error message or take appropriate action
+                    alert('Please select a GIF, PNG, or JPEG image.');
+                    imageInput.value = ''; // Clear the file input
+                }
+            } else {
+                // Clear the text input and hide the image container if no file is selected
+                photoNameInput.value = '';
+                imageInput.value = '';
+                selectedImage.src = '';
+                imageContainer.style.display = 'none';
+            }
+        });
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {

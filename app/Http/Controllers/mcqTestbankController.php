@@ -245,7 +245,7 @@ class mcqTestbankController extends Controller
         $randomName = "";
         if ($request->hasFile('imageInput')) {
             do {
-                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                 $existingImage = questions::where('question_image', $randomName)->first();
             } while ($existingImage);
             $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
@@ -410,7 +410,7 @@ class mcqTestbankController extends Controller
             }
             if ($request->hasFile('imageInput')) {
                 do {
-                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . '.' . $request->file('imageInput')->getClientOriginalExtension();
+                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                     $existingImage = questions::where('question_image', $randomName)->first();
                 } while ($existingImage);
                 $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);

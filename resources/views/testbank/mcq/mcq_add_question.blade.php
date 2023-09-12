@@ -107,9 +107,10 @@
                     <div>
                         <input type="text" class="text-input-attach-image" name="question_image" id="photoName" readonly>
                         <input type="file" id="imageInput" style="display:none;" name="imageInput">
+                        <button class="text-input-image-button" type="button" id="clearButton" style="display: none;">Clear</button>
                         <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
                     </div>
-                    <p class="text-supported-format">Supported formats: .jpg, .png, .gif | Select no file to clear the input.</p>
+                    <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
                     <div id="imageContainer" style="display: none;" class="image-preview-container">
                         <img id="selectedImage" src="#" alt="Selected Image" class="image-preview">
                     </div>
@@ -193,6 +194,18 @@
             const imageInput = document.getElementById('imageInput');
             const selectedImage = document.getElementById('selectedImage');
             const imageContainer = document.getElementById('imageContainer');
+            const clearButton = document.getElementById('clearButton');
+
+            clearButton.addEventListener('click', () => {
+                photoNameInput.value = '';
+                imageInput.value = '';
+                selectedImage.src = '';
+                imageContainer.style.display = 'none';
+                imageChangedInput.value = '1';
+                clearButton.style.display = 'none';
+                choosePhotoButton.style.display = 'inline-block';
+            });
+
 
             // Add a click event listener to the button
             choosePhotoButton.addEventListener('click', () => {
@@ -221,6 +234,9 @@
                             imageContainer.style.display = 'flex';
                         };
                         reader.readAsDataURL(selectedFile);
+
+                        clearButton.style.display = 'inline-block';
+                        choosePhotoButton.style.display = 'none';
                     } else {
                         // Display an error message or take appropriate action
                         alert('Please select a GIF, PNG, or JPEG image.');
