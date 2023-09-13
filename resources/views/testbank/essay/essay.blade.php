@@ -172,15 +172,14 @@
                 window.location.href = "essay/" + columnData;
             }
 
-            function handleEditClick(event) {
-                const clickedButton = event.currentTarget;
-                const dataID = clickedButton.getAttribute('data-id');
-                window.location.href = "essay/" + dataID + "/edit";
-            }
+            const buttons = document.querySelectorAll(".buttons-edit-button");
 
-            const editButtons = document.querySelectorAll(".test-edit-button");
-            editButtons.forEach(editButton => {
-                editButton.addEventListener('click', handleEditClick);
+            // Loop through each button and attach the event handler
+            buttons.forEach(function(button) {
+                button.onclick = function() {
+                    const dataID = this.getAttribute("data-id");
+                    window.location.href = "essay/" + dataID + "/edit";
+                }
             });
 
             const columns = document.querySelectorAll('.test-body-column');

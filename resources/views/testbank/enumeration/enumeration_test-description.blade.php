@@ -102,10 +102,13 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                <a href="/enumeration" class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                        <p>Back</p>
+                    </button>
+                </a>
+                <div class="searchbar-container">
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
@@ -184,10 +187,6 @@
                 dropdown.style.display = "none";
             }
         }
-        
-        document.getElementById('back-button').addEventListener('click', function() {
-            window.location.href = "/enumeration";
-        });
 
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {

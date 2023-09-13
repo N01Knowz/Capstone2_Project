@@ -174,10 +174,15 @@
             column.addEventListener('click', handleRowClick);
         });
 
-        document.getElementById("test-edit-button").onclick = function() {
-            const dataID = this.getAttribute("data-id")
-            window.location.href = "enumeration/" + dataID + "/edit";
-        }
+        const buttons = document.querySelectorAll(".buttons-edit-button");
+
+        // Loop through each button and attach the event handler
+        buttons.forEach(function(button) {
+            button.onclick = function() {
+                const dataID = this.getAttribute("data-id");
+                window.location.href = "enumeration/" + dataID + "/edit";
+            }
+        });
     </script>
     <!-- <script>
         function chosenTestType(newTestTypeId) {

@@ -75,11 +75,11 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div class="add-test-button-anchor">
+                <a href="/mcq" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
-                </div>
+                </a>
                 <div class="searchbar-container">
                 </div>
             </div>
@@ -193,10 +193,6 @@
                 return false;
             }
         }
-
-        document.getElementById('back-button').addEventListener('click', function() {
-            window.location.href = "/mcq"
-        });
     </script>
 </body>
 

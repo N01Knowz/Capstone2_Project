@@ -152,6 +152,7 @@
                 dropdown.style.display = "none";
             }
         }
+
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
                 // User clicked OK, proceed with form submission
@@ -168,15 +169,14 @@
                 window.location.href = "matching/" + columnData;
             }
 
-            function handleEditClick(event) {
-                const clickedButton = event.currentTarget;
-                const dataID = clickedButton.getAttribute('data-id');
-                window.location.href = "matching/" + dataID + "/edit";
-            }
+            const buttons = document.querySelectorAll(".buttons-edit-button");
 
-            const editButtons = document.querySelectorAll(".test-edit-button");
-            editButtons.forEach(editButton => {
-                editButton.addEventListener('click', handleEditClick);
+            // Loop through each button and attach the event handler
+            buttons.forEach(function(button) {
+                button.onclick = function() {
+                    const dataID = this.getAttribute("data-id");
+                    window.location.href = "matching/" + dataID + "/edit";
+                }
             });
 
             const columns = document.querySelectorAll('.test-body-column');

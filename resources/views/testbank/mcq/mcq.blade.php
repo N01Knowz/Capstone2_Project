@@ -100,46 +100,46 @@
                     <tbody>
                         <!-- Table content goes here -->
                         @foreach ($tests as $test)
-                            @if ($test->test_active == 1)
-                                <tr id="test-question-description">
-                                    <td class="test-body-column test-body-title" data-id="{{$test->id}}">
-                                        <p>{{$test->test_title}}</p>
-                                    </td>
-                                    <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
-                                        <p>{{$test->test_instruction}}</p>
-                                    </td>
-                                    <td class="test-body-column test-body-status" data-id="{{$test->id}}">
-                                        <div>
-                                            <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
-                                        </div>
-                                    </td>
-                                    <td class="test-body-column test-body-points" data-id="{{$test->id}}">
-                                        <div>
-                                            <p>{{$test->test_total_points}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="test-body-buttons-column" id="test-bb">
-                                        <div class="test-body-buttons-column-div">
-                                            <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
-                                                <p>Add Question</p>
-                                            </button>
-                                            <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
-                                                <p>Edit</p>
-                                            </button>
-                                            <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                                <p>Print</p>
-                                            </button>
-                                            <form method="POST" action="/mcq/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
-                                                @csrf
-                                                @method('delete')
-                                                <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
-                                                    <p>Delete</p>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endif
+                        @if ($test->test_active == 1)
+                        <tr id="test-question-description">
+                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
+                                <p>{{$test->test_title}}</p>
+                            </td>
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
+                                <p>{{$test->test_instruction}}</p>
+                            </td>
+                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                                <div>
+                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
+                                </div>
+                            </td>
+                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
+                                <div>
+                                    <p>{{$test->test_total_points}}</p>
+                                </div>
+                            </td>
+                            <td class="test-body-buttons-column" id="test-bb">
+                                <div class="test-body-buttons-column-div">
+                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
+                                        <p>Add Question</p>
+                                    </button>
+                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                        <p>Edit</p>
+                                    </button>
+                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
+                                        <p>Print</p>
+                                    </button>
+                                    <form method="POST" action="/mcq/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                                            <p>Delete</p>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>
@@ -155,6 +155,7 @@
                 dropdown.style.display = "none";
             }
         }
+
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
                 // User clicked OK, proceed with form submission
@@ -164,6 +165,7 @@
                 return false;
             }
         }
+
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const columnData = clickedColumn.getAttribute('data-id');
@@ -180,10 +182,15 @@
             window.location.href = "mcq/" + dataID + "/create_question";
         }
 
-        document.getElementById("test-edit-button").onclick = function() {
-            const dataID = this.getAttribute("data-id")
-            window.location.href = "mcq/" + dataID + "/edit";
-        }
+        const buttons = document.querySelectorAll(".buttons-edit-button");
+
+        // Loop through each button and attach the event handler
+        buttons.forEach(function(button) {
+            button.onclick = function() {
+                const dataID = this.getAttribute("data-id");
+                window.location.href = "mcq/" + dataID + "/edit";
+            }
+        });
     </script>
     <!-- <script>
         function chosenTestType(newTestTypeId) {

@@ -81,10 +81,10 @@
                     <p>Add New Test</p>
                 </button>
             </form>
-                <form method="GET" action="" class="searchbar-container">
-                    <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
-                    <button class="search-button">Search</button>
-                </form>
+            <form method="GET" action="" class="searchbar-container">
+                <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
+                <button class="search-button">Search</button>
+            </form>
         </div>
         <div class="test-body-content">
             <table class="test-body-table">
@@ -182,10 +182,16 @@
             column.addEventListener('click', handleRowClick);
         });
 
-        document.getElementById("test-edit-button").onclick = function() {
-            const dataID = this.getAttribute("data-id")
-            window.location.href = "mtf/" + dataID + "/edit";
-        }
+        // Select all elements with the class "buttons-edit-button"
+        const buttons = document.querySelectorAll(".buttons-edit-button");
+
+        // Loop through each button and attach the event handler
+        buttons.forEach(function(button) {
+            button.onclick = function() {
+                const dataID = this.getAttribute("data-id");
+                window.location.href = "mtf/" + dataID + "/edit";
+            }
+        });
     </script>
     <!-- <script>
         function chosenTestType(newTestTypeId) {

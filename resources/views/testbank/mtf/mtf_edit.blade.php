@@ -74,12 +74,13 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/tf" class="add-test-button-anchor">
-                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                <a class="add-test-button-anchor" href="/mtf">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
                 </a>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
+                <div class="searchbar-container">
+                </div>
             </div>
             <form method="POST" action="/mtf/{{$test->id}}" class="test-body-content">
                 @csrf

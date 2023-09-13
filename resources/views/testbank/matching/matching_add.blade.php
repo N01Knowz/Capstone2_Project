@@ -76,10 +76,13 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
+                <a href="/matching" class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                        <p>Back</p>
+                    </button>
+                </a>
+                <div class="searchbar-container">
                 </div>
-                <input type="text" placeholder="Search tests here..." class="test-searchbar">
             </div>
             <form method="POST" action="/matching" class="test-body-content">
                 @csrf
@@ -137,9 +140,7 @@
                 dropdown.style.display = "none";
             }
         }
-        document.getElementById('back-button').addEventListener('click', function() {
-            window.history.back();
-        });
+       
 
         document.addEventListener("DOMContentLoaded", function() {
             const numChoicesInput = document.getElementById("numChoicesInput");

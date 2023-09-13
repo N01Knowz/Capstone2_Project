@@ -83,10 +83,11 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <div href="/mcq" class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button" data-id="{{$test->id}}"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
-                </div>
-
+                <a href="/mcq/{{$test->id}}" class="add-test-button-anchor">
+                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                        <p>Back</p>
+                    </button>
+                </a>
                 <div class="searchbar-container">
                 </div>
             </div>
@@ -176,15 +177,6 @@
             }
         }
         document.addEventListener("DOMContentLoaded", function() {
-
-
-            document.getElementById('back-button').addEventListener('click', function() {
-                // Get the data-id attribute value
-                var dataId = this.getAttribute('data-id');
-
-                // Navigate to a new URL using the data-id value
-                window.location.href = "/mcq/" + dataId;
-            });
 
             $('.summernote').summernote({
                 placeholder: 'Enter Option...',
