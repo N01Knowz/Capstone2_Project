@@ -92,7 +92,7 @@
                     <thead>
                         <tr class="test-table-header">
                             <th>Title</th>
-                            <th>Question/Instruction</th>
+                            <th>Instruction</th>
                             <th>Status</th>
                             <th>Total point(s)</th>
                             <th></th>

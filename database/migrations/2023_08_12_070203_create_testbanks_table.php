@@ -23,6 +23,14 @@ return new class extends Migration
             $table->integer('test_total_points');
             $table->boolean('test_visible');
             $table->boolean('test_active');
+            $table->decimal('Realistic')->nullable();
+            $table->decimal('Investigative')->nullable();
+            $table->decimal('Artistic')->nullable();
+            $table->decimal('Social')->nullable();
+            $table->decimal('Enterprising')->nullable();
+            $table->decimal('Conventional')->nullable();
+            $table->boolean('Unknown')->default(false);
+            $table->boolean('Labeled')->default(false);
             $table->timestamps();
         });
     }

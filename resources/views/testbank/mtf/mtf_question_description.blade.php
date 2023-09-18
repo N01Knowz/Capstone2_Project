@@ -105,10 +105,17 @@
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image" value="{{$question->question_image}}" readonly>
-                        <button class="text-input-image-button">Browse</button>
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
+                        <button class="text-input-image-button" type="button" id="browseButton" disabled>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
+                    <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
+                        style="display: none;"
+                        @else
+                        style="display: flex;"
+                        @endif class="image-preview-container">
+                        <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
+                    </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                     @for($i = 1; $i <= $question->choices_number; $i++)
                         <div id="optionsContainer">

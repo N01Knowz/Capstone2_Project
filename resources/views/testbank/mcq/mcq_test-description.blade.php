@@ -96,7 +96,6 @@
                             <thead>
                                 <tr>
                                     <th class="questions-table-no-column">No.</th>
-                                    <th class="questions-table-status-column">Status</th>
                                     <th class="questions-table-question-column">Question</th>
                                     <th class="questions-table-point-column">Point(s)</th>
                                     <th class="questions-table-buttons-column"></th>
@@ -109,10 +108,30 @@
                                         <p>{{ $loop->index + 1}}</p>
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>@if($question->question_active == 1) Active @else Inactive @endif</p>
-                                    </td>
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{$question->item_question}}</p>
+                                        <div class="question-labels">
+                                            @if(!is_null($question->Realistic))
+                                                <div class="label r-label">Realistic</div>
+                                            @endif
+                                            @if(!is_null($question->Investigative))
+                                                <div class="label i-label">Investigative</div>
+                                            @endif
+                                            @if(!is_null($question->Artistic))
+                                                <div class="label a-label">Artistic</div>
+                                            @endif
+                                            @if(!is_null($question->Social))
+                                                <div class="label s-label">Social</div>
+                                            @endif
+                                            @if(!is_null($question->Enterprising))
+                                                <div class="label e-label">Enterprising</div>
+                                            @endif
+                                            @if(!is_null($question->Conventional))
+                                                <div class="label c-label">Conventional</div>
+                                            @endif
+                                            @if($question->Unknown == 1)
+                                                <div class="label u-label">Unknown</div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{$question->question_point}}</p>

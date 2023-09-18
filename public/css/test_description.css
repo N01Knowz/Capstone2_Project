@@ -25,7 +25,7 @@
 }
 
 .test-questions-container {
-    width: var(96% + 1em);
+    width: calc(96% + 2em);
     border: 1px solid gray;
     border-radius: 25px;
 }
@@ -41,7 +41,7 @@
 .questions-table {
     border-collapse: collapse;
     width: 100%;
-    text-align: center;
+    text-align: left;
 }
 
 .questions-table>thead {
@@ -50,15 +50,22 @@
     width: 100%;
 }
 
-.questions-table > tbody > tr:nth-child(even) {
-    background-color: #cccccc; /* Grayish background color */
-    padding: 10px; /* Adjust the padding as needed for left and right spacing */
+.questions-table>thead>tr>th {
+    padding-left: 1em;
+}
+
+.questions-table>tbody>tr:nth-child(even) {
+    background-color: #cccccc;
+    /* Grayish background color */
+    padding: 10px;
+    /* Adjust the padding as needed for left and right spacing */
 }
 
 .questions-table>tbody>tr>td {
     font-weight: normal;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
+    padding-left: 1em;
 }
 
 .questions-table-no-column {
@@ -87,7 +94,8 @@
 .questions-table-buttons-column-div {
     display: flex;
     justify-content: space-between;
-    margin: 0 10px; /* Adjust the left and right margin as needed */
+    margin: 0 10px;
+    /* Adjust the left and right margin as needed */
     gap: 10%;
 }
 
@@ -153,4 +161,62 @@
 #test-question-item-description:hover {
     background-color: #ffcc66;
     cursor: pointer;
+}
+
+.tag {
+    width: 120px;
+    /* Adjust the width as needed */
+    background-color: #007bff;
+    /* Tag background color */
+    color: #fff;
+    /* Tag text color */
+    border-radius: 4px;
+    /* Rounded corners for the tag */
+    position: relative;
+    display: inline-block;
+}
+
+.question-labels {
+    display: flex;
+}
+
+.label {
+    padding: 0.3em;
+    font-size: 0.8em;
+    border-radius: 5px;
+    margin-right: 0.8em;
+}
+
+.r-label {
+    color: white;
+    background-color: #473C1F;
+}
+
+.i-label {
+    background-color: #EEEBD3;
+}
+
+.a-label {
+    color: white;
+    background-color: #A98743;
+}
+
+.s-label {
+    color: white;
+    background-color: #F7C548;
+}
+
+.e-label {
+    color: white;
+    background-color: #255957;
+}
+
+.c-label {
+    color: white;
+    background-color: #437C90;
+}
+
+.u-label {
+    background-color: #c0d9ff;
+    color: #333;
 }
