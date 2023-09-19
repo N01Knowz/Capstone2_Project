@@ -111,25 +111,25 @@
                                         <p>{{$question->item_question}}</p>
                                         <div class="question-labels">
                                             @if(!is_null($question->Realistic))
-                                            Realistic 
+                                                <div class="label r-label">Realistic</div>
                                             @endif
                                             @if(!is_null($question->Investigative))
-                                            Investigative
+                                                <div class="label i-label">Investigative</div>
                                             @endif
                                             @if(!is_null($question->Artistic))
-                                            Artistic
+                                                <div class="label a-label">Artistic</div>
                                             @endif
                                             @if(!is_null($question->Social))
-                                            Social
+                                                <div class="label s-label">Social</div>
                                             @endif
                                             @if(!is_null($question->Enterprising))
-                                            Enterprising
+                                                <div class="label e-label">Enterprising</div>
                                             @endif
                                             @if(!is_null($question->Conventional))
-                                            Conventional
+                                                <div class="label c-label">Conventional</div>
                                             @endif
                                             @if($question->Unknown == 1)
-                                            Unknown
+                                                <div class="label u-label">Unknown</div>
                                             @endif
                                         </div>
                                     </td>

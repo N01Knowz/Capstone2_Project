@@ -92,7 +92,7 @@
                     <thead>
                         <tr class="test-table-header">
                             <th>Title</th>
-                            <th>Question/Instruction</th>
+                            <th>Instruction</th>
                             <th>Status</th>
                             <th>Total point(s)</th>
                             <th></th>
@@ -107,6 +107,29 @@
                             </td>
                             <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
                                 <p>{{$test->test_instruction}}</p>
+                                <div class="question-labels">
+                                    @if(!is_null($test->Realistic))
+                                    <div class="label r-label">Realistic</div>
+                                    @endif
+                                    @if(!is_null($test->Investigative))
+                                    <div class="label i-label">Investigative</div>
+                                    @endif
+                                    @if(!is_null($test->Artistic))
+                                    <div class="label a-label">Artistic</div>
+                                    @endif
+                                    @if(!is_null($test->Social))
+                                    <div class="label s-label">Social</div>
+                                    @endif
+                                    @if(!is_null($test->Enterprising))
+                                    <div class="label e-label">Enterprising</div>
+                                    @endif
+                                    @if(!is_null($test->Conventional))
+                                    <div class="label c-label">Conventional</div>
+                                    @endif
+                                    @if($test->Unknown == 1)
+                                    <div class="label u-label">Unknown</div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="test-body-column test-body-status" data-id="{{$test->id}}">
                                 <div>

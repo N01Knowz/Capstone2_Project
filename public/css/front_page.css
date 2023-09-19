@@ -20,6 +20,16 @@
     cursor: pointer;
 }
 
+.test-body-table>thead>tr>th {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.test-body-table>tbody>tr>td {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
 table {
     border-collapse: collapse;
 }

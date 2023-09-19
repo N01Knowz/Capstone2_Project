@@ -25,8 +25,7 @@
 }
 
 .test-questions-container {
-    width: 96%;
-    padding: 1em;
+    width: calc(96% + 2em);
     border: 1px solid gray;
     border-radius: 25px;
 }
@@ -42,7 +41,7 @@
 .questions-table {
     border-collapse: collapse;
     width: 100%;
-    text-align: center;
+    text-align: left;
 }
 
 .questions-table>thead {
@@ -51,27 +50,39 @@
     width: 100%;
 }
 
-.questions-table > tbody > tr:nth-child(even) {
-    background-color: #cccccc; /* Grayish background color */
-    padding: 10px; /* Adjust the padding as needed for left and right spacing */
+.questions-table>thead>tr>th {
+    padding-left: 1em;
+}
+
+.questions-table>tbody>tr:nth-child(even) {
+    background-color: #cccccc;
+    /* Grayish background color */
+    padding: 10px;
+    /* Adjust the padding as needed for left and right spacing */
 }
 
 .questions-table>tbody>tr>td {
     font-weight: normal;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
+    padding-left: 1em;
 }
 
 .questions-table-no-column {
-    width: 12%;
+    width: 10%;
+}
+
+.questions-table-status-column {
+    width: 15%;
+    font-weight: bold;
 }
 
 .questions-table-question-column {
-    width: 40%;
+    width: 30%;
 }
 
 .questions-table-point-column {
-    width: 18%;
+    width: 15%;
 }
 
 .questions-table-buttons-column {
@@ -83,7 +94,8 @@
 .questions-table-buttons-column-div {
     display: flex;
     justify-content: space-between;
-    margin: 0 10px; /* Adjust the left and right margin as needed */
+    margin: 0 10px;
+    /* Adjust the left and right margin as needed */
     gap: 10%;
 }
 
@@ -149,7 +161,4 @@
 #test-question-item-description:hover {
     background-color: #ffcc66;
     cursor: pointer;
-}
-.question-labels {
-    background-color: var(--color1);
 }

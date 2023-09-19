@@ -106,7 +106,7 @@
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
                         <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
-                        <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
+                        <button class="text-input-image-button" type="button" id="browseButton" disabled>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
                     <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
