@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
@@ -81,18 +82,20 @@
                     @method('PUT')
                     <img id="selectedImage" class="user-profile-picture" @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif>
                     <input type="file" id="imageInput" style="display:none;" name="imageInput" accept="image/*">
-                    <button class="user-profile-button" type="button" id="browseButton">Select Image</button>
-                    <div class="edit-user-name-container">
+                    <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
+                    <div>
                         <label for="first_name">First Name:</label>
-                        <input type="text" name="first_name" value="{{auth()->user()->first_name;}}" required class="user-name-input">
+                        <input type="text" name="first_name" value="{{auth()->user()->first_name;}}" required>
                         <label for="last_name">Last Name:</label>
-                        <input type="text" name="last_name" value="{{auth()->user()->last_name;}}" required class="user-name-input">
+                        <input type="text" name="last_name" value="{{auth()->user()->last_name;}}" required>
                     </div>
-
-                    <button class="user-profile-button edit-profile-button">Save Edit</button>
-                    <form action="/profile" method="get">
-                        <button class="user-profile-button new-password-button">Cancel</button>
-                    </form>
+                    <label for="inputWithDropdown">Input with Dropdown:</label>
+                    <h1>Autocomplete Example</h1>
+                    <div style="position: relative;">
+                        <input type="text" id="searchInput" placeholder="Start typing...">
+                        <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
+                    </div>
+                    <button>Save Edit</button>
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -117,6 +120,50 @@
         }
         // JavaScript Code
         document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsList = document.getElementById('suggestions');
+
+            // Sample list of suggestions (you can fetch this from an API)
+            const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
+
+            // Function to update the suggestions
+            function updateSuggestions() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                // Check if the input is not empty
+                if (searchTerm === '') {
+                    suggestionsList.innerHTML = ''; // Clear suggestions
+                    suggestionsList.style.display = 'none'; // Hide suggestions
+                    return;
+                }
+
+                const filteredSuggestions = suggestions.filter(suggestion =>
+                    suggestion.toLowerCase().startsWith(searchTerm)
+                );
+
+                // Clear previous suggestions
+                suggestionsList.innerHTML = '';
+
+                // Display filtered suggestions
+                if (filteredSuggestions.length > 0) {
+                    suggestionsList.style.display = 'block'; // Show suggestions
+                    filteredSuggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        li.textContent = suggestion;
+                        li.addEventListener('click', () => {
+                            searchInput.value = suggestion;
+                            suggestionsList.innerHTML = '';
+                            suggestionsList.style.display = 'none'; // Hide suggestions
+                        });
+                        suggestionsList.appendChild(li);
+                    });
+                } else {
+                    suggestionsList.style.display = 'none'; // Hide suggestions
+                }
+            }
+
+            // Listen for input events on the search input
+            searchInput.addEventListener('input', updateSuggestions);
 
             // Get references to the text input, button, and file input
             const choosePhotoButton = document.getElementById('browseButton');
@@ -155,6 +202,32 @@
             });
         });
     </script>
+    
+    <style>
+        #suggestions {
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: white; /* Background color */
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #suggestions li {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ccc; /* Bottom border for each suggestion */
+        }
+
+        #suggestions li:last-child {
+            border-bottom: none; /* Remove border for the last suggestion */
+        }
+
+        #suggestions li:hover {
+            background-color: lightgray;
+        }
+    </style>
 </body>
 
 </html>

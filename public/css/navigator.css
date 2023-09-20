@@ -103,6 +103,10 @@ body {
     border-radius: 50%;
 }
 
+.info {
+    overflow: hidden;
+}
+
 #profile-name {
     color: white;
 }
@@ -161,4 +165,8 @@ body {
 
 .setting-logout {
     cursor: pointer;
+}
+
+.test-type:hover {
+    background-color: #3f3f3f;
 }

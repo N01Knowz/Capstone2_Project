@@ -2,6 +2,7 @@
 .test-body {
     margin-left: 20%;
     width: 80%;
+    min-height: 90vh;
 }
 
 .test-body-header {
@@ -83,4 +84,51 @@
 .button-delete-form {
     flex: 1;
     display: inline-flex;
+}
+
+
+.question-labels {
+    display: flex;
+}
+
+.label {
+    padding: 0.3em;
+    font-size: 0.8em;
+    border-radius: 5px;
+    margin-right: 0.8em;
+    margin-bottom: 0.5em;
+}
+
+.r-label {
+    color: white;
+    background-color: #473C1F;
+}
+
+.i-label {
+    background-color: #EEEBD3;
+}
+
+.a-label {
+    color: white;
+    background-color: #A98743;
+}
+
+.s-label {
+    color: white;
+    background-color: #F7C548;
+}
+
+.e-label {
+    color: white;
+    background-color: #255957;
+}
+
+.c-label {
+    color: white;
+    background-color: #437C90;
+}
+
+.u-label {
+    background-color: #c0d9ff;
+    color: #333;
 }

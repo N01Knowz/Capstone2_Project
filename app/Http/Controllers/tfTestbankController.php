@@ -168,7 +168,21 @@ class tfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        questions::where('testbank_id', $id)->delete();
+        
+        $questions = questions::where('testbank_id', $id)->get();
+        foreach ($questions as $question) {
+
+            $questionImage = $question->question_image;
+            $imagePath = public_path('user_upload_images/' . $questionImage);
+            if (File::exists($imagePath)) {
+                // Delete the image file
+                File::delete($imagePath);
+
+                // Optionally, you can also remove the image filename from the database or update the question record here
+            }
+            $question->delete();
+        }
+        
         $test->delete();
         
         return back();
@@ -282,6 +296,15 @@ class tfTestbankController extends Controller
         $test = testbank::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
+        }
+        
+        $questionImage = $question->question_image;
+        $imagePath = public_path('user_upload_images/' . $questionImage);
+        if (File::exists($imagePath)) {
+            // Delete the image file
+            File::delete($imagePath);
+
+            // Optionally, you can also remove the image filename from the database or update the question record here
         }
 
         $question->delete();

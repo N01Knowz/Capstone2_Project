@@ -58,7 +58,7 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -66,7 +66,9 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -107,6 +109,29 @@
                             </td>
                             <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
                                 <p>{{$test->test_instruction}}</p>
+                                <div class="question-labels">
+                                    @if(!is_null($test->Realistic))
+                                    <div class="label r-label">Realistic</div>
+                                    @endif
+                                    @if(!is_null($test->Investigative))
+                                    <div class="label i-label">Investigative</div>
+                                    @endif
+                                    @if(!is_null($test->Artistic))
+                                    <div class="label a-label">Artistic</div>
+                                    @endif
+                                    @if(!is_null($test->Social))
+                                    <div class="label s-label">Social</div>
+                                    @endif
+                                    @if(!is_null($test->Enterprising))
+                                    <div class="label e-label">Enterprising</div>
+                                    @endif
+                                    @if(!is_null($test->Conventional))
+                                    <div class="label c-label">Conventional</div>
+                                    @endif
+                                    @if($test->Unknown == 1)
+                                    <div class="label u-label">Unknown</div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="test-body-column test-body-status" data-id="{{$test->id}}">
                                 <div>

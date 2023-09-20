@@ -56,7 +56,7 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -64,7 +64,9 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -83,7 +85,7 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" action="/essay" class="test-body-content" enctype="multipart/form-data">
+            <form method="POST" action="/essay" class="test-body-content" enctype="multipart/form-data" id="add-form">
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
@@ -199,12 +201,22 @@
                 </table>
 
                 <div class="add-test-button-anchor">
-                    <button class="save-test-button">Save Test</button>
+                    <button class="save-test-button" id="save-quiz-button">Save Test</button>
                 </div>
             </form>
         </div>
     </div>
     <script>
+        
+        var save_button = document.getElementById("save-quiz-button");
+
+        // Add a click event listener to the button
+        save_button.addEventListener("click", function() {
+            // Disable the button
+            save_button.disabled = true;
+            document.getElementById("add-form").submit();
+        });
+
         const photoNameInput = document.getElementById('photoName');
         const choosePhotoButton = document.getElementById('browseButton');
         const imageInput = document.getElementById('imageInput');

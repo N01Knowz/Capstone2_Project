@@ -252,6 +252,15 @@ class essayTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testImage = $test->test_image;
+        $imagePath = public_path('user_upload_images/' . $testImage);
+        if (File::exists($imagePath)) {
+            // Delete the image file
+            File::delete($imagePath);
+            // Optionally, you can also remove the image filename from the database or update the question record here
+        }
+        
         questions::where('testbank_id', $id)->delete();
         $test->delete();
 

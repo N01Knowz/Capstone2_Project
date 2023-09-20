@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longText('test_title');
             $table->longText('test_question');
             $table->longText('test_instruction');
+            $table->longText('test_subject')->nullable();
             $table->string('test_image')->nullable();
             $table->integer('test_total_points');
             $table->boolean('test_visible');

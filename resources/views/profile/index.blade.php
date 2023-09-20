@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modified True or False</title>
+    <title>Profile</title>
     <link rel="icon" href="/images/logo.png">
-    <link rel="stylesheet" href="/css/front_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
-    <link rel="stylesheet" href="/css/tf.css">
+    <link rel="stylesheet" href="/css/profile.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
+    <!-- <h1>Your id is: {{auth()->user()->id;}}</h1> -->
     <div class="test-container">
         <div class="navigator">
             <div id="logo-container">
@@ -36,9 +38,9 @@
                     <p>True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type chosen-type" id="mtf-test" data-icon-id="mtf-icon">
+            <div class="test-type" id="mtf-test" data-icon-id="mtf-icon">
                 <a class="test-link" href="/mtf" onclick="chosenTestType('mtf-test')">
-                    <img src="/images/tf-icon-dark.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
+                    <img src="/images/tf-icon-light.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
@@ -55,63 +57,49 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
-                    <p id="profile-name">Some Guy's Name</p>
-                    <p id="profile-email">someguyemail@gmail.com</p>
+                    <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
+                    <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
-                <img src="/images/icons8-gear-50.png" id="profile-setting-icon">
+                <div class="setting-container">
+                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <div class="setting-dropdown-menu" id="dropdown-menu">
+                        <button class="setting-profile">Profile</button>
+                        <form action="/logout" method="POST" class="setting-logout-form">
+                            @csrf
+                            <button class="setting-logout">Log Out</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="test-body">
-            @yield('content')
+            <div class="user-profile-container">
+                <div class="user-profile-sub-container">
+                    <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif class="user-profile-picture">
+                    <div class="user-name-email">
+                        <p class="user-profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
+                        <p class="user-profile-email">{{auth()->user()->email;}}</p>
+                    </div>
+                    <form action="/profile/edit" method="get">
+                        <button class="user-profile-button edit-profile-button">Edit Profile</button>
+                    </form>
+                    <button class="user-profile-button new-password-button">New Password</button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        function handleRowClick(event) {
-            window.location.href = "tf/1/description";
-        }
-
-        const columns = document.querySelectorAll('.test-body-column');
-        columns.forEach(column => {
-            column.addEventListener('click', handleRowClick);
-        });
-
-        document.getElementById("test-add-question").onclick = function() {
-            window.location.href = "tf/question/add";
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
         }
     </script>
-    <!-- <script>
-        function chosenTestType(newTestTypeId) {
-            const oldDivElement = document.querySelector('.chosen-type');
-            if (oldDivElement) {
-                oldDivElement.classList.remove('chosen-type');
-                flipIconColor(oldDivElement);
-            }
-
-            console.log(newTestTypeId);
-            const newDivElement = document.getElementById(newTestTypeId);
-            newDivElement.classList.add('chosen-type');
-            flipIconColor(newDivElement);
-        }
-
-        function flipIconColor(divElement) {
-            if (divElement) {
-                const testIconId = divElement.getAttribute('data-icon-id');
-                const iconElement = document.getElementById(testIconId);
-
-                const getIconLight = iconElement.getAttribute('data-icon-light');
-                const getIconDark = iconElement.getAttribute('data-icon-dark');
-
-                if (divElement.classList.contains('chosen-type')) {
-                    iconElement.src = getIconDark;
-                }
-                else {
-                    iconElement.src = getIconLight;
-                }
-            }
-        }
-    </script> -->
-    <!-- <script src="/javascript/index.js"></script> -->
 </body>
+
 </html>
