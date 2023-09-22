@@ -85,7 +85,9 @@
                     <form action="/profile/edit" method="get">
                         <button class="user-profile-button edit-profile-button">Edit Profile</button>
                     </form>
-                    <button class="user-profile-button new-password-button">New Password</button>
+                    <form action="/profile/new_password" method="get">
+                        <button class="user-profile-button new-password-button">New Password</button>
+                    </form>
                 </div>
             </div>
         </div>

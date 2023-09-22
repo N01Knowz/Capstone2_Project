@@ -96,6 +96,10 @@
                 <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
+                <div style="position: relative;">
+                    <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
+                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
+                </div>
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <div class="share-container">

@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -82,8 +83,41 @@ class ProfileController extends Controller
         $user->save();
 
 
-        return redirect('/profile');
     }
+
+    public function new_password(Request $request): View
+    {
+        return view('profile.new_password', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function update_password(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        // Validate the input
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+    
+        // Check if the current password is correct
+        if (Hash::check($request->current_password, $user->password)) {
+            // Update the password
+            $user->update([
+                'password' => Hash::make($request->new_password),
+            ]);
+    
+            // Logout the user
+            Auth::logout();
+    
+            return redirect('/login')->with('password_changed', 'Password changed successfully. You have been logged out.');
+        }
+    
+        return redirect()->back()->with('error', 'Current password is incorrect.');
+    }
+    
 
     /**
      * Delete the user's account.

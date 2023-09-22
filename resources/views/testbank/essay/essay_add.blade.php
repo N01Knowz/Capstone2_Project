@@ -100,6 +100,12 @@
                 @enderror
                 <p class="text-input-label label-margin-top">Instructions</p>
                 <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" required></textarea>
+                <p class="text-input-label label-margin-top">Subject</p>
+                <div style="position: relative;">
+                    <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
+                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
+                </div>
+                <p class="text-supported-format">Leave blank for no subject.</p>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
                     <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" readonly>
@@ -207,7 +213,51 @@
         </div>
     </div>
     <script>
-        
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsList = document.getElementById('suggestions');
+
+        // Sample list of suggestions (you can fetch this from an API)
+        const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
+
+        // Function to update the suggestions
+        function updateSuggestions() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // Check if the input is not empty
+            if (searchTerm === '') {
+                suggestionsList.innerHTML = ''; // Clear suggestions
+                suggestionsList.style.display = 'none'; // Hide suggestions
+                return;
+            }
+
+            const filteredSuggestions = suggestions.filter(suggestion =>
+                suggestion.toLowerCase().startsWith(searchTerm)
+            );
+
+            // Clear previous suggestions
+            suggestionsList.innerHTML = '';
+
+            // Display filtered suggestions
+            if (filteredSuggestions.length > 0) {
+                suggestionsList.style.display = 'block'; // Show suggestions
+                filteredSuggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    li.addEventListener('click', () => {
+                        searchInput.value = suggestion;
+                        suggestionsList.innerHTML = '';
+                        suggestionsList.style.display = 'none'; // Hide suggestions
+                    });
+                    suggestionsList.appendChild(li);
+                });
+            } else {
+                suggestionsList.style.display = 'none'; // Hide suggestions
+            }
+        }
+
+        // Listen for input events on the search input
+        searchInput.addEventListener('input', updateSuggestions);
+
         var save_button = document.getElementById("save-quiz-button");
 
         // Add a click event listener to the button
@@ -333,6 +383,35 @@
             total_points.value = sum;
         }
     </script>
+
+    <style>
+        #suggestions {
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ccc;
+            background-color: white;
+            /* Background color */
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #suggestions li {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+            /* Bottom border for each suggestion */
+        }
+
+        #suggestions li:last-child {
+            border-bottom: none;
+            /* Remove border for the last suggestion */
+        }
+
+        #suggestions li:hover {
+            background-color: lightgray;
+        }
+    </style>
 </body>
 
 </html>

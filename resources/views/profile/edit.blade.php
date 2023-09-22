@@ -90,9 +90,9 @@
                     </div>
 
                     <button class="user-profile-button edit-profile-button">Save Edit</button>
-                    <form action="/profile" method="get">
-                        <button class="user-profile-button new-password-button">Cancel</button>
-                    </form>
+                    <a href="/profile">
+                        <button class="user-profile-button new-password-button" type="button">Cancel</button>
+                    </a>
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>

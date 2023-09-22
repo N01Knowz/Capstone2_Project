@@ -4,14 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modified True or False</title>
+    <title>Profile</title>
     <link rel="icon" href="/images/logo.png">
-    <link rel="stylesheet" href="/css/add_page.css">
-    <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/navigator.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <!-- <h1>Your id is: {{auth()->user()->id;}}</h1> -->
     <div class="test-container">
         <div class="navigator">
             <div id="logo-container">
@@ -36,9 +38,9 @@
                     <p>True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type chosen-type" id="mtf-test" data-icon-id="mtf-icon">
+            <div class="test-type" id="mtf-test" data-icon-id="mtf-icon">
                 <a class="test-link" href="/mtf" onclick="chosenTestType('mtf-test')">
-                    <img src="/images/tf-icon-dark.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
+                    <img src="/images/tf-icon-light.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
@@ -63,9 +65,7 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <form action="/profile" method="get">
-                            <button class="setting-profile">Profile</button>
-                        </form>
+                        <button class="setting-profile">Profile</button>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -75,64 +75,37 @@
             </div>
         </div>
         <div class="test-body">
-            <div class="test-body-header">
-                <a href="/mtf" class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
-                        <p>Back</p>
-                    </button>
-                </a>
-                <div class="searchbar-container">
-                </div>
+            <div class="user-profile-container">
+                <form method="POST" class="user-profile-sub-container">
+                    @csrf
+                    @method('PUT')
+                    <div class="edit-user-name-container">
+                        <label for="current_password">Current Password:</label>
+                        <input type="password" name="current_password" required class="user-name-input">
+                        <label for="new_password">New Password:</label>
+                        <input type="password" name="new_password" required class="user-name-input">
+                        <label for="new_password_confirmation">New Password Confirmation:</label>
+                        <input type="password" name="new_password_confirmation" required class="user-name-input">
+                    </div>
+
+                    <button class="user-profile-button edit-profile-button">Save Edit</button>
+                    <a href="/profile">
+                        <button class="user-profile-button new-password-button" type="button">Cancel</button>
+                    </a>
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li style="color: red;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+                </form>
             </div>
-            <form method="POST" action="/mtf" class="test-body-content" id="add-form">
-                @csrf
-                <input type="hidden" name="id" value="{{auth()->user()->id;}}">
-                <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
-                @error('title')
-                <div class="alert alert-dange red-asterisk">{{ $message }}</div>
-                @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
-                @error('instruction')
-                <div style="position: relative;">
-                    <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
-                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
-                </div>
-                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                @enderror
-                <div class="share-container">
-                    <input type="checkbox" class="share-checkbox" name="share">
-                    <p class="text-input-label">Share with other faculties</p>
-                </div>
-                <!-- <div class="criteria-point-container">
-                    <div class="criteria-point-sub-container">
-                        <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
-                        <input type="text" class="text-input-background critera-point-input">
-                    </div>
-                    <div class="criteria-point-sub-container">
-                        <div>
-                            <p class="text-input-label">Point(s)</p>
-                            <input type="text" class="text-input-background critera-point-input">
-                        </div>
-                    </div>
-                </div> -->
-                <div class="add-test-button-anchor">
-                    <button class="save-test-button" id="save-quiz-button">Save Test</button>
-                </div>
-            </form>
         </div>
     </div>
     <script>
-        
-        var save_button = document.getElementById("save-quiz-button");
-
-        // Add a click event listener to the button
-        save_button.addEventListener("click", function() {
-            // Disable the button
-            save_button.disabled = true;
-            document.getElementById("add-form").submit();
-        });
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {
