@@ -4,15 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>True or False</title>
+    <title>Enumeration</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/test_description.css">
+    <link rel="stylesheet" href="/css/enumeration-test_description.css">
+    <link rel="stylesheet" href="/css/test_maker_description.css">
 </head>
 
 <body>
+    <div class="add-item-container" id="add_item_container">
+        <div class="add-item-sub-container" id="add_item_sub_container">
+            <div class="add-item-modal-header">
+                <p class="add-item-enter-answer">Select Type</p>
+                <button class="add-item-modal-header-close" id="add_item_modal_header_close">x</button>
+            </div>
+            <div class="add-item-modal-body">
+                <div class="test-select-body-container">
+                    <button>Essay</button>
+                    <button>MCQ</button>
+                    <button>True or False</button>
+                    <button>Modified True or False</button>
+                    <button>Matching</button>
+                    <button>Enumeration</button>
+                </div>
+            </div>
+            <div class="add-item-modal-footer">
+                <div class="add-item-buttons-container">
+                    <button form="add_item_form" class="add-item-save-button add-item-modal-button" id="save-quiz-button">Save</button>
+                    <button id="add_item_close_button" class="add-item-close-button add-item-modal-button">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="test-container">
         <div class="navigator">
             <div id="logo-container">
@@ -83,7 +109,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a class="add-test-button-anchor" href="/test">
+                <a href="/enumeration" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -99,73 +125,48 @@
                 </div>
                 <div class="test-questions-container">
                     <div class="test-questions-table-container">
-                        <p class="test-question-label">Test Items</p>
+                        <p class="test-question-label">Enumeration Answers</p>
                         <table class="questions-table">
                             <thead>
                                 <tr>
-                                    <th class="questions-table-no-column">No.</th>
-                                    <th class="questions-table-question-column">Question</th>
-                                    <th class="questions-table-point-column">Point(s)</th>
-                                    <th class="questions-table-buttons-column"></th>
+                                    <th class="enumeration-questions-table-no-column">No.</th>
+                                    <th class="enumeration-questions-table-answer-column">Answer(s)</th>
+                                    <th class="enumeration-questions-table-sensitive-column">Case Sensitive</th>
+                                    <th class="enumeration-questions-table-buttons-column"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($questions as $question)
-                                <tr id="test-question-item-description">
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{ $loop->index + 1}}</p>
-                                    </td>
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->item_question}}</p>
-                                        <div class="question-labels">
-                                            @if(!is_null($question->Realistic))
-                                            <div class="label r-label">Realistic</div>
-                                            @endif
-                                            @if(!is_null($question->Investigative))
-                                            <div class="label i-label">Investigative</div>
-                                            @endif
-                                            @if(!is_null($question->Artistic))
-                                            <div class="label a-label">Artistic</div>
-                                            @endif
-                                            @if(!is_null($question->Social))
-                                            <div class="label s-label">Social</div>
-                                            @endif
-                                            @if(!is_null($question->Enterprising))
-                                            <div class="label e-label">Enterprising</div>
-                                            @endif
-                                            @if(!is_null($question->Conventional))
-                                            <div class="label c-label">Conventional</div>
-                                            @endif
-                                            @if($question->Unknown == 1)
-                                            <div class="label u-label">Unknown</div>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->question_point}}</p>
+                                <tr>
+                                    <td>
+                                        <p>{{$loop->iteration}}</p>
                                     </td>
                                     <td>
-                                        <div class="questions-table-buttons-column-div">
-                                            <form action="/tf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
-                                                <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
-                                                    <p>Edit</p>
-                                                </button>
-                                            </form>
-                                            <form action="/tf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
-                                                @csrf
-                                                @method('delete')
-                                                <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
-                                                    <p>Delete</p>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <p>{{$question->item_question}}</p>
+                                    </td>
+                                    <td>
+                                        <p>@if($question->option_1 == "0")
+                                            No
+                                            @else
+                                            Yes
+                                            @endif
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <form action="/enumeration/{{$question->id}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
+                                            @csrf
+                                            @method('delete')
+                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
+                                                <p>Delete</p>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
-                            <p>Add Test Item</p>
+                        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                            <p>Add Item</p>
                         </button>
                     </div>
                 </div>
@@ -185,6 +186,15 @@
         </div>
     </div>
     <script>
+        var save_button = document.getElementById("save-quiz-button");
+
+        // Add a click event listener to the button
+        save_button.addEventListener("click", function() {
+            // Disable the button
+            save_button.disabled = true;
+            document.getElementById("add_item_form").submit();
+        });
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -193,21 +203,6 @@
                 dropdown.style.display = "none";
             }
         }
-        document.getElementById('add_item_button').addEventListener('click', function() {
-            window.location.href = window.location.href + "/create_question";
-        });
-
-        function handleRowClick(event) {
-            const clickedColumn = event.currentTarget;
-            const questionID = clickedColumn.getAttribute('data-question-id');
-            const testID = clickedColumn.getAttribute('data-test-id');
-            window.location.href = "/tf/" + testID + "/" + questionID;
-        }
-
-        const columns = document.querySelectorAll('.question-description');
-        columns.forEach(column => {
-            column.addEventListener('click', handleRowClick);
-        });
 
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
@@ -218,7 +213,25 @@
                 return false;
             }
         }
+        const add_item_container = document.getElementById('add_item_container');
+        const add_item_sub_container = document.getElementById('add_item_sub_container');
+        const add_item_modal_header_close = document.getElementById('add_item_modal_header_close');
+        const add_item_close_button = document.getElementById('add_item_close_button');
+        document.getElementById('add-test-button').addEventListener('click', function() {
+            add_item_container.style.display = "flex";
+            setTimeout(() => {
+                add_item_sub_container.classList.add("show");
+            }, 10);
+        });
+
+        add_item_container.addEventListener("click", function(event) {
+            if (event.target === add_item_container || event.target === add_item_modal_header_close || event.target === add_item_close_button) {
+                add_item_container.style.display = "none";
+                add_item_sub_container.classList.remove("show");
+            }
+        });
     </script>
+
 </body>
 
 </html>

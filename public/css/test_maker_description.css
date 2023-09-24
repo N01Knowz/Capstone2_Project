@@ -1,0 +1,25 @@
+.test-select-body-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: calc(100% - 2em);
+    height: 100%;
+}
+
+.test-select-body-container > button {
+    margin: 1em;
+    height: 4em;
+}
+
+.add-item-sub-container {
+    height: 400px;
+}
+
+.add-item-modal-header {
+    height: 15%;
+}
+
+.add-item-modal-body {
+    height: 65%;
+}

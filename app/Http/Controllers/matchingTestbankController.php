@@ -90,6 +90,7 @@ class matchingTestbankController extends Controller
             'test_title' => $request->input('title'),
             'test_question' => '',
             'test_instruction' => $request->input('instruction'),
+            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
             'test_total_points' => 0,
             'test_visible' => $request->has('share'),
