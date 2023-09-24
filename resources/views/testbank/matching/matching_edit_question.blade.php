@@ -44,6 +44,12 @@
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
             <div class="test-type chosen-type" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
                     <img src="/images/matching-icon-dark.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">

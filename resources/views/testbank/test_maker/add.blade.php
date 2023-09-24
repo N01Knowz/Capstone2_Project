@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matching</title>
+    <title>Test Maker</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/navigator.css">
-    <link rel="stylesheet" href="/css/mcq_add_question.css">
-    <link rel="stylesheet" href="/css/mt_add_questions.css">
 </head>
 
 <body>
@@ -44,9 +42,9 @@
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type chosen-type" id="matching-test" data-icon-id="matching-icon">
+            <div class="test-type" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
-                    <img src="/images/matching-icon-dark.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
+                    <img src="/images/matching-icon-light.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
                     <p>Matching Type</p>
                 </a>
             </div>
@@ -56,9 +54,9 @@
                     <p>Enumeration</p>
                 </a>
             </div>
-            <div class="test-type" id="test-test" data-icon-id="test-icon">
+            <div class="test-type chosen-type" id="test-test" data-icon-id="test-icon">
                 <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
-                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <img src="/images/test-icon-dark.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
                     <p>Test</p>
                 </a>
             </div>
@@ -84,57 +82,50 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/matching/{{$test->id}}" class="add-test-button-anchor">
-                    <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
+                <a href="/test" class="add-test-button-anchor">
+                    <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
                 </a>
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" class="test-body-content" id="add-form">
+            <form method="POST" action="/test" class="test-body-content" id="add-form">
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}" readonly>
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required>
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
+                <p class="text-input-label label-margin-top">Instruction<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
-                <input type="number" class="text-input-choices" value="{{ old('numChoicesInput') ? old('numChoicesInput') : 1 }}" id="numChoicesInput" name="numChoicesInput">
-                <p class="mt-note">Note: you may add extra choices (distractors) by adding an answer with a blank item text. Blank item test will not be added to the list of answerable items (including points).</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>
-                                <p class="test-profile-label">Item Text <span class="red-asterisk">*</span></p>
-                            </th>
-                            <th>
-                                <p class="test-profile-label">Answer <span class="red-asterisk">*</span></p>
-                            </th>
-                            <th>
-                                <p class="test-profile-label">Point(s) <span class="red-asterisk">*</span></p>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsContainer">
-
-                    </tbody>
-                </table>
-                @error('item_text_1')
-                <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
-                @enderror
-                <button class="save-test-button" id="save-quiz-button">Save Quiz Item</button>
+                <div class="share-container">
+                    <input type="checkbox" class="share-checkbox" name="share">
+                    <p class="text-input-label">Share with other faculties</p>
+                </div>
+                <!-- <div class="criteria-point-container">
+                    <div class="criteria-point-sub-container">
+                        <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
+                        <input type="text" class="text-input-background critera-point-input">
+                    </div>
+                    <div class="criteria-point-sub-container">
+                        <div>
+                            <p class="text-input-label">Point(s)</p>
+                            <input type="text" class="text-input-background critera-point-input">
+                        </div>
+                    </div>
+                </div> -->
+                <div class="add-test-button-anchor">
+                    <button class="save-test-button" id="save-quiz-button">Save Test</button>
+                </div>
             </form>
         </div>
     </div>
     <script>
-        
         var save_button = document.getElementById("save-quiz-button");
 
         // Add a click event listener to the button
@@ -151,48 +142,6 @@
             } else {
                 dropdown.style.display = "none";
             }
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const numChoicesInput = document.getElementById("numChoicesInput");
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            numChoicesInput.addEventListener("input", function() {
-                updateRows();
-            });
-
-            // Initial execution when the page loads
-            const initialNumChoices = parseInt(numChoicesInput.value);
-            putRows(initialNumChoices);
-        });
-
-        function putRows(numChoices) {
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            if (!isNaN(numChoices) && numChoices >= 1 && numChoices <= 10) {
-                for (let i = 1; i <= numChoices; i++) {
-                    const row = `
-                <tr>
-                    <td><input class="mt-inputs item_text" type="text" name="item_text_${i}"></td>
-                    <td><input class="mt-inputs item_answer" type="text" name="item_answer_${i}"></td>
-                    <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point_${i}" value="0"></td>
-                </tr>
-            `;
-                    itemsContainer.innerHTML += row;
-                }
-            }
-        }
-
-        function updateRows() {
-            const numChoicesInput = document.getElementById("numChoicesInput");
-            const numChoices = parseInt(numChoicesInput.value);
-            const itemsContainer = document.getElementById("itemsContainer");
-
-            // Clear existing options
-            itemsContainer.innerHTML = "";
-
-            // Create components based on the updated numChoices value
-            putRows(numChoices);
         }
     </script>
 </body>

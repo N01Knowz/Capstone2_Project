@@ -4,26 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Essay</title>
+    <title>Test Maker</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/front_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
     <link rel="stylesheet" href="/css/body.css">
-    <link rel="stylesheet" href="/css/essay.css">
+    <link rel="stylesheet" href="/css/tf.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <!-- <h1>Your id is: {{auth()->user()->id;}}</h1> -->
     <div class="test-container">
         <div class="navigator">
             <div id="logo-container">
                 <img src="/images/logo.png" id="logo">
                 <p>Test Bank</p>
             </div>
-            <div class="test-type chosen-type" id="essay-test" data-icon-id="essay-icon">
+            <div class="test-type" id="essay-test" data-icon-id="essay-icon">
                 <a class="test-link" href="/essay" onclick="chosenTestType('essay-test')">
-                    <img src="/images/essay-icon-dark.png" class="test-icon" data-icon-light="/images/essay-icon-light.png" data-icon-dark="/images/essay-icon-dark.png" id="essay-icon">
+                    <img src="/images/essay-icon-light.png" class="test-icon" data-icon-light="/images/essay-icon-light.png" data-icon-dark="/images/essay-icon-dark.png" id="essay-icon">
                     <p>Essay Tests</p>
                 </a>
             </div>
@@ -57,9 +56,9 @@
                     <p>Enumeration</p>
                 </a>
             </div>
-            <div class="test-type" id="test-test" data-icon-id="test-icon">
+            <div class="test-type chosen-type" id="test-test" data-icon-id="test-icon">
                 <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
-                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <img src="/images/test-icon-dark.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
                     <p>Test</p>
                 </a>
             </div>
@@ -85,7 +84,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <form method="get" action="/essay/create" class="add-test-button-anchor">
+                <form method="get" action="test/create" class="add-test-button-anchor">
                     <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
                         <p>Add New Test</p>
                     </button>
@@ -102,42 +101,20 @@
                             <th>Title</th>
                             <th>Instruction</th>
                             <th>Status</th>
-                            <th>Subject</th>
+                            <th>Total point(s)</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Table content goes here -->
                         @foreach ($tests as $test)
-                        <tr>
+                        @if ($test->test_active == 1)
+                        <tr id="test-question-description">
                             <td class="test-body-column test-body-title" data-id="{{$test->id}}">
                                 <p>{{$test->test_title}}</p>
                             </td>
                             <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
                                 <p>{{$test->test_instruction}}</p>
-                                <div class="question-labels">
-                                    @if(!is_null($test->Realistic))
-                                    <div class="label r-label">Realistic</div>
-                                    @endif
-                                    @if(!is_null($test->Investigative))
-                                    <div class="label i-label">Investigative</div>
-                                    @endif
-                                    @if(!is_null($test->Artistic))
-                                    <div class="label a-label">Artistic</div>
-                                    @endif
-                                    @if(!is_null($test->Social))
-                                    <div class="label s-label">Social</div>
-                                    @endif
-                                    @if(!is_null($test->Enterprising))
-                                    <div class="label e-label">Enterprising</div>
-                                    @endif
-                                    @if(!is_null($test->Conventional))
-                                    <div class="label c-label">Conventional</div>
-                                    @endif
-                                    @if($test->Unknown == 1)
-                                    <div class="label u-label">Unknown</div>
-                                    @endif
-                                </div>
                             </td>
                             <td class="test-body-column test-body-status" data-id="{{$test->id}}">
                                 <div>
@@ -146,12 +123,15 @@
                             </td>
                             <td class="test-body-column test-body-points" data-id="{{$test->id}}">
                                 <div>
-                                    <p>{{$test->test_subject}}</p>
+                                    <p>{{$test->test_total_points}}</p>
                                 </div>
                             </td>
-                            <td class="test-body-buttons-column">
+                            <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
+                                        <p>Add Question</p>
+                                    </button>
+                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
                                     <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
@@ -167,6 +147,7 @@
                                 </div>
                             </td>
                         </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>
@@ -174,6 +155,15 @@
         </div>
     </div>
     <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
+
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
                 // User clicked OK, proceed with form submission
@@ -184,70 +174,63 @@
             }
         }
 
-        function toggleDropdown() {
-            var dropdown = document.getElementById("dropdown-menu");
-            if (dropdown.style.display === "none" || dropdown.style.display === "") {
-                dropdown.style.display = "block";
-            } else {
-                dropdown.style.display = "none";
-            }
+        document.getElementById("test-add-question").onclick = function() {
+            const dataID = this.getAttribute("data-id")
+            window.location.href = "test/" + dataID + "/create_question";
         }
 
+        function handleRowClick(event) {
+            const clickedColumn = event.currentTarget;
+            const columnData = clickedColumn.getAttribute('data-id');
+            window.location.href = "test/" + columnData;
+        }
 
-
-        document.addEventListener("DOMContentLoaded", function() {
-
-            function handleRowClick(event) {
-                const clickedColumn = event.currentTarget;
-                const columnData = clickedColumn.getAttribute('data-id');
-                window.location.href = "essay/" + columnData;
-            }
-
-            const buttons = document.querySelectorAll(".buttons-edit-button");
-
-            // Loop through each button and attach the event handler
-            buttons.forEach(function(button) {
-                button.onclick = function() {
-                    const dataID = this.getAttribute("data-id");
-                    window.location.href = "essay/" + dataID + "/edit";
-                }
-            });
-
-            const columns = document.querySelectorAll('.test-body-column');
-            columns.forEach(column => {
-                column.addEventListener('click', handleRowClick);
-            });
+        const columns = document.querySelectorAll('.test-body-column');
+        columns.forEach(column => {
+            column.addEventListener('click', handleRowClick);
         });
 
-        // function chosenTestType(newTestTypeId) {
-        //     const oldDivElement = document.querySelector('.chosen-type');
-        //     if (oldDivElement) {
-        //         oldDivElement.classList.remove('chosen-type');
-        //         flipIconColor(oldDivElement);
-        //     }
+        const buttons = document.querySelectorAll(".buttons-edit-button");
 
-        //     console.log(newTestTypeId);
-        //     const newDivElement = document.getElementById(newTestTypeId);
-        //     newDivElement.classList.add('chosen-type');
-        //     flipIconColor(newDivElement);
-        // }
-
-        // function flipIconColor(divElement) {
-        //     if (divElement) {
-        //         const testIconId = divElement.getAttribute('data-icon-id');
-        //         const iconElement = document.getElementById(testIconId);
-
-        //         const getIconLight = iconElement.getAttribute('data-icon-light');
-        //         const getIconDark = iconElement.getAttribute('data-icon-dark');
-
-        //         if (divElement.classList.contains('chosen-type')) {
-        //             iconElement.src = getIconDark;
-        //         } else {
-        //             iconElement.src = getIconLight;
-        //         }
-        //     }
-        // }
+        // Loop through each button and attach the event handler
+        buttons.forEach(function(button) {
+            button.onclick = function() {
+                const dataID = this.getAttribute("data-id");
+                window.location.href = "test/" + dataID + "/edit";
+            }
+        });
     </script>
+    <!-- <script>
+        function chosenTestType(newTestTypeId) {
+            const oldDivElement = document.querySelector('.chosen-type');
+            if (oldDivElement) {
+                oldDivElement.classList.remove('chosen-type');
+                flipIconColor(oldDivElement);
+            }
+
+            console.log(newTestTypeId);
+            const newDivElement = document.getElementById(newTestTypeId);
+            newDivElement.classList.add('chosen-type');
+            flipIconColor(newDivElement);
+        }
+
+        function flipIconColor(divElement) {
+            if (divElement) {
+                const testIconId = divElement.getAttribute('data-icon-id');
+                const iconElement = document.getElementById(testIconId);
+
+                const getIconLight = iconElement.getAttribute('data-icon-light');
+                const getIconDark = iconElement.getAttribute('data-icon-dark');
+
+                if (divElement.classList.contains('chosen-type')) {
+                    iconElement.src = getIconDark;
+                }
+                else {
+                    iconElement.src = getIconLight;
+                }
+            }
+        }
+    </script> -->
     <!-- <script src="/javascript/index.js"></script> -->
 </body>
 

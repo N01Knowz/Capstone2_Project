@@ -47,7 +47,14 @@ class mcqTestbankController extends Controller
      */
     public function create()
     {
-        return view('testbank.mcq.mcq_add');
+        $currentUserId = Auth::user()->id;
+        $uniqueSubjects = testbank::where('test_type', 'mtf')
+            ->where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+        return view('testbank.mcq.mcq_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 
     /**

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\testbank;
 use App\Models\questions;
-use DOMDocument;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -48,7 +47,14 @@ class tfTestbankController extends Controller
      */
     public function create()
     {
-        return view('testbank.tf.tf_add');
+        $currentUserId = Auth::user()->id;
+        $uniqueSubjects = testbank::where('test_type', 'mtf')
+            ->where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+        return view('testbank.tf.tf_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 
     /**

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modified True or False</title>
+    <title>True or False</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
@@ -37,9 +37,9 @@
                     <p>True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type chosen-type" id="mtf-test" data-icon-id="mtf-icon">
+            <div class="test-type" id="mtf-test" data-icon-id="mtf-icon">
                 <a class="test-link" href="/mtf" onclick="chosenTestType('mtf-test')">
-                    <img src="/images/tf-icon-dark.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
+                    <img src="/images/tf-icon-light.png" class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
@@ -55,9 +55,9 @@
                     <p>Enumeration</p>
                 </a>
             </div>
-            <div class="test-type" id="test-test" data-icon-id="test-icon">
+            <div class="test-type chosen-type" id="test-test" data-icon-id="test-icon">
                 <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
-                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <img src="/images/test-icon-dark.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
                     <p>Test</p>
                 </a>
             </div>
@@ -83,7 +83,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mtf" class="add-test-button-anchor">
+                <a class="add-test-button-anchor" href="/test">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -142,16 +142,16 @@
                                         </div>
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->question_point + $question->explanation_point}}</p>
+                                        <p>{{$question->question_point}}</p>
                                     </td>
                                     <td>
                                         <div class="questions-table-buttons-column-div">
-                                            <form action="/mtf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                            <form action="/tf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
                                                 <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
                                                     <p>Edit</p>
                                                 </button>
                                             </form>
-                                            <form action="/mtf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                            <form action="/tf/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
                                                 @csrf
                                                 @method('delete')
                                                 <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
@@ -169,11 +169,6 @@
                         </button>
                     </div>
                 </div>
-                <script>
-                    document.getElementById('add_item_button').addEventListener('click', function() {
-                        window.location.href = window.location.href + "/create_question";
-                    });
-                </script>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
@@ -198,12 +193,15 @@
                 dropdown.style.display = "none";
             }
         }
+        document.getElementById('add_item_button').addEventListener('click', function() {
+            window.location.href = window.location.href + "/create_question";
+        });
 
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const questionID = clickedColumn.getAttribute('data-question-id');
             const testID = clickedColumn.getAttribute('data-test-id');
-            window.location.href = "/mtf/" + testID + "/" + questionID;
+            window.location.href = "/tf/" + testID + "/" + questionID;
         }
 
         const columns = document.querySelectorAll('.question-description');

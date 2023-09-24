@@ -109,7 +109,8 @@
 
 #suggestions {
     list-style: none;
-    padding: 0;
+    width: 95%;
+    padding: 0.5%;
     border: 1px solid #ccc;
     background-color: white;
     /* Background color */
@@ -120,7 +121,6 @@
 
 #suggestions li {
     cursor: pointer;
-    padding: 5px;
     border-bottom: 1px solid #ccc;
     /* Bottom border for each suggestion */
 }

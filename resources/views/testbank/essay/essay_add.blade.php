@@ -55,6 +55,12 @@
                     <p>Enumeration</p>
                 </a>
             </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
             <div class="profile-container">
                 <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
@@ -101,9 +107,9 @@
                 <p class="text-input-label label-margin-top">Instructions</p>
                 <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" required></textarea>
                 <p class="text-input-label label-margin-top">Subject</p>
-                <div style="position: relative;">
+                <div style="position: relative; width: 100%;">
                     <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
-                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
+                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;" data-unique-subjects="{{ json_encode($uniqueSubjects) }}"></ul>
                 </div>
                 <p class="text-supported-format">Leave blank for no subject.</p>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
@@ -216,47 +222,66 @@
         const searchInput = document.getElementById('searchInput');
         const suggestionsList = document.getElementById('suggestions');
 
-        // Sample list of suggestions (you can fetch this from an API)
-        const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
+        // Preload the suggestions from the data attribute
+        const suggestions = JSON.parse(suggestionsList.getAttribute('data-unique-subjects'));
+        // const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
 
-        // Function to update the suggestions
+        // Create the list items for suggestions and hide them initially
+        const suggestionItems = suggestions.map(suggestion => {
+            const li = document.createElement('li');
+            li.textContent = suggestion;
+
+            li.style.display = 'none'; // Hide initially
+            suggestionsList.appendChild(li);
+
+            return li;
+        });
+
         function updateSuggestions() {
             const searchTerm = searchInput.value.toLowerCase();
-
-            // Check if the input is not empty
-            if (searchTerm === '') {
-                suggestionsList.innerHTML = ''; // Clear suggestions
-                suggestionsList.style.display = 'none'; // Hide suggestions
-                return;
-            }
 
             const filteredSuggestions = suggestions.filter(suggestion =>
                 suggestion.toLowerCase().startsWith(searchTerm)
             );
 
-            // Clear previous suggestions
-            suggestionsList.innerHTML = '';
+            // Hide all suggestions by default
+            suggestionItems.forEach(item => (item.style.display = 'none'));
 
             // Display filtered suggestions
             if (filteredSuggestions.length > 0) {
-                suggestionsList.style.display = 'block'; // Show suggestions
                 filteredSuggestions.forEach(suggestion => {
-                    const li = document.createElement('li');
-                    li.textContent = suggestion;
-                    li.addEventListener('click', () => {
-                        searchInput.value = suggestion;
-                        suggestionsList.innerHTML = '';
-                        suggestionsList.style.display = 'none'; // Hide suggestions
-                    });
-                    suggestionsList.appendChild(li);
+                    // Show only the suggestions that match the filter
+                    suggestionItems
+                        .filter(item => item.textContent === suggestion)
+                        .forEach(item => (item.style.display = 'block'));
                 });
+                suggestionsList.style.display = 'block'; // Show suggestions list
             } else {
-                suggestionsList.style.display = 'none'; // Hide suggestions
+                suggestionsList.style.display = 'none'; // Hide suggestions list
             }
         }
 
-        // Listen for input events on the search input
+        // Delegate the click event to the suggestionsList and set the input value when a suggestion is clicked
+        suggestionsList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.nodeName === 'LI') {
+                searchInput.value = target.textContent;
+                suggestionsList.style.display = 'none'; // Hide suggestions list
+            }
+        });
+
+        let blurTimer; // Initialize a timer variable
+        // Add this event listener to hide suggestions when the input loses focus
+        searchInput.addEventListener('blur', () => {
+            // Delay the blur event for 200 milliseconds (adjust as needed)
+            blurTimer = setTimeout(() => {
+                suggestionsList.style.display = 'none'; // Hide suggestions list
+            }, 100); // 200 milliseconds delay
+        });
+
+        // Listen for both input and focus events on the search input
         searchInput.addEventListener('input', updateSuggestions);
+        searchInput.addEventListener('focus', updateSuggestions);
 
         var save_button = document.getElementById("save-quiz-button");
 
