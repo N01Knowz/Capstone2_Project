@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enumeration</title>
+    <title>Test Maker</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="/css/add_page.css">
     <link rel="stylesheet" href="/css/navigator.css">
@@ -23,18 +23,29 @@
             </div>
             <div class="add-item-modal-body">
                 <div class="test-select-body-container">
-                    <button>Essay</button>
-                    <button>MCQ</button>
-                    <button>True or False</button>
-                    <button>Modified True or False</button>
-                    <button>Matching</button>
-                    <button>Enumeration</button>
+                    <a href="/test/{{$test->id}}/essay">
+                        <button class="select-type-test-button">Essay</button>
+                    </a>
+                    <a href="/test/{{$test->id}}/mcq">
+                        <button class="select-type-test-button">MCQ</button>
+                    </a>
+                    <a href="/test/{{$test->id}}/tf">
+                        <button class="select-type-test-button">True or False</button>
+                    </a>
+                    <a href="/test/{{$test->id}}/mtf">
+                        <button class="select-type-test-button">Modified True or False</button>
+                    </a>
+                    <a href="/test/{{$test->id}}/matching">
+                        <button class="select-type-test-button">Matching</button>
+                    </a>
+                    <a href="/test/{{$test->id}}/enumeration">
+                        <button class="select-type-test-button">Enumeration</button>
+                    </a>
                 </div>
             </div>
             <div class="add-item-modal-footer">
                 <div class="add-item-buttons-container">
-                    <button form="add_item_form" class="add-item-save-button add-item-modal-button" id="save-quiz-button">Save</button>
-                    <button id="add_item_close_button" class="add-item-close-button add-item-modal-button">Close</button>
+                    <button id="add_item_close_button" class="add-item-close-button add-item-modal-button" style="cursor:pointer;">Close</button>
                 </div>
             </div>
         </div>
@@ -186,15 +197,6 @@
         </div>
     </div>
     <script>
-        var save_button = document.getElementById("save-quiz-button");
-
-        // Add a click event listener to the button
-        save_button.addEventListener("click", function() {
-            // Disable the button
-            save_button.disabled = true;
-            document.getElementById("add_item_form").submit();
-        });
-
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {

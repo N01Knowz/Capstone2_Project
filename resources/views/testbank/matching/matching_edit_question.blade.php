@@ -44,12 +44,6 @@
                     <p>Modified True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type" id="test-test" data-icon-id="test-icon">
-                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
-                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
-                    <p>Test</p>
-                </a>
-            </div>
             <div class="test-type chosen-type" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
                     <img src="/images/matching-icon-dark.png" class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
@@ -60,6 +54,12 @@
                 <a class="test-link" href="/enumeration" onclick="chosenTestType('enumeration-test')">
                     <img src="/images/enumeration-icon-light.png" class="test-icon" data-icon-light="/images/enumeration-icon-light.png" data-icon-dark="/images/enumeration-icon-dark.png" id="enumeration-icon">
                     <p>Enumeration</p>
+                </a>
+            </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
                 </a>
             </div>
             <div class="profile-container">
@@ -105,7 +105,8 @@
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                @enderror <table>
+                @enderror 
+                <table>
                     <thead>
                         <tr>
                             <th>
@@ -129,7 +130,7 @@
                 </table>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                @enderror <table>
+                @enderror
                     <button class="save-test-button">Save Quiz Item</button>
             </form>
         </div>
@@ -143,7 +144,6 @@
                 dropdown.style.display = "none";
             }
         }
-       
     </script>
 </body>
 

@@ -6,10 +6,14 @@
     height: calc(100% - 2em);
     height: 100%;
 }
-
-.test-select-body-container > button {
-    margin: 1em;
+.test-select-body-container > a {
+    margin: 0.5em;
     height: 4em;
+}
+
+.test-select-body-container > a > button {
+    height: 4em;
+    width: 100%;
 }
 
 .add-item-sub-container {
@@ -22,4 +26,8 @@
 
 .add-item-modal-body {
     height: 65%;
+}
+
+.select-type-test-button {
+    cursor: pointer;
 }

@@ -31,7 +31,7 @@ class testMakerController extends Controller
 
         $tests = $testsQuery->orderBy('id', 'desc')
             ->get();
-            
+
         return view('testbank.test_maker.index', [
             'tests' => $tests,
         ]);
@@ -82,9 +82,9 @@ class testMakerController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -120,5 +120,46 @@ class testMakerController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function add_test_index(string $id, string $test_type)
+    {
+        $test = testbank::find($id);
+        $currentUserId = Auth::user()->id;
+        $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
+
+        if (!in_array($test_type, $types_of_test)) {
+            abort(404, 'Page not found');
+        }
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $allTestQuery = testbank::join('questions', 'testbanks.id', '=', 'questions.testbank_id')
+            ->where('testbanks.test_type', '=', $test_type)
+            ->where('testbanks.user_id', '=', $currentUserId)
+            ->orderBy('testbanks.id', 'desc')
+            ->select('testbanks.*') 
+            ->get();
+
+        $allQuestionQuery = questions::join('testbanks', 'testbanks.id', '=', 'questions.testbank_id')
+            ->where('testbanks.test_type', '=', $test_type)
+            ->where('testbanks.user_id', '=', $currentUserId)
+            ->orderBy('testbanks.id', 'desc')
+            ->select('questions.*') 
+            ->get();
+            // dd($allQuestionQuery);
+
+
+        return view('testbank.test_maker.add_question', [
+            'test' => $test,
+            'allTestQuery' => $allTestQuery,
+            'allQuestionQuery' => $allQuestionQuery,
+            'testType' => ucfirst($test_type),
+        ]);
     }
 }
