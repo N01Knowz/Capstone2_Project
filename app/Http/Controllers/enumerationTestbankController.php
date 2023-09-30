@@ -65,6 +65,7 @@ class enumerationTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
+            'question' => 'required',
             'instruction' => 'required',
         ]);
 
@@ -76,7 +77,7 @@ class enumerationTestbankController extends Controller
             'user_id' => Auth::id(),
             'test_type' => 'enumeration',
             'test_title' => $request->input('title'),
-            'test_question' => '',
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
             'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
@@ -138,6 +139,7 @@ class enumerationTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'instruction' => 'required',
+            'question' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -154,6 +156,7 @@ class enumerationTestbankController extends Controller
 
         $testbank->update([
             'test_title' => $request->input('title'),
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
             'test_visible' => $request->has('share'),
         ]);

@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="/css/mcq_add_question.css">
     <link rel="stylesheet" href="/css/mt_add_questions.css">
     <link rel="stylesheet" href="/css/matching_test_description.css">
+    <link rel="stylesheet" href="/css/test_description.css">
 </head>
 
 <body>
@@ -107,16 +108,18 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
+                        <p>Add Test Item</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
                     <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Question: <span class="test-profile-value">{{$test->test_question}}</span></p>
                 </div>
                 <div class="test-add-question-container">
-                    <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input matching-instruction" readonly>{{$test->test_instruction}}</textarea>
                     <table>
                         <thead>
                             <tr>
@@ -159,7 +162,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <button class="save-test-button" id="add_item_button">Add Items</button>
+
                 </div>
             </div>
         </div>

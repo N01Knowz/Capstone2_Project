@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\testbank;
 use App\Models\questions;
+use App\Models\testMaker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 
 class testMakerController extends Controller
 {
@@ -139,20 +139,20 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        $allTestQuery = testbank::join('questions', 'testbanks.id', '=', 'questions.testbank_id')
-            ->where('testbanks.test_type', '=', $test_type)
+        $allTestQuery = testbank::where('testbanks.test_type', '=', $test_type)
             ->where('testbanks.user_id', '=', $currentUserId)
             ->orderBy('testbanks.id', 'desc')
-            ->select('testbanks.*') 
             ->get();
+
+        // dd($allTestQuery);
 
         $allQuestionQuery = questions::join('testbanks', 'testbanks.id', '=', 'questions.testbank_id')
             ->where('testbanks.test_type', '=', $test_type)
             ->where('testbanks.user_id', '=', $currentUserId)
             ->orderBy('testbanks.id', 'desc')
-            ->select('questions.*') 
+            ->select('questions.*')
             ->get();
-            // dd($allQuestionQuery);
+        // dd($allQuestionQuery);
 
 
         return view('testbank.test_maker.add_question', [
@@ -161,5 +161,49 @@ class testMakerController extends Controller
             'allQuestionQuery' => $allQuestionQuery,
             'testType' => ucfirst($test_type),
         ]);
+    }
+
+    public function add_test_store(Request $request, string $id, string $test_type)
+    {
+        $test = testbank::find($id);
+        $currentUserId = Auth::user()->id;
+        $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
+
+        if (!in_array($test_type, $types_of_test)) {
+            abort(404, 'Page not found');
+        }
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        if (in_array($test_type, ['tf', 'mtf', 'mcq'])) {
+            $checkboxes = $request->input('question_checkbox_add', []);
+            if (!empty($checkboxes)) {
+                foreach ($checkboxes as $checkbox) {
+                    testMaker::create([
+                        'testbank_id' => $id,
+                        'question_id' => $checkbox,
+                    ]);
+                }
+            }
+        }
+
+        if (in_array($test_type, ['essay', 'enumeration', 'matching'])) {
+            $checkboxes = $request->input('test_checkbox_add', []);
+            if (!empty($checkboxes)) {
+                foreach ($checkboxes as $checkbox) {
+                    testMaker::create([
+                        'testbank_id' => $id,
+                        'test_id' => $checkbox,
+                    ]);
+                }
+            }
+        }
+
+        return redirect('/test/' . $id);
     }
 }

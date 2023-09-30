@@ -89,6 +89,9 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
+                        <p>Add Test Item</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
@@ -164,9 +167,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
-                            <p>Add Test Item</p>
-                        </button>
                     </div>
                 </div>
                 <script>

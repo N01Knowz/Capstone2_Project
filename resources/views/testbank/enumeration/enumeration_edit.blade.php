@@ -100,11 +100,13 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
-                @error('instruction')
+                <p class="text-input-label label-margin-top">Question<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="question" required>{{$test->test_question}}</textarea>
+                @error('question')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
+                <p class="text-input-label label-margin-top">Instructions</p>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
                 <div class="share-container">
                     <input type="checkbox" @if($test->test_visible == '1') checked="true" @endif class="share-checkbox" name="share" >
                     <p class="text-input-label">Share with other faculties</p>

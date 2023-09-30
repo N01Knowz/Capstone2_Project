@@ -89,6 +89,9 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
+                        <p>Add Test Item</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
@@ -119,25 +122,25 @@
                                         <p>{{$question->item_question}}</p>
                                         <div class="question-labels">
                                             @if(!is_null($question->Realistic))
-                                                <div class="label r-label">Realistic</div>
+                                            <div class="label r-label">Realistic</div>
                                             @endif
                                             @if(!is_null($question->Investigative))
-                                                <div class="label i-label">Investigative</div>
+                                            <div class="label i-label">Investigative</div>
                                             @endif
                                             @if(!is_null($question->Artistic))
-                                                <div class="label a-label">Artistic</div>
+                                            <div class="label a-label">Artistic</div>
                                             @endif
                                             @if(!is_null($question->Social))
-                                                <div class="label s-label">Social</div>
+                                            <div class="label s-label">Social</div>
                                             @endif
                                             @if(!is_null($question->Enterprising))
-                                                <div class="label e-label">Enterprising</div>
+                                            <div class="label e-label">Enterprising</div>
                                             @endif
                                             @if(!is_null($question->Conventional))
-                                                <div class="label c-label">Conventional</div>
+                                            <div class="label c-label">Conventional</div>
                                             @endif
                                             @if($question->Unknown == 1)
-                                                <div class="label u-label">Unknown</div>
+                                            <div class="label u-label">Unknown</div>
                                             @endif
                                         </div>
                                     </td>
@@ -164,9 +167,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
-                            <p>Add Test Item</p>
-                        </button>
                     </div>
                 </div>
                 <script>

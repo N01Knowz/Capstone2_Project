@@ -80,6 +80,7 @@ Route::delete('/enumeration/{question_id}/delete_question', [enumerationTestbank
 
 Route::resource('test', testMakerController::class);
 Route::get('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_index']);
+Route::post('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_store']);
 
 
 

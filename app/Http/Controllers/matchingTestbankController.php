@@ -64,6 +64,7 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
+            'question' => 'required',
             'instruction' => 'required',
         ]);
 
@@ -88,7 +89,7 @@ class matchingTestbankController extends Controller
             'user_id' => Auth::id(),
             'test_type' => 'matching',
             'test_title' => $request->input('title'),
-            'test_question' => '',
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
             'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
@@ -174,6 +175,7 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
+            'question' => 'required',
             'instruction' => 'required',
         ]);
 
@@ -191,6 +193,7 @@ class matchingTestbankController extends Controller
 
         $testbank->update([
             'test_title' => $request->input('title'),
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
             'test_visible' => $request->has('share'),
         ]);

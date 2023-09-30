@@ -101,11 +101,10 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
+                <p class="text-input-label label-margin-top">Question</p>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_question}}</textarea>
+                <p class="text-input-label label-margin-top">Instruction</p>
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
-                @error('instruction')
-                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
-                @enderror 
                 <table>
                     <thead>
                         <tr>
@@ -131,7 +130,7 @@
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
-                    <button class="save-test-button">Save Quiz Item</button>
+                <button class="save-test-button">Save Quiz Item</button>
             </form>
         </div>
     </div>

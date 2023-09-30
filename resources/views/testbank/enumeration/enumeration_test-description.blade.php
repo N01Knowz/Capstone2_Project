@@ -116,6 +116,9 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                        <p>Add Answer</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
@@ -123,6 +126,7 @@
                     <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Question: <span class="test-profile-value">{{$test->test_question}}</span></p>
                 </div>
                 <div class="test-questions-container">
                     <div class="test-questions-table-container">
@@ -166,9 +170,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
-                            <p>Add Answer</p>
-                        </button>
                     </div>
                 </div>
                 <!-- <div class="criteria-point-container">

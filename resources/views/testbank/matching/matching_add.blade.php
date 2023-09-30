@@ -100,11 +100,13 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
-                @error('instruction')
+                <p class="text-input-label label-margin-top">Question<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="question" required></textarea>
+                @error('question')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
+                <p class="text-input-label label-margin-top">Instructions</p>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" required></textarea>
                 <p class="text-input-label label-margin-top">Subject</p>
                 <div style="position: relative; width: 100%;">
                     <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">

@@ -84,7 +84,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/matching/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/test/{{$test->id}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -94,7 +94,6 @@
             </div>
             <form method="POST" class="test-body-content">
                 @csrf
-                @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Test Type</p>
                 <input type="text" class="textinput-base textarea-title text-input-background" name="test_type" value="{{$testType}}" readonly>
@@ -112,7 +111,10 @@
                     <button type="button">Enterprising</button>
                     <button type="button">Conventional</button>
                 </div>
-                <button class="save-test-button label-margin-top">Search/Filter</button>
+                <div class="testmaker-buttons">
+                    <button class="search-filter-button label-margin-top">Search/Filter</button>
+                    <button class="save-test-button">Save Item</button>
+                </div>
                 @foreach($allTestQuery as $testQuery)
                 <div class="dropdown-container">
                     <div class="dropdown-header">
@@ -120,9 +122,9 @@
                             {{$testQuery->test_title}}
                             <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->id}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
                         </button>
-                        <input type="checkbox" class="dropdown-checkbox">
+                        <input type="checkbox" name="test_checkbox_add[]" value="{{$testQuery->id}}" id="parent-checkbox-{{$testQuery->id}}" class="dropdown-checkbox" data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->id}}" @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf'])) onclick="toggleCheckboxes(this)"@endif>
                     </div>
-                    <div class="dropdown-content" id="{{'dropdown-content-' . $testQuery->id}}">
+                    <div class="dropdown-content" id="{{'dropdown-content-' . $testQuery->id}}" style="background-color: white;">
                         @if($testQuery->test_type == 'essay')
                         @foreach($allQuestionQuery as $questionQuery)
                         @if($questionQuery->testbank_id == $testQuery->id)
@@ -130,7 +132,7 @@
                         <table class="essay-table">
                             <thead>
                                 <tr>
-                                    <th class="essay-criteria-column">Criteria</th>
+                                    <th class="essay-criteria-column">Criteria(s)</th>
                                     <th>Point(s)</th>
                                 </tr>
                             </thead>
@@ -169,29 +171,64 @@
                         @endforeach
                         @endif
                         @if($testQuery->test_type == 'enumeration')
-                        <p>Hello enumeration</p>
+                        <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
+                        <table class="essay-table">
+                            <thead>
+                                <tr>
+                                    <th class="essay-criteria-column">Answer(s)</th>
+                                    <th>Point(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allQuestionQuery as $questionQuery)
+                                @if($questionQuery->testbank_id == $testQuery->id)
+                                <tr>
+                                    <td>{{$questionQuery->item_question}}</td>
+                                    <td>{{$questionQuery->question_point}}</td>
+                                </tr>
+                                @endif
+                                @endforeach
+                            </tbody>
+                        </table>
                         @endif
                         @if($testQuery->test_type == 'matching')
-                        <p>hello matching</p>
+                        <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
+                        <table class="essay-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Text</th>
+                                    <th>Answer(s)</th>
+                                    <th>Point(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($allQuestionQuery as $questionQuery)
+                                @if($questionQuery->testbank_id == $testQuery->id)
+                                <tr>
+                                    <td>{{$questionQuery->option_1}}</td>
+                                    <td>{{$questionQuery->item_question}}</td>
+                                    <td>{{$questionQuery->question_point}}</td>
+                                </tr>
+                                @endif
+                                @endforeach
+                            </tbody>
+                        </table>
                         @endif
                         @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf']))
                         @foreach($allQuestionQuery as $questionQuery)
                         @if($questionQuery->testbank_id == $testQuery->id)
-                        <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" data-dropdown-icon="{{'dropdown-icon-' . $testQuery->id}}" data-dropdown-id="{{'dropdown-content-' . $testQuery->id}}" onclick="showDropdown()">
-                                {{$testQuery->test_title}}
-                                <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->id}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
+                        <div class="dropdown-question-header">
+                            <button class="dropdown-question-title dropdown-question-title-child" type="button" data-dropdown-icon="{{'dropdown-icon-' . $testQuery->id}}" data-dropdown-id="{{'dropdown-content-' . $testQuery->id}}">
+                                <p class="text-input-label">Question: <span class="test-question-output">{{$questionQuery->item_question}}</span></p>
                             </button>
-                            <input type="checkbox" class="dropdown-checkbox">
+                            <input type="checkbox" class="dropdown-checkbox dropdown-questions-checkbox-{{$testQuery->id}}" data-parent-checkbox="parent-checkbox-{{$testQuery->id}}" onclick="updateSelectAllState(this)" name="question_checkbox_add[]" value="{{$questionQuery->id}}">
                         </div>
-                        <p class="text-input-label">Question: <span class="test-question-output">{{$questionQuery->item_question}}</span></p>
                         @endif
                         @endforeach
                         @endif
                     </div>
                 </div>
                 @endforeach
-                <button class="save-test-button label-margin-top">Save Item</button>
             </form>
         </div>
     </div>
@@ -226,6 +263,23 @@
             } else {
                 dropdown.style.display = "none";
             }
+        }
+
+        // Function to toggle checkboxes based on the checkbox that triggered the function
+        function toggleCheckboxes(checkbox) {
+            const targetClass = checkbox.getAttribute('data-dropdown-checkboxes');
+            const checkboxes = document.querySelectorAll('.' + targetClass);
+            checkboxes.forEach(cbox => {
+                cbox.checked = checkbox.checked;
+            });
+        }
+
+        // Function to update the checkbox that triggered the function based on other checkboxes
+        function updateSelectAllState(checkbox) {
+            const targetClass = checkbox.getAttribute('data-parent-checkbox');
+            const parentCheckbox = document.getElementById(targetClass);
+
+            parentCheckbox.checked = false;
         }
     </script>
 </body>

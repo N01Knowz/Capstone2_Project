@@ -125,7 +125,10 @@
                         <p>Back</p>
                     </button>
                 </a>
-                <div class="searchbar-container">
+                <div class="add-item-button-container">
+                    <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                        <p>Add Item</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
@@ -176,9 +179,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
-                            <p>Add Item</p>
-                        </button>
                     </div>
                 </div>
                 <!-- <div class="criteria-point-container">
