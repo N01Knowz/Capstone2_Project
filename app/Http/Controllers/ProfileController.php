@@ -83,6 +83,7 @@ class ProfileController extends Controller
         $user->save();
 
 
+        return redirect('/profile');
     }
 
     public function new_password(Request $request): View

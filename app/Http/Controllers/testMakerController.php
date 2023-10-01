@@ -8,6 +8,7 @@ use App\Models\questions;
 use App\Models\testMaker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class testMakerController extends Controller
 {
@@ -122,11 +123,26 @@ class testMakerController extends Controller
         //
     }
 
-    public function add_test_index(string $id, string $test_type)
+    public function add_test_index(Request $request, string $id, string $test_type)
     {
         $test = testbank::find($id);
         $currentUserId = Auth::user()->id;
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
+        $filterLabel = ['realistic_filter' => 'Realistic', 'investigative_filter' => 'Investigative', 'artistic_filter' => 'Artistic', 'social_filter' => 'Social', 'enterprising_filter' => 'Enterprising', 'conventional_filter' => 'Conventional'];
+        $searchTitle = $request->input('search_title');
+        $subjectFilter = $request->input('subject');
+        foreach ($filterLabel as $label) {
+            if ($request->input($label)) {
+                // dd($request->input($label), $label);
+            }
+        }
+        if ($searchTitle) {
+            // dd($searchTitle);
+        }
+        if ($subjectFilter) {
+            // dd($subjectFilter);
+        }
+
 
         if (!in_array($test_type, $types_of_test)) {
             abort(404, 'Page not found');
@@ -140,19 +156,61 @@ class testMakerController extends Controller
         }
 
         $allTestQuery = testbank::where('testbanks.test_type', '=', $test_type)
-            ->where('testbanks.user_id', '=', $currentUserId)
-            ->orderBy('testbanks.id', 'desc')
+            ->where('testbanks.user_id', '=', $currentUserId);
+        if (in_array($test_type, ['essay', 'matching', 'enumeration'])) {
+            foreach ($filterLabel as $key => $value) {
+                if ($request->input($key)) {
+                    $allTestQuery = $allTestQuery->whereNotNull($value);
+                }
+            }
+        }
+
+        if ($searchTitle) {
+            $allTestQuery = $allTestQuery->where('test_title', 'LIKE', "%$searchTitle%");
+        }
+        if ($subjectFilter) {
+            $allTestQuery = $allTestQuery->where('test_subject', $subjectFilter);
+        }
+
+        $allTestQuery = $allTestQuery->orderBy('testbanks.id', 'desc')
             ->get();
+
 
         // dd($allTestQuery);
 
-        $allQuestionQuery = questions::join('testbanks', 'testbanks.id', '=', 'questions.testbank_id')
-            ->where('testbanks.test_type', '=', $test_type)
-            ->where('testbanks.user_id', '=', $currentUserId)
-            ->orderBy('testbanks.id', 'desc')
-            ->select('questions.*')
+        $allQuestionQuery = questions::from(DB::raw('questions AS q'))
+            ->join('testbanks AS t', 't.id', '=', 'q.testbank_id')
+            ->where('t.test_type', '=', $test_type)
+            ->where('t.user_id', '=', $currentUserId);
+
+        if (in_array($test_type, ['mcq', 'tf', 'mtf'])) {
+            foreach ($filterLabel as $key => $value) {
+                if ($request->input($key)) {
+                    $allQuestionQuery = $allQuestionQuery->whereNotNull("q.$value");
+                }
+            }
+        }
+
+        if ($searchTitle) {
+            $allQuestionQuery = $allQuestionQuery->where('t.test_title', 'LIKE', "%$searchTitle%");
+        }
+
+        if ($subjectFilter) {
+            $allQuestionQuery = $allQuestionQuery->where('t.test_subject', $subjectFilter ? $subjectFilter : "No Subject");
+        }
+
+        $allQuestionQuery = $allQuestionQuery->orderBy('t.id', 'desc')
+            ->select('q.*', 't.test_title as test_title_alias', 't.test_subject as test_subject_alias')
             ->get();
         // dd($allQuestionQuery);
+
+
+        $uniqueSubjects = testbank::where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+
 
 
         return view('testbank.test_maker.add_question', [
@@ -160,6 +218,7 @@ class testMakerController extends Controller
             'allTestQuery' => $allTestQuery,
             'allQuestionQuery' => $allQuestionQuery,
             'testType' => ucfirst($test_type),
+            'uniqueSubjects' => $uniqueSubjects
         ]);
     }
 

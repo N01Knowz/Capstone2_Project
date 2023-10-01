@@ -129,6 +129,9 @@
                     <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
                         <p>Add Item</p>
                     </button>
+                    <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                        <p>Add Random Items</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">

@@ -128,3 +128,21 @@ td {
 .dropdown-content .dropdown-question-header:nth-child(even) {
     background-color: #cccccc; /* Set the background color to gray */
   }
+
+.filter-label-buttons {
+    padding: 0.8em 1.5em 0.8em 1.5em;
+    border-radius: 10px;
+    border: 1px solid black;
+    cursor: pointer;
+    width: 10em;
+}
+
+.filter-label-container {
+    display: flex;
+    gap: 1em;
+}
+
+.chosen-label-button {
+    background-color: #007bff; /* Change to the desired color for active state */
+    color: white; /* Change text color for better contrast */
+}
