@@ -104,7 +104,18 @@ class testMakerController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        return view('testbank.test_maker.edit', [
+            'test' => $test,
+        ]);
     }
 
     /**
@@ -112,7 +123,32 @@ class testMakerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'title' => 'required',
+            'instruction' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $testbank = testbank::find($id);
+        if (is_null($testbank)) {
+            abort(404); // User does not own the test
+        }
+        if ($testbank->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $testbank->update([
+            'test_title' => $request->input('title'),
+            'test_instruction' => $request->input('instruction'),
+            'test_visible' => $request->has('share'),
+        ]);
+
+        return redirect('/test');
     }
 
     /**
@@ -120,7 +156,21 @@ class testMakerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $test = testbank::find($id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        
+        testMaker::where('testbank_id', $id)->delete();
+        $test->delete();
+
+        return back();
     }
 
     public function add_test_index(Request $request, string $id, string $test_type)

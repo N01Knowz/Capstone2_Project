@@ -137,7 +137,7 @@
                                     <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
                                         <p>Print</p>
                                     </button>
-                                    <form method="POST" action="/tf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                    <form method="POST" action="/test/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
                                         <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">

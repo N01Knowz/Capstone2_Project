@@ -140,48 +140,57 @@
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
                 </div>
-                <div class="test-questions-container">
-                    <div class="test-questions-table-container">
-                        <p class="test-question-label">Enumeration Answers</p>
-                        <table class="questions-table">
-                            <thead>
-                                <tr>
-                                    <th class="enumeration-questions-table-no-column">No.</th>
-                                    <th class="enumeration-questions-table-answer-column">Answer(s)</th>
-                                    <th class="enumeration-questions-table-sensitive-column">Case Sensitive</th>
-                                    <th class="enumeration-questions-table-buttons-column"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($questions as $question)
-                                <tr>
-                                    <td>
-                                        <p>{{$loop->iteration}}</p>
-                                    </td>
-                                    <td>
-                                        <p>{{$question->item_question}}</p>
-                                    </td>
-                                    <td>
-                                        <p>@if($question->option_1 == "0")
-                                            No
-                                            @else
-                                            Yes
-                                            @endif
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <form action="/enumeration/{{$question->id}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
-                                            @csrf
-                                            @method('delete')
-                                            <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">
-                                                <p>Delete</p>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <div class="test-maker-tests-container">
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                Essay Tests
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-content">
+                            hello
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                MCQ Tests
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                True or False Tests
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                Modified True or False Tests
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                Matching Type
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown()">
+                                Enumeration
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- <div class="criteria-point-container">
