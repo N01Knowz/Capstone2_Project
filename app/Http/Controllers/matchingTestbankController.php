@@ -7,6 +7,7 @@ use App\Models\testbank;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\questions;
+use Illuminate\Support\Facades\File;
 
 class matchingTestbankController extends Controller
 {
@@ -44,7 +45,14 @@ class matchingTestbankController extends Controller
      */
     public function create()
     {
-        return view('testbank.matching.matching_add');
+        $currentUserId = Auth::user()->id;
+        $uniqueSubjects = testbank::where('test_type', 'mtf')
+            ->where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+        return view('testbank.matching.matching_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 
     /**
@@ -56,6 +64,7 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
+            'question' => 'required',
             'instruction' => 'required',
         ]);
 
@@ -80,8 +89,9 @@ class matchingTestbankController extends Controller
             'user_id' => Auth::id(),
             'test_type' => 'matching',
             'test_title' => $request->input('title'),
-            'test_question' => '',
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
+            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
             'test_total_points' => 0,
             'test_visible' => $request->has('share'),
@@ -165,6 +175,7 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
+            'question' => 'required',
             'instruction' => 'required',
         ]);
 
@@ -182,6 +193,7 @@ class matchingTestbankController extends Controller
 
         $testbank->update([
             'test_title' => $request->input('title'),
+            'test_question' => $request->input('question'),
             'test_instruction' => $request->input('instruction'),
             'test_visible' => $request->has('share'),
         ]);
@@ -202,6 +214,15 @@ class matchingTestbankController extends Controller
         }
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
+        }
+
+        
+        $testImage = $test->test_image;
+        $imagePath = public_path('user_upload_images/' . $testImage);
+        if (File::exists($imagePath)) {
+            // Delete the image file
+            File::delete($imagePath);
+            // Optionally, you can also remove the image filename from the database or update the question record here
         }
 
 

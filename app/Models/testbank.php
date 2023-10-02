@@ -14,6 +14,7 @@ class testbank extends Model
         "test_type",
         "test_title",
         "test_question",
+        "test_subject",
         "test_instruction",
         "test_image",
         "test_total_points",

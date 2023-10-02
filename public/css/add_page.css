@@ -106,3 +106,31 @@
     width: 500px;
     margin-bottom: 10px;
 }
+
+#suggestions {
+    list-style: none;
+    width: 95%;
+    padding: 0.5%;
+    border: 1px solid #ccc;
+    background-color: white;
+    /* Background color */
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+
+#suggestions li {
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    /* Bottom border for each suggestion */
+}
+
+#suggestions li:last-child {
+    border-bottom: none;
+    /* Remove border for the last suggestion */
+}
+
+#suggestions li:hover {
+    background-color: lightgray;
+}
+

@@ -36,6 +36,7 @@
     align-items: center;
     flex-direction: column;
     font-weight: bold;
+    padding-bottom: 1.5em;
 }
 
 .questions-table {
@@ -137,22 +138,21 @@
 }
 
 .add-test-question-button {
-    margin-right: auto;
-    margin-top: 2em;
-    margin-bottom: 2em;
-    margin-left: 2em;
-    width: 20%;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    font-size: 1em;
+    background-color: var(--color1);
+    border-radius: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color1);
-    border: none;
-    border-radius: 25px;
-    font-weight: bold;
-    padding: 0.5em;
-    gap: 2%;
-    cursor: pointer;
+    gap: 3%;
+    width: 20em;
 }
+
 
 .add-test-question-button>img {
     height: 2em;

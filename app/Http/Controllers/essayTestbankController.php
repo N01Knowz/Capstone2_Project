@@ -45,7 +45,14 @@ class essayTestbankController extends Controller
      */
     public function create()
     {
-        return view('testbank.essay.essay_add');
+        $currentUserId = Auth::user()->id;
+        $uniqueSubjects = testbank::where('test_type', 'mtf')
+            ->where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+        return view('testbank.essay.essay_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 
     /**
@@ -82,7 +89,8 @@ class essayTestbankController extends Controller
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
+            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => $request->hasFile('imageInput') ? $randomName : null,
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
@@ -252,6 +260,15 @@ class essayTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testImage = $test->test_image;
+        $imagePath = public_path('user_upload_images/' . $testImage);
+        if (File::exists($imagePath)) {
+            // Delete the image file
+            File::delete($imagePath);
+            // Optionally, you can also remove the image filename from the database or update the question record here
+        }
+        
         questions::where('testbank_id', $id)->delete();
         $test->delete();
 

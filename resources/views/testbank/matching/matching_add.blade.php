@@ -56,8 +56,14 @@
                     <p>Enumeration</p>
                 </a>
             </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -65,7 +71,9 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -84,7 +92,7 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" action="/matching" class="test-body-content">
+            <form method="POST" action="/matching" class="test-body-content" id="add-form">
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
@@ -92,11 +100,19 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
-                @error('instruction')
+                <p class="text-input-label label-margin-top">Question<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="question" required></textarea>
+                @error('question')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
+                <p class="text-input-label label-margin-top">Instructions</p>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction" required></textarea>
+                <p class="text-input-label label-margin-top">Subject</p>
+                <div style="position: relative; width: 100%;">
+                    <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
+                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;" data-unique-subjects="{{ json_encode($uniqueSubjects) }}"></ul>
+                </div>
+                <p class="text-supported-format">Leave blank for no subject.</p>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
                     <p class="text-input-label">Share with other faculties</p>
@@ -125,13 +141,87 @@
                 @error('no_item')
                 <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
                 @enderror
-                <button class="save-test-button">Save Test</button>
+                <button class="save-test-button" id="save-quiz-button">Save Test</button>
             </form>
         </div>
     </div>
     </div>
     </div>
     <script>
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsList = document.getElementById('suggestions');
+
+        // Preload the suggestions from the data attribute
+        const suggestions = JSON.parse(suggestionsList.getAttribute('data-unique-subjects'));
+        // const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
+
+        // Create the list items for suggestions and hide them initially
+        const suggestionItems = suggestions.map(suggestion => {
+            const li = document.createElement('li');
+            li.textContent = suggestion;
+
+            li.style.display = 'none'; // Hide initially
+            suggestionsList.appendChild(li);
+
+            return li;
+        });
+
+        function updateSuggestions() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            const filteredSuggestions = suggestions.filter(suggestion =>
+                suggestion.toLowerCase().startsWith(searchTerm)
+            );
+
+            // Hide all suggestions by default
+            suggestionItems.forEach(item => (item.style.display = 'none'));
+
+            // Display filtered suggestions
+            if (filteredSuggestions.length > 0) {
+                filteredSuggestions.forEach(suggestion => {
+                    // Show only the suggestions that match the filter
+                    suggestionItems
+                        .filter(item => item.textContent === suggestion)
+                        .forEach(item => (item.style.display = 'block'));
+                });
+                suggestionsList.style.display = 'block'; // Show suggestions list
+            } else {
+                suggestionsList.style.display = 'none'; // Hide suggestions list
+            }
+        }
+
+        // Delegate the click event to the suggestionsList and set the input value when a suggestion is clicked
+        suggestionsList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.nodeName === 'LI') {
+                searchInput.value = target.textContent;
+                suggestionsList.style.display = 'none'; // Hide suggestions list
+            }
+        });
+
+        let blurTimer; // Initialize a timer variable
+        // Add this event listener to hide suggestions when the input loses focus
+        searchInput.addEventListener('blur', () => {
+            // Delay the blur event for 200 milliseconds (adjust as needed)
+            blurTimer = setTimeout(() => {
+                suggestionsList.style.display = 'none'; // Hide suggestions list
+            }, 100); // 200 milliseconds delay
+        });
+
+        // Listen for both input and focus events on the search input
+        searchInput.addEventListener('input', updateSuggestions);
+        searchInput.addEventListener('focus', updateSuggestions);
+        
+
+        var save_button = document.getElementById("save-quiz-button");
+
+        // Add a click event listener to the button
+        save_button.addEventListener("click", function() {
+            // Disable the button
+            save_button.disabled = true;
+            document.getElementById("add-form").submit();
+        });
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -140,7 +230,7 @@
                 dropdown.style.display = "none";
             }
         }
-       
+
 
         document.addEventListener("DOMContentLoaded", function() {
             const numChoicesInput = document.getElementById("numChoicesInput");

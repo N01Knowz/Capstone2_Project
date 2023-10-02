@@ -2,6 +2,7 @@
 .test-body {
     margin-left: 20%;
     width: 80%;
+    min-height: 90vh;
 }
 
 .test-body-header {
@@ -23,7 +24,7 @@
 }
 
 .add-test-button {
-    width: 100%;
+    width: 20em;
     height: 40px;
     padding: 0;
     margin: 0;
@@ -39,6 +40,19 @@
     align-items: center;
     gap: 3%;
 }
+
+
+.add-item-button>img {
+    height: 2em;
+}
+
+
+.add-item-button-container {
+    width: 65%;
+    display: flex;
+    gap: 2%;
+}
+
 
 .add-test-button-icon {
     height: 80%;

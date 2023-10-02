@@ -56,8 +56,14 @@
                     <p>Enumeration</p>
                 </a>
             </div>
-            <<div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
+            <div class="profile-container">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -65,86 +71,88 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
                         </form>
                     </div>
                 </div>
+            </div>
         </div>
-    </div>
-    <div class="test-body">
-        <div class="test-body-header">
-            <form method="get" action="mtf/create" class="add-test-button-anchor">
-                <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
-                    <p>Add New Test</p>
-                </button>
-            </form>
-            <form method="GET" action="" class="searchbar-container">
-                <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
-                <button class="search-button">Search</button>
-            </form>
-        </div>
-        <div class="test-body-content">
-            <table class="test-body-table">
-                <thead>
-                    <tr class="test-table-header">
-                        <th>Title</th>
-                        <th>Instruction</th>
-                        <th>Status</th>
-                        <th>Total point(s)</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Table content goes here -->
-                    @foreach ($tests as $test)
-                    @if ($test->test_active == 1)
-                    <tr id="test-question-description">
-                        <td class="test-body-column test-body-title" data-id="{{$test->id}}">
-                            <p>{{$test->test_title}}</p>
-                        </td>
-                        <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
-                            <p>{{$test->test_instruction}}</p>
-                        </td>
-                        <td class="test-body-column test-body-status" data-id="{{$test->id}}">
-                            <div>
-                                <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
-                            </div>
-                        </td>
-                        <td class="test-body-column test-body-points" data-id="{{$test->id}}">
-                            <div>
-                                <p>{{$test->test_total_points}}</p>
-                            </div>
-                        </td>
-                        <td class="test-body-buttons-column" id="test-bb">
-                            <div class="test-body-buttons-column-div">
-                                <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
-                                    <p>Add Question</p>
-                                </button>
-                                <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
-                                    <p>Edit</p>
-                                </button>
-                                <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                    <p>Print</p>
-                                </button>
-                                <form method="POST" action="/mtf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
-                                    @csrf
-                                    @method('delete')
-                                    <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
-                                        <p>Delete</p>
+        <div class="test-body">
+            <div class="test-body-header">
+                <form method="get" action="mtf/create" class="add-test-button-anchor">
+                    <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+                        <p>Add New Test</p>
+                    </button>
+                </form>
+                <form method="GET" action="" class="searchbar-container">
+                    <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
+                    <button class="search-button">Search</button>
+                </form>
+            </div>
+            <div class="test-body-content">
+                <table class="test-body-table">
+                    <thead>
+                        <tr class="test-table-header">
+                            <th>Title</th>
+                            <th>Instruction</th>
+                            <th>Status</th>
+                            <th>Subject</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table content goes here -->
+                        @foreach ($tests as $test)
+                        @if ($test->test_active == 1)
+                        <tr id="test-question-description">
+                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
+                                <p>{{$test->test_title}}</p>
+                            </td>
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
+                                <p>{{$test->test_instruction}}</p>
+                            </td>
+                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                                <div>
+                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
+                                </div>
+                            </td>
+                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
+                                <div>
+                                    <p>{{$test->test_subject}}</p>
+                                </div>
+                            </td>
+                            <td class="test-body-buttons-column" id="test-bb">
+                                <div class="test-body-buttons-column-div">
+                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
+                                        <p>Add Question</p>
                                     </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endif
-                    @endforeach
-                </tbody>
-            </table>
+                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                        <p>Edit</p>
+                                    </button>
+                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
+                                        <p>Print</p>
+                                    </button>
+                                    <form method="POST" action="/mtf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                                            <p>Delete</p>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
     </div>
     <script>
         function toggleDropdown() {

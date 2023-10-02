@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\testbank;
 use App\Models\questions;
-use DOMDocument;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -48,7 +47,14 @@ class tfTestbankController extends Controller
      */
     public function create()
     {
-        return view('testbank.tf.tf_add');
+        $currentUserId = Auth::user()->id;
+        $uniqueSubjects = testbank::where('test_type', 'mtf')
+            ->where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->pluck('test_subject')
+            ->toArray();
+        return view('testbank.tf.tf_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 
     /**
@@ -73,6 +79,7 @@ class tfTestbankController extends Controller
             'test_title' => $request->input('title'),
             'test_question' => '',
             'test_instruction' => $request->input('instruction'),
+            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
             'test_total_points' => 0,
             'test_visible' => $request->has('share'),
@@ -168,7 +175,21 @@ class tfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        questions::where('testbank_id', $id)->delete();
+        
+        $questions = questions::where('testbank_id', $id)->get();
+        foreach ($questions as $question) {
+
+            $questionImage = $question->question_image;
+            $imagePath = public_path('user_upload_images/' . $questionImage);
+            if (File::exists($imagePath)) {
+                // Delete the image file
+                File::delete($imagePath);
+
+                // Optionally, you can also remove the image filename from the database or update the question record here
+            }
+            $question->delete();
+        }
+        
         $test->delete();
         
         return back();
@@ -282,6 +303,15 @@ class tfTestbankController extends Controller
         $test = testbank::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
+        }
+        
+        $questionImage = $question->question_image;
+        $imagePath = public_path('user_upload_images/' . $questionImage);
+        if (File::exists($imagePath)) {
+            // Delete the image file
+            File::delete($imagePath);
+
+            // Optionally, you can also remove the image filename from the database or update the question record here
         }
 
         $question->delete();

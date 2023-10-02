@@ -34,7 +34,7 @@
             </div>
             <div class="add-item-modal-footer">
                 <div class="add-item-buttons-container">
-                    <button form="add_item_form" class="add-item-save-button add-item-modal-button">Save</button>
+                    <button form="add_item_form" class="add-item-save-button add-item-modal-button" id="save-quiz-button">Save</button>
                     <button id="add_item_close_button" class="add-item-close-button add-item-modal-button">Close</button>
                 </div>
             </div>
@@ -82,8 +82,14 @@
                     <p>Enumeration</p>
                 </a>
             </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -91,7 +97,9 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -108,6 +116,9 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+                        <p>Add Answer</p>
+                    </button>
                 </div>
             </div>
             <div class="test-body-content">
@@ -115,6 +126,7 @@
                     <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
                     <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
                     <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Question: <span class="test-profile-value">{{$test->test_question}}</span></p>
                 </div>
                 <div class="test-questions-container">
                     <div class="test-questions-table-container">
@@ -158,9 +170,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
-                            <p>Add Answer</p>
-                        </button>
                     </div>
                 </div>
                 <!-- <div class="criteria-point-container">
@@ -179,6 +188,15 @@
         </div>
     </div>
     <script>
+        var save_button = document.getElementById("save-quiz-button");
+
+        // Add a click event listener to the button
+        save_button.addEventListener("click", function() {
+            // Disable the button
+            save_button.disabled = true;
+            document.getElementById("add_item_form").submit();
+        });
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {

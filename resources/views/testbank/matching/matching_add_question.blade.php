@@ -56,8 +56,14 @@
                     <p>Enumeration</p>
                 </a>
             </div>
+            <div class="test-type" id="test-test" data-icon-id="test-icon">
+                <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
+                    <img src="/images/test-icon-light.png" class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Test</p>
+                </a>
+            </div>
             <div class="profile-container">
-                <img src="/images/profile.png" id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
@@ -65,7 +71,9 @@
                 <div class="setting-container">
                     <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
-                        <button class="setting-profile">Profile</button>
+                        <form action="/profile" method="get">
+                            <button class="setting-profile">Profile</button>
+                        </form>
                         <form action="/logout" method="POST" class="setting-logout-form">
                             @csrf
                             <button class="setting-logout">Log Out</button>
@@ -84,7 +92,7 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" class="test-body-content">
+            <form method="POST" class="test-body-content" id="add-form">
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
@@ -121,11 +129,21 @@
                 @error('item_text_1')
                 <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
                 @enderror
-                <button class="save-test-button">Save Quiz Item</button>
+                <button class="save-test-button" id="save-quiz-button">Save Quiz Item</button>
             </form>
         </div>
     </div>
     <script>
+        
+        var save_button = document.getElementById("save-quiz-button");
+
+        // Add a click event listener to the button
+        save_button.addEventListener("click", function() {
+            // Disable the button
+            save_button.disabled = true;
+            document.getElementById("add-form").submit();
+        });
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {
