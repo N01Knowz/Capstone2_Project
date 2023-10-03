@@ -211,7 +211,9 @@
                         </tr>
                     </tbody>
                 </table>
-
+                @error('criteria_1')
+                <div class="alert alert-danger red-asterisk">{{ $message }}</div>
+                @enderror
                 <div class="add-test-button-anchor">
                     <button class="save-test-button" id="save-quiz-button">Save Test</button>
                 </div>

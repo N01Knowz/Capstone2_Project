@@ -89,7 +89,7 @@ class essayTestbankController extends Controller
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => $request->hasFile('imageInput') ? $randomName : null,
             'test_total_points' => $request->input('total_points'),

@@ -84,6 +84,8 @@ class testMakerController extends Controller
     {
         $test = testbank::find($id);
 
+        $currentUserId = Auth::user()->id;
+
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -93,9 +95,24 @@ class testMakerController extends Controller
         }
         $questions = questions::where('testbank_id', '=', $id)
             ->get();
+
+        $allTestQuery = testMaker::from(DB::raw('test_makers AS tm'))
+            ->join('testbanks AS t', 't.id', '=', 'tm.test_id')
+            ->where('tm.testbank_id', $id)
+            ->get();
+
+        $allQuestionQuery = testMaker::join('questions', 'questions.id', '=', 'question_id')
+            ->join('testbanks AS t', 't.id', '=', 'questions.testbank_id')
+            ->where('test_makers.testbank_id', $id)
+            ->get();
+        // dd($allQuestionQuery->count());
+
+
         return view('testbank.test_maker.description', [
             'test' => $test,
             'questions' => $questions,
+            'allTestQuery' => $allTestQuery,
+            'allQuestionQuery' => $allQuestionQuery,
         ]);
     }
 
@@ -166,7 +183,7 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        
+
         testMaker::where('testbank_id', $id)->delete();
         $test->delete();
 

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/body.css">
     <link rel="stylesheet" href="/css/test_description.css">
     <link rel="stylesheet" href="/css/enumeration-test_description.css">
-    <link rel="stylesheet" href="/css/test_maker_description.css">
+    <link rel="stylesheet" href="/css/tm_description.css">
 </head>
 
 <body>
@@ -143,53 +143,188 @@
                 <div class="test-maker-tests-container">
                     <div class="test-maker-questions-container">
                         <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                Essay Tests
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-essay')">
+                                Essay Tests Questions
                                 <span class="dropdown-icon">▼</span>
                             </button>
                         </div>
-                        <div class="dropdown-content">
-                            hello
-                        </div>
-                    </div>
-                    <div class="test-maker-questions-container">
-                        <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                MCQ Tests
-                                <span class="dropdown-icon">▼</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="test-maker-questions-container">
-                        <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                True or False Tests
-                                <span class="dropdown-icon">▼</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="test-maker-questions-container">
-                        <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                Modified True or False Tests
-                                <span class="dropdown-icon">▼</span>
-                            </button>
+                        <div class="dropdown-content" id="dropdown-content-essay">
+                            @php
+                            $hasEssay = false;
+                            @endphp
+                            @foreach($allTestQuery as $testQuery)
+                            @if($testQuery->test_type == 'essay')
+                            @php
+                            $hasEssay = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$testQuery->test_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasEssay)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
                         </div>
                     </div>
                     <div class="test-maker-questions-container">
                         <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                Matching Type
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-mcq')">
+                                MCQ Tests Questions
                                 <span class="dropdown-icon">▼</span>
                             </button>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-content-mcq">
+                            @php
+                            $hasMCQ = false;
+                            @endphp
+                            @foreach($allQuestionQuery as $questionQuery)
+                            @if($questionQuery->test_type == 'mcq')
+                            @php
+                            $hasMCQ = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$questionQuery->item_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasMCQ)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
                         </div>
                     </div>
                     <div class="test-maker-questions-container">
                         <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" onclick="showDropdown()">
-                                Enumeration
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-tf')">
+                                True or False Tests Questions
                                 <span class="dropdown-icon">▼</span>
                             </button>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-content-tf">
+                            @php
+                            $hasTF = false;
+                            @endphp
+                            @foreach($allQuestionQuery as $questionQuery)
+                            @if($questionQuery->test_type == 'tf')
+                            @php
+                            $hasTF = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$questionQuery->item_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasTF)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-mtf')">
+                                Modified True or False Tests Questions
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-content-mtf">
+                            @php
+                            $hasMTF = false;
+                            @endphp
+                            @foreach($allQuestionQuery as $questionQuery)
+                            @if($questionQuery->test_type == 'mtf')
+                            @php
+                            $hasMTF = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$questionQuery->item_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasMTF)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-matching')">
+                                Matching Type Questions
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-content-matching">
+                            @php
+                            $hasMatching = false;
+                            @endphp
+                            @foreach($allTestQuery as $testQuery)
+                            @if($testQuery->test_type == 'matching')
+                            @php
+                            $hasMatching = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$testQuery->test_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasMatching)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="test-maker-questions-container">
+                        <div class="dropdown-header">
+                            <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-enumeration')">
+                                Enumeration Questions
+                                <span class="dropdown-icon">▼</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-content-enumeration">
+                            @php
+                            $hasEnum = false;
+                            @endphp
+                            @foreach($allTestQuery as $testQuery)
+                            @if($testQuery->test_type == 'enumeration')
+                            @php
+                            $hasEnum = true;
+                            @endphp
+                            <div class="dropdown-question-container">
+                                <div class="dropdown-question-content">
+                                    {{$testQuery->test_question}}
+                                </div>
+                                <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
+                            </div>
+                            @endif
+                            @endforeach
+                            @if(!$hasEnum)
+                            <p class="no-question-sentence">
+                                No questions added.
+                            </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -209,6 +344,15 @@
         </div>
     </div>
     <script>
+        function showDropdown(contentID) {
+            const content = document.getElementById(contentID);
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'flex';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+
         function toggleDropdown() {
             var dropdown = document.getElementById("dropdown-menu");
             if (dropdown.style.display === "none" || dropdown.style.display === "") {
