@@ -28,7 +28,7 @@
 
 .add-item-container {
     position: absolute;
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     display: none;
     z-index: 2;
     width: 100vw;
@@ -65,13 +65,13 @@
 }
 
 .add-item-modal-header-close {
-   margin-left: auto;
-   height: 60%;
-   cursor: pointer;
-   background-color: transparent;
-   border: none;
-   color: gray;
-   font-size: 1.5em;
+    margin-left: auto;
+    height: 60%;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: gray;
+    font-size: 1.5em;
 }
 
 .add-item-modal-body {
@@ -90,6 +90,10 @@
 
 .add-item-buttons-container {
     margin-right: 2em;
+}
+
+.add-item-buttons-container>button {
+    cursor: pointer;
 }
 
 .add-item-modal-button {

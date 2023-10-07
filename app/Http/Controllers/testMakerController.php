@@ -93,19 +93,33 @@ class testMakerController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
         $questions = questions::where('testbank_id', '=', $id)
             ->get();
 
         $allTestQuery = testMaker::from(DB::raw('test_makers AS tm'))
             ->join('testbanks AS t', 't.id', '=', 'tm.test_id')
             ->where('tm.testbank_id', $id)
+            ->select('t.*', 'tm.id as test_maker_ID')
             ->get();
+
+        // dd($allTestQuery);
 
         $allQuestionQuery = testMaker::join('questions', 'questions.id', '=', 'question_id')
             ->join('testbanks AS t', 't.id', '=', 'questions.testbank_id')
             ->where('test_makers.testbank_id', $id)
+            ->select('questions.*', 'test_type', 'test_makers.id as test_maker_ID')
             ->get();
-        // dd($allQuestionQuery->count());
+
+        // dd($allQuestionQuery);
+
+        $uniqueSubjects = testbank::where('user_id', $currentUserId)
+            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('test_subject')
+            ->select('test_subject')
+            ->get();
+
+        // dd($uniqueSubjects);
 
 
         return view('testbank.test_maker.description', [
@@ -113,6 +127,7 @@ class testMakerController extends Controller
             'questions' => $questions,
             'allTestQuery' => $allTestQuery,
             'allQuestionQuery' => $allQuestionQuery,
+            'subjects' => $uniqueSubjects,
         ]);
     }
 
@@ -222,8 +237,15 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        $allTestQuery = testbank::where('testbanks.test_type', '=', $test_type)
+        $allTestQuery = testbank::select('testbanks.id', 'test_type', 'test_title', 'test_question', 'test_instruction', 'test_subject')
+            ->addSelect(DB::raw('CASE WHEN tm.test_id IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'))
+            ->leftJoin('test_makers AS tm', function ($join)  use ($currentUserId){
+                $join->on('testbanks.id', '=', 'tm.test_id')
+                    ->where('testbanks.user_id', '=', $currentUserId);
+            })
+            ->where('testbanks.test_type', '=', $test_type)
             ->where('testbanks.user_id', '=', $currentUserId);
+
         if (in_array($test_type, ['essay', 'matching', 'enumeration'])) {
             foreach ($filterLabel as $key => $value) {
                 if ($request->input($key)) {
@@ -231,6 +253,7 @@ class testMakerController extends Controller
                 }
             }
         }
+
 
         if ($searchTitle) {
             $allTestQuery = $allTestQuery->where('test_title', 'LIKE', "%$searchTitle%");
@@ -242,11 +265,16 @@ class testMakerController extends Controller
         $allTestQuery = $allTestQuery->orderBy('testbanks.id', 'desc')
             ->get();
 
+        // dd($allTestQuery);
+
 
         // dd($allTestQuery);
 
         $allQuestionQuery = questions::from(DB::raw('questions AS q'))
             ->join('testbanks AS t', 't.id', '=', 'q.testbank_id')
+            ->leftJoin('test_makers AS tm', function ($join) {
+                $join->on('q.id', '=', 'tm.question_id');
+            })
             ->where('t.test_type', '=', $test_type)
             ->where('t.user_id', '=', $currentUserId);
 
@@ -268,6 +296,7 @@ class testMakerController extends Controller
 
         $allQuestionQuery = $allQuestionQuery->orderBy('t.id', 'desc')
             ->select('q.*', 't.test_title as test_title_alias', 't.test_subject as test_subject_alias')
+            ->addSelect(DB::raw('CASE WHEN tm.question_id IS NOT NULL THEN 1 ELSE 0 END AS in_test_makers'))
             ->get();
         // dd($allQuestionQuery);
 
@@ -292,7 +321,6 @@ class testMakerController extends Controller
     public function add_test_store(Request $request, string $id, string $test_type)
     {
         $test = testbank::find($id);
-        $currentUserId = Auth::user()->id;
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
 
         if (!in_array($test_type, $types_of_test)) {
@@ -331,5 +359,105 @@ class testMakerController extends Controller
         }
 
         return redirect('/test/' . $id);
+    }
+
+    public function random_test_store(Request $request, string $id, string $test_type)
+    {
+        $test = testbank::find($id);
+        $currentUserId = Auth::user()->id;
+        $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
+        $subjectFilter = $request->input('random_item_subject');
+        $numberOfRows = $request->input('random_item_number');
+
+        if (!in_array($test_type, $types_of_test)) {
+            abort(404, 'Page not found');
+        }
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $filterLabel = ['realistic_filter' => 'Realistic', 'investigative_filter' => 'Investigative', 'artistic_filter' => 'Artistic', 'social_filter' => 'Social', 'enterprising_filter' => 'Enterprising', 'conventional_filter' => 'Conventional'];
+
+
+        if (in_array($test_type, ['tf', 'mtf', 'mcq'])) {
+            $allQuestionQuery = questions::from(DB::raw('questions AS q'))
+                ->join('testbanks AS t', 't.id', '=', 'q.testbank_id')
+                ->where('t.test_type', '=', $test_type)
+                ->where('t.user_id', '=', $currentUserId)
+                ->leftJoin('test_makers AS tm', 'q.id', '=', 'tm.question_id')
+                ->whereNull('tm.question_id');
+
+
+            if ($subjectFilter) {
+                $allQuestionQuery = $allQuestionQuery->where('test_subject', $subjectFilter);
+            }
+            foreach ($filterLabel as $key => $value) {
+                if ($request->input($key)) {
+                    $allQuestionQuery = $allQuestionQuery->whereNotNull("$value");
+                }
+            }
+            $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->select('q.id')->get();
+            if ($allQuestionQuery->count() < $numberOfRows) {
+                return redirect()->back()->with('lackingRows', 'Not enough rows found.');
+            }
+
+            foreach ($allQuestionQuery as $question) {
+                testMaker::create([
+                    'testbank_id' => $id,
+                    'question_id' => $question->id,
+                ]);
+            }
+            return redirect('/test/' . $id);
+        } elseif (in_array($test_type, ['essay', 'enumeration', 'matching'])) {
+            $allTestQuery = testbank::where('testbanks.test_type', '=', $test_type)
+                ->where('testbanks.user_id', '=', $currentUserId)
+                ->leftJoin('test_makers AS tm', 'testbanks.id', '=', 'tm.test_id')
+                ->whereNull('tm.test_id');
+
+            if ($subjectFilter) {
+                $allTestQuery = $allTestQuery->where('test_subject', $subjectFilter);
+            }
+            foreach ($filterLabel as $key => $value) {
+                if ($request->input($key)) {
+                    $allTestQuery = $allTestQuery->whereNotNull("$value");
+                }
+            }
+            $allTestQuery = $allTestQuery->inRandomOrder()->limit($numberOfRows)->select('testbanks.id')->get();
+
+            if ($allTestQuery->count() < $numberOfRows) {
+                return redirect()->back()->with('lackingRows', 'Not enough rows found.');
+            }
+
+            foreach ($allTestQuery as $test) {
+                testMaker::create([
+                    'testbank_id' => $id,
+                    'test_id' => $test->id,
+                ]);
+            }
+
+            return redirect('/test/' . $id);
+        } else {
+            abort(404);
+        }
+    }
+    public function destroy_question(string $test_id, string $test_makerID)
+    {
+        $test = testbank::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        testMaker::where('id', $test_makerID)->delete();
+
+        return back();
     }
 }

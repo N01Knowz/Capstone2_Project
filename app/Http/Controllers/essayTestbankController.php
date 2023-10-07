@@ -46,12 +46,12 @@ class essayTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = testbank::where('test_type', 'mtf')
-            ->where('user_id', $currentUserId)
+        $uniqueSubjects = testbank::where('user_id', $currentUserId)
             ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
             ->distinct('test_subject')
             ->pluck('test_subject')
             ->toArray();
+
         return view('testbank.essay.essay_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
 

@@ -79,8 +79,10 @@ Route::post('/enumeration/{test_id}/create_question', [enumerationTestbankContro
 Route::delete('/enumeration/{question_id}/delete_question', [enumerationTestbankController::class, 'add_question_destroy']);
 
 Route::resource('test', testMakerController::class);
+Route::delete('/test/{test_id}/{test_maker_id}/delete', [testMakerController::class, 'destroy_question']);
 Route::get('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_index']);
 Route::post('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_store']);
+Route::post('/test/{test_id}/{test_type}/add', [testMakerController::class, 'random_test_store']);
 
 
 

@@ -108,7 +108,7 @@
                         <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;" data-unique-subjects="{{ json_encode($uniqueSubjects) }}"></ul>
                     </div>
                     <p class="text-supported-format">Leave blank for no subject.</p>
-                    <p class="text-input-label label-margin-top">Filter</p>
+                    <p class="text-input-label label-margin-top">Label</p>
                     <div class="filter-label-container">
                         <button type="button" class="filter-label-buttons {{ request('realistic_filter') ? 'chosen-label-button' : '' }}" onclick="triggerLabelFilter(this)" data-input="realistic_filter" id="realistic-button">Realistic</button>
                         <input type="hidden" value="{{ request('realistic_filter') ? '1' : '0' }}" id="realistic_filter" name="realistic_filter">
@@ -128,7 +128,6 @@
                     <button class="search-filter-button label-margin-top" form="filter_form">Search/Filter</button>
                     <button class="save-test-button" form="save_form">Save Item</button>
                 </div>
-
                 <form method="POST" id="save_form">
                     @csrf
                     @foreach($allTestQuery as $testQuery)
@@ -138,7 +137,7 @@
                                 {{$testQuery->test_title}}
                                 <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->id}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
                             </button>
-                            <input type="checkbox" name="test_checkbox_add[]" value="{{$testQuery->id}}" id="parent-checkbox-{{$testQuery->id}}" class="dropdown-checkbox" data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->id}}" @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf'])) onclick="toggleCheckboxes(this)"@endif>
+                            <input type="checkbox"value="{{$testQuery->id}}" id="parent-checkbox-{{$testQuery->id}}" class="dropdown-checkbox" data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->id}}"  @if(!$testQuery->in_test_makers) name="test_checkbox_add[]" @endif  @if($testQuery->in_test_makers) checked disabled @endif @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf'])) onclick="toggleCheckboxes(this)"@endif>
                         </div>
                         <div class="dropdown-content" id="{{'dropdown-content-' . $testQuery->id}}" style="background-color: white;">
                             @if($testQuery->test_type == 'essay')
@@ -237,7 +236,7 @@
                                 <button class="dropdown-question-title dropdown-question-title-child" type="button" data-dropdown-icon="{{'dropdown-icon-' . $testQuery->id}}" data-dropdown-id="{{'dropdown-content-' . $testQuery->id}}">
                                     <p class="text-input-label">Question: <span class="test-question-output">{{$questionQuery->item_question}}</span></p>
                                 </button>
-                                <input type="checkbox" class="dropdown-checkbox dropdown-questions-checkbox-{{$testQuery->id}}" data-parent-checkbox="parent-checkbox-{{$testQuery->id}}" onclick="updateSelectAllState(this)" name="question_checkbox_add[]" value="{{$questionQuery->id}}">
+                                <input type="checkbox" class="dropdown-checkbox  @if(!$questionQuery->in_test_makers) dropdown-questions-checkbox-{{$testQuery->id}} @endif" data-parent-checkbox="parent-checkbox-{{$testQuery->id}}" onclick="updateSelectAllState(this)" @if($questionQuery->in_test_makers) checked disabled @endif @if(!$questionQuery->in_test_makers) name="question_checkbox_add[]" @endif value="{{$questionQuery->id}}">
                             </div>
                             @endif
                             @endforeach
