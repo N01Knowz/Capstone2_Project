@@ -116,9 +116,11 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    @if(auth()->user()->id == $test->user_id)
                     <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
                         <p>Add Answer</p>
                     </button>
+                    @endif
                 </div>
             </div>
             <div class="test-body-content">
@@ -137,7 +139,9 @@
                                     <th class="enumeration-questions-table-no-column">No.</th>
                                     <th class="enumeration-questions-table-answer-column">Answer(s)</th>
                                     <th class="enumeration-questions-table-sensitive-column">Case Sensitive</th>
+                                    @if(auth()->user()->id == $test->user_id)
                                     <th class="enumeration-questions-table-buttons-column"></th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -157,6 +161,7 @@
                                             @endif
                                         </p>
                                     </td>
+                                    @if(auth()->user()->id == $test->user_id)
                                     <td>
                                         <form action="/enumeration/{{$question->id}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
                                             @csrf
@@ -166,6 +171,7 @@
                                             </button>
                                         </form>
                                     </td>
+                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>

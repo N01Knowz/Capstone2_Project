@@ -115,7 +115,7 @@
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
                     <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" readonly>
-                    <input type="file" id="imageInput" style="display:none;" name="imageInput">
+                    <input type="file" id="imageInput" style="display:none;" name="imageInput" accept="image/*">
                     <button class="text-input-image-button" type="button" id="clearButton" style="display: none;">Clear</button>
                     <button class="text-input-image-button" type="button" id="browseButton">Browse</button>
                 </div>
@@ -125,7 +125,7 @@
                 </div>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
-                    <p class="text-input-label">Share with other faculties</p>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <table class="criteria-points-table">
                     <thead>

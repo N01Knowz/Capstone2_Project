@@ -94,12 +94,13 @@ class tfTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
-        
-        
-        if(is_null($test)){
+        $isShared = $test->test_visible;
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id()) {
+        if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
         $questions = questions::where('testbank_id', '=', $id)

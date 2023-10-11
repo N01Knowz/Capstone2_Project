@@ -109,7 +109,7 @@
                 <textarea class="textinput-base textarea-instruction text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
                 <div class="share-container">
                     <input type="checkbox" @if($test->test_visible == '1') checked="true" @endif class="share-checkbox" name="share" >
-                    <p class="text-input-label">Share with other faculties</p>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">

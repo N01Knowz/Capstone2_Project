@@ -1,6 +1,4 @@
-<!-- @auth
-    @if($test)
-        @if(auth()->user()->id === $test->user_id) -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -108,9 +106,11 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    @if(auth()->user()->id == $test->user_id)
                     <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
                         <p>Add Test Item</p>
                     </button>
+                    @endif
                 </div>
             </div>
             <div class="test-body-content">
@@ -142,6 +142,7 @@
                                 </td>
                                 <td><input class="mt-inputs" readonly type="text" value="{{$question->item_question}}"></td>
                                 <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->question_point}}"></td>
+                                @if(auth()->user()->id == $test->user_id)
                                 <td class="buttons-column">
                                     <div class="questions-table-buttons-column-div">
                                         <form action="/matching/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
@@ -158,6 +159,7 @@
                                         </form>
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
@@ -210,10 +212,3 @@
 </body>
 
 </html>
-<!-- @else
-            @php abort(403); @endphp
-        @endif
-    @else 
-    @php abort(403, 'Test ownership information is missing.'); @endphp
-    @endif
-@endauth -->

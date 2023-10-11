@@ -125,12 +125,13 @@ class essayTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        $isShared = $test->test_visible;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id()) {
+        if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
         $question = questions::where('testbank_id', '=', $id)->first();
@@ -210,7 +211,7 @@ class essayTestbankController extends Controller
             'test_type' => 'essay',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_total_points' => $request->input('total_points'),
             'test_visible' => $request->has('share'),
             'test_active' => 1,

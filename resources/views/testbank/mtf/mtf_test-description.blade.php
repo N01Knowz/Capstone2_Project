@@ -89,9 +89,11 @@
                     </button>
                 </a>
                 <div class="searchbar-container">
+                    @if(auth()->user()->id == $test->user_id)
                     <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
                         <p>Add Test Item</p>
                     </button>
+                    @endif
                 </div>
             </div>
             <div class="test-body-content">
@@ -109,7 +111,9 @@
                                     <th class="questions-table-no-column">No.</th>
                                     <th class="questions-table-question-column">Question</th>
                                     <th class="questions-table-point-column">Point(s)</th>
+                                    @if(auth()->user()->id == $test->user_id)
                                     <th class="questions-table-buttons-column"></th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,6 +151,7 @@
                                     <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
                                         <p>{{$question->question_point + $question->explanation_point}}</p>
                                     </td>
+                                    @if(auth()->user()->id == $test->user_id)
                                     <td>
                                         <div class="questions-table-buttons-column-div">
                                             <form action="/mtf/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
@@ -163,6 +168,7 @@
                                             </form>
                                         </div>
                                     </td>
+                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>

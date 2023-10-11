@@ -84,6 +84,9 @@ Route::get('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test
 Route::post('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_store']);
 Route::post('/test/{test_id}/{test_type}/add', [testMakerController::class, 'random_test_store']);
 
+Route::get('/testpage', function(){
+    return view('testview');
+});
 
 
 require __DIR__.'/auth.php';

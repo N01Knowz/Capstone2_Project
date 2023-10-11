@@ -111,7 +111,7 @@
                 <p class="text-supported-format">Leave blank for no subject.</p>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
-                    <p class="text-input-label">Share with other faculties</p>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
@@ -196,10 +196,6 @@
             // Listen for both input and focus events on the search input
             searchInput.addEventListener('input', updateSuggestions);
             searchInput.addEventListener('focus', updateSuggestions);
-
-
-
-
 
 
             var save_button = document.getElementById("save-quiz-button");

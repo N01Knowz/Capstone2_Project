@@ -119,7 +119,7 @@
                         <img id="selectedImage" src="/user_upload_images/{{$test->test_image}}" alt="Selected Image" class="image-preview">
                     </div>
                 <div class="share-container">
-                    <input type="checkbox" class="share-checkbox" name="share" disabled>
+                    <input type="checkbox" class="share-checkbox" name="share" disabled @if($test->test_visible) checked @endif>
                     <p class="text-input-label">Share with other faculties</p>
                 </div>
                 <table class="criteria-points-table">
@@ -206,10 +206,11 @@
                         </tr>
                     </tbody>
                 </table>
-
+                @if(auth()->user()->id == $test->user_id)
                 <div class="add-test-button-anchor">
                     <button class="save-test-button">Edit Test</button>
                 </div>
+                @endif
             </form>
         </div>
     </div>

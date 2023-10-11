@@ -31,6 +31,7 @@ return new class extends Migration
             $table->longText('option_7')->nullable();
             $table->longText('option_8')->nullable();
             $table->longText('option_9')->nullable();
+            $table->longText('option_10')->nullable();
             $table->decimal('Realistic')->nullable();
             $table->decimal('Investigative')->nullable();
             $table->decimal('Artistic')->nullable();

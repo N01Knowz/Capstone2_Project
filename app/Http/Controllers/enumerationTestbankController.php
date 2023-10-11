@@ -65,7 +65,6 @@ class enumerationTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'question' => 'required',
-            'instruction' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -77,7 +76,7 @@ class enumerationTestbankController extends Controller
             'test_type' => 'enumeration',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
             'test_total_points' => 0,
@@ -94,11 +93,13 @@ class enumerationTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        $isShared = $test->test_visible;
+
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id()) {
+        if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
         $questions = questions::where('testbank_id', '=', $id)
@@ -137,7 +138,6 @@ class enumerationTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
             'question' => 'required',
         ]);
 
@@ -156,7 +156,7 @@ class enumerationTestbankController extends Controller
         $testbank->update([
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_visible' => $request->has('share'),
         ]);
 

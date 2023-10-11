@@ -115,7 +115,7 @@
                 <p class="text-supported-format">Leave blank for no subject.</p>
                 <div class="share-container">
                     <input type="checkbox" class="share-checkbox" name="share">
-                    <p class="text-input-label">Share with other faculties</p>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                 <input type="number" class="text-input-choices" value="{{ old('numChoicesInput') ? old('numChoicesInput') : 1 }}" id="numChoicesInput" name="numChoicesInput">
@@ -142,6 +142,15 @@
                 <div class="alert alert-danger red-asterisk">There should at least be 1 item</div>
                 @enderror
                 <button class="save-test-button" id="save-quiz-button">Save Test</button>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </form>
         </div>
     </div>

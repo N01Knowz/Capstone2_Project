@@ -85,12 +85,13 @@ class testMakerController extends Controller
         $test = testbank::find($id);
 
         $currentUserId = Auth::user()->id;
+        $isShared = $test->test_visible;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id()) {
+        if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
 

@@ -64,7 +64,6 @@ class matchingTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'question' => 'required',
-            'instruction' => 'required',
         ]);
 
         $hasAtLeastOneItemText = false;
@@ -89,7 +88,7 @@ class matchingTestbankController extends Controller
             'test_type' => 'matching',
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
             'test_image' => '',
             'test_total_points' => 0,
@@ -130,12 +129,14 @@ class matchingTestbankController extends Controller
     public function show(string $id)
     {
         $test = testbank::find($id);
+        $isShared = $test->test_visible;
+        // dd($test->user_id != Auth::id() && !$isShared);
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id()) {
+        if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
         $questions = questions::where('testbank_id', '=', $id)
@@ -175,7 +176,6 @@ class matchingTestbankController extends Controller
         $validator = Validator::make($input, [
             'title' => 'required',
             'question' => 'required',
-            'instruction' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -193,7 +193,7 @@ class matchingTestbankController extends Controller
         $testbank->update([
             'test_title' => $request->input('title'),
             'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction'),
+            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
             'test_visible' => $request->has('share'),
         ]);
 

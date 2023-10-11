@@ -110,7 +110,7 @@
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
                     <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" value="{{$test->test_image}}" readonly>
-                    <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $test->test_image }}">
+                    <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $test->test_image }}" accept="image/*">
                     <input type="hidden" name="imageChanged" id="imageChanged" value="0">
                     <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($test->test_image))
                         style="display: none;"
@@ -128,8 +128,8 @@
                     <img id="selectedImage" src="/user_upload_images/{{$test->test_image}}" alt="Selected Image" class="image-preview">
                 </div>
                 <div class="share-container">
-                    <input type="checkbox" class="share-checkbox" name="share">
-                    <p class="text-input-label">Share with other faculties</p>
+                    <input type="checkbox" class="share-checkbox" name="share" @if($test->test_visible) checked @endif>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <table class="criteria-points-table">
                     <thead>

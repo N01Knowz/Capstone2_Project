@@ -94,7 +94,7 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
-                <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
+                <p class="text-input-label">Title</p>
                 <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}">
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
@@ -105,7 +105,7 @@
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
                 <div class="share-container">
                     <input type="checkbox" @if($test->test_visible == '1') checked="true" @endif class="share-checkbox" name="share" >
-                    <p class="text-input-label">Share with other faculties</p>
+                    <p class="text-input-label">Share with other users</p>
                 </div>
                 <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
