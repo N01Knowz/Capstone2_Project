@@ -96,7 +96,7 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
+                <p class="text-input-label label-margin-top">Description<span class="red-asterisk"> *</span></p>
                 <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
                 @error('instruction')
                 <div style="position: relative;">

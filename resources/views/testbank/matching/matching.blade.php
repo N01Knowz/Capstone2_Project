@@ -154,9 +154,6 @@
                                     <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
-                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                        <p>Print</p>
-                                    </button>
                                     <form method="POST" action="/matching/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
@@ -197,7 +194,7 @@
             function handleRowClick(event) {
                 const clickedColumn = event.currentTarget;
                 const columnData = clickedColumn.getAttribute('data-id');
-                window.location.href = "matching/" + columnData;
+                window.location.href = "/matching/" + columnData;
             }
 
             const buttons = document.querySelectorAll(".buttons-edit-button");
@@ -206,7 +203,7 @@
             buttons.forEach(function(button) {
                 button.onclick = function() {
                     const dataID = this.getAttribute("data-id");
-                    window.location.href = "matching/" + dataID + "/edit";
+                    window.location.href = "/matching/" + dataID + "/edit";
                 }
             });
 

@@ -91,44 +91,44 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" action="/essay/{{$test->id}}" class="test-body-content" enctype="multipart/form-data">
+            <form method="POST" action="/essay/{{$test->essID}}" class="test-body-content" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required value="{{$test->test_title}}">
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" required value="{{$test->essTitle}}">
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Question<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="question" required>{{$test->test_question}}</textarea>
+                <textarea class="textinput-base textarea-question text-input-background" name="question" required>{{$test->essQuestion}}</textarea>
                 @error('question')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Instructions</p>
-                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
+                <textarea class="textinput-base textarea-instruction text-input-background" name="instruction">{{$test->essInstruction}}</textarea>
                 <p class="text-input-label label-margin-top">Attach an Image(Optional)</p>
                 <div>
-                    <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" value="{{$test->test_image}}" readonly>
-                    <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $test->test_image }}" accept="image/*">
+                    <input type="text" class="text-input-background text-input-attach-image" name="question_image" id="photoName" value="{{$test->essImage}}" readonly>
+                    <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $test->essImage }}" accept="image/*">
                     <input type="hidden" name="imageChanged" id="imageChanged" value="0">
-                    <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($test->test_image))
+                    <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($test->essImage))
                         style="display: none;"
                         @endunless>Clear</button>
-                    <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($test->test_image))
+                    <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($test->essImage))
                         style="display: none;"
                         @endunless>Browse</button>
                 </div>
                 <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                <div id="imageContainer" @if(is_null($test->test_image) || empty($test->test_image))
+                <div id="imageContainer" @if(is_null($test->essImage) || empty($test->essImage))
                     style="display: none;"
                     @else
                     style="display: flex;"
                     @endif class="image-preview-container">
-                    <img id="selectedImage" src="/user_upload_images/{{$test->test_image}}" alt="Selected Image" class="image-preview">
+                    <img id="selectedImage" src="/user_upload_images/{{$test->essImage}}" alt="Selected Image" class="image-preview">
                 </div>
                 <div class="share-container">
-                    <input type="checkbox" class="share-checkbox" name="share" @if($test->test_visible) checked @endif>
+                    <input type="checkbox" class="share-checkbox" name="share" @if($test->essIsPublic) checked @endif>
                     <p class="text-input-label">Share with other users</p>
                 </div>
                 <table class="criteria-points-table">
@@ -146,60 +146,60 @@
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" required placeholder="E.g Content" name="criteria_1" value="{{$question->item_question}}">
+                                    <input type="text" class="criteria-point-input criteria-input" required placeholder="E.g Content" name="criteria_1" value="{{$test->essCriteria1}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" required min="0" name="criteria_point_1" value="{{$question->question_point}}">
+                                    <input type="number" class="criteria-point-input point-input" required min="0" name="criteria_point_1" value="{{$test->essScore1}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_2" value="{{$question->option_1}}">
+                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_2" value="{{$test->essCriteria2}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_2" value="{{$question->option_2}}">
+                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_2" value="{{$test->essScore2}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_3" value="{{$question->option_3}}">
+                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_3" value="{{$test->essCriteria3}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_3" value="{{$question->option_4}}">
+                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_3" value="{{$test->essScore3}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_4" value="{{$question->option_5}}">
+                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_4" value="{{$test->essCriteria4}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_4" value="{{$question->option_6}}">
+                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_4" value="{{$test->essScore4}}">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="criteria-point-sub-container">
-                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_5" value="{{$question->option_7}}">
+                                    <input type="text" class="criteria-point-input criteria-input" placeholder="(Optional)" name="criteria_5" value="{{$test->essCriteria5}}">
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_5" value="{{$question->option_8}}">
+                                    <input type="number" class="criteria-point-input point-input" min="0" name="criteria_point_5" value="{{$test->essScore5}}">
                                 </div>
                             </td>
                         </tr>
@@ -209,7 +209,7 @@
                             </td>
                             <td>
                                 <div>
-                                    <input type="number" class="criteria-point-input point-input" id="total_points" min="0" name="total_points" value="{{$test->test_total_points}}" readonly>
+                                    <input type="number" class="criteria-point-input point-input" id="total_points" min="0" name="total_points" value="{{$test->essScoreTotal}}" readonly>
                                 </div>
                             </td>
                         </tr>

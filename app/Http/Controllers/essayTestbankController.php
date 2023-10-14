@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\testbank;
-use App\Models\questions;
+use App\Models\essays;
+use App\Models\subjects;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -23,17 +23,18 @@ class essayTestbankController extends Controller
         $search = $request->input('search');
 
         $currentUserId = Auth::user()->id;
-        $testsQuery = testbank::where('test_type', '=', 'essay')
-            ->where('user_id', '=', $currentUserId);
+        $testsQuery = essays::leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')
+            ->where('essays.user_id', '=', $currentUserId);
+
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
-                $query->where('test_title', 'LIKE', "%$search%")
-                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+                $query->where('essTitle', 'LIKE', "%$search%")
+                    ->orWhere('essInstruction', 'LIKE', "%$search%");
             });
         }
 
-        $tests = $testsQuery->orderBy('id', 'desc')
+        $tests = $testsQuery->orderBy('essID', 'desc')
             ->get();
         return view('testbank.essay.essay', [
             'tests' => $tests,
@@ -46,10 +47,10 @@ class essayTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = testbank::where('user_id', $currentUserId)
-            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('test_subject')
-            ->pluck('test_subject')
+        $uniqueSubjects = subjects::where('user_id', $currentUserId)
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
             ->toArray();
 
         return view('testbank.essay.essay_add', ['uniqueSubjects' => $uniqueSubjects]);
@@ -78,43 +79,84 @@ class essayTestbankController extends Controller
         $randomName = "";
         if ($request->hasFile('imageInput')) {
             do {
-                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
-                $existingImage = testbank::where('test_image', $randomName)->first();
+                $randomName = 'ess_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = essays::where('essImage', $randomName)->first();
             } while ($existingImage);
             $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
 
-        $testbank = testbank::create([
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subject = subjects::where('subjectName', $request->input('subject'))
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => $request->input('subject'),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
+
+        // $subject = subjects::where('subjectName', $request->input('subject'))
+        //     ->where('user_id', Auth::id())
+        //     ->first();
+
+        // $subjectID = null;
+
+        // if ($subject) {
+        //     $subjectID = $subject->subjectID;
+        // } else {
+        //     if ($request->input('subject')) {
+        //         // This block creates a subject with a custom name
+        //         $createSubject = subjects::create([
+        //             'subjectName' => $request->input('subject'),
+        //             'user_id' => Auth::id(),
+        //         ]);
+        //         $subjectID = $createSubject->subjectID;
+        //     } else {
+        //         $checkNoSubject = subjects::where('subjectName', 'No Subject')
+        //             ->where('user_id', Auth::id())
+        //             ->first();
+        //         if ($checkNoSubject) {
+        //             $subjectID = $checkNoSubject->subjectID;
+        //         } else {
+        //             // Changed variable name from $createNoSubject to $createSubject
+        //             $createNoSubject = subjects::create([
+        //                 'subjectName' => 'No Subject',
+        //                 'user_id' => Auth::id(),
+        //             ]);
+        //             $subjectID = $createNoSubject->subjectID;
+        //         }
+        //     }
+        // }
+
+
+        $testbank = essays::create([
             'user_id' => Auth::id(),
-            'test_type' => 'essay',
-            'test_title' => $request->input('title'),
-            'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
-            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
-            'test_image' => $request->hasFile('imageInput') ? $randomName : null,
-            'test_total_points' => $request->input('total_points'),
-            'test_visible' => $request->has('share'),
-            'test_active' => 1,
+            'subjectID' => $subjectID,
+            'essTitle' => $request->input('title'),
+            'essQuestion' => $request->input('question'),
+            'essInstruction' => $request->input('instruction') ? $request->input('instruction') : '',
+            'essCriteria1' => $request->input('criteria_1'),
+            'essScore1' => $request->input('criteria_point_1'),
+            'essCriteria2' => $request->input('criteria_2'),
+            'essScore2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
+            'essCriteria3' => $request->input('criteria_3'),
+            'essScore3' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
+            'essCriteria4' => $request->input('criteria_4'),
+            'essScore4' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
+            'essCriteria5' => $request->input('criteria_5'),
+            'essScore5' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
+            'essImage' => $request->hasFile('imageInput') ? $randomName : null,
+            'essScoreTotal' => $request->input('total_points'),
+            'essIsPublic' => $request->has('share'),
         ]);
-
-        $question = questions::create([
-            'testbank_id' => $testbank->id,
-            'question_active' => 1,
-            'item_question' => $request->input('criteria_1'),
-            'question_image' => null,
-            'choices_number' => 2,
-            'question_answer' => 0,
-            'question_point' => $request->input('criteria_point_1'),
-            'option_1' => $request->input('criteria_2'),
-            'option_2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
-            'option_3' => $request->input('criteria_3'),
-            'option_4' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
-            'option_5' => $request->input('criteria_4'),
-            'option_6' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
-            'option_7' => $request->input('criteria_5'),
-            'option_8' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
-        ]);
-
 
         return redirect('/essay');
     }
@@ -124,8 +166,8 @@ class essayTestbankController extends Controller
      */
     public function show(string $id)
     {
-        $test = testbank::find($id);
-        $isShared = $test->test_visible;
+        $test = essays::where('essID', $id)->first();
+        $isShared = $test->essIsPublic;
 
 
         if (is_null($test)) {
@@ -134,10 +176,8 @@ class essayTestbankController extends Controller
         if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
-        $question = questions::where('testbank_id', '=', $id)->first();
         return view('testbank.essay.essay_test-description', [
             'test' => $test,
-            'question' => $question,
         ]);
     }
 
@@ -146,8 +186,7 @@ class essayTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = testbank::find($id);
-        $question = questions::where('testbank_id', '=', $id)->first();
+        $test = essays::where('essID', $id)->first();
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
@@ -156,7 +195,6 @@ class essayTestbankController extends Controller
         }
         return view('testbank.essay.essay_edit', [
             'test' => $test,
-            'question' => $question,
         ]);
     }
 
@@ -166,7 +204,7 @@ class essayTestbankController extends Controller
     public function update(Request $request, string $id)
     {
         $input = $request->all();
-        $testbank = testbank::find($id);
+        $testbank = essays::where('essID', $id)->first();
         if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
@@ -186,10 +224,10 @@ class essayTestbankController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+
         $randomName = "";
         if ($request->input('imageChanged')) {
-            $testImage = $testbank->test_image;
+            $testImage = $testbank->essImage;
             $imagePath = public_path('user_upload_images/' . $testImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
@@ -199,50 +237,37 @@ class essayTestbankController extends Controller
             }
             if ($request->hasFile('imageInput')) {
                 do {
-                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
-                    $existingImage = testbank::where('test_image', $randomName)->first();
+                    $randomName = 'ess_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
+                    $existingImage = essays::where('essImage', $randomName)->first();
                 } while ($existingImage);
                 $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
             }
         }
 
         $dataToUpdate = [
-            'user_id' => $request->input('id'),
-            'test_type' => 'essay',
-            'test_title' => $request->input('title'),
-            'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
-            'test_total_points' => $request->input('total_points'),
-            'test_visible' => $request->has('share'),
-            'test_active' => 1,
+            'essTitle' => $request->input('title'),
+            'essQuestion' => $request->input('question'),
+            'essInstruction' => $request->input('instruction') ? $request->input('instruction') : '',
+            'essScoreTotal' => $request->input('total_points'),
+            'essIsPublic' => $request->has('share'),
+            'essCriteria1' => $request->input('criteria_1'),
+            'essScore1' => $request->input('criteria_point_1'),
+            'essCriteria2' => $request->input('criteria_2'),
+            'essScore2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
+            'essCriteria3' => $request->input('criteria_3'),
+            'essScore3' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
+            'essCriteria4' => $request->input('criteria_4'),
+            'essScore4' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
+            'essCriteria5' => $request->input('criteria_5'),
+            'essScore5' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
         ];
 
-        
+
         if ($request->input('imageChanged')) {
-            $dataToUpdate['test_image'] = $request->hasFile('imageInput') ? $randomName : null;
+            $dataToUpdate['essImage'] = $request->hasFile('imageInput') ? $randomName : null;
         }
 
         $testbank->update($dataToUpdate);
-
-
-        $question = questions::where('testbank_id', '=', $id)->first();
-
-        $question->update([
-            'question_active' => 1,
-            'item_question' => $request->input('criteria_1'),
-            'question_image' => $request->input('question_image', null),
-            'choices_number' => 2,
-            'question_answer' => 0,
-            'question_point' => $request->input('criteria_point_1'),
-            'option_1' => $request->input('criteria_2'),
-            'option_2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
-            'option_3' => $request->input('criteria_3'),
-            'option_4' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
-            'option_5' => $request->input('criteria_4'),
-            'option_6' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
-            'option_7' => $request->input('criteria_5'),
-            'option_8' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
-        ]);
 
         return redirect('/essay');
     }
@@ -252,8 +277,8 @@ class essayTestbankController extends Controller
      */
     public function destroy(string $id)
     {
-        $test = testbank::find($id);
-
+        $test = essays::where('essID', $id)->first();
+        // dd($test);
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -262,15 +287,14 @@ class essayTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $testImage = $test->test_image;
+        $testImage = $test->essImage;
         $imagePath = public_path('user_upload_images/' . $testImage);
         if (File::exists($imagePath)) {
             // Delete the image file
             File::delete($imagePath);
             // Optionally, you can also remove the image filename from the database or update the question record here
         }
-        
-        questions::where('testbank_id', $id)->delete();
+
         $test->delete();
 
         return back();

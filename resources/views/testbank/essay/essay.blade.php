@@ -110,12 +110,12 @@
                         <!-- Table content goes here -->
                         @foreach ($tests as $test)
                         <tr>
-                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
-                                <p>{{$test->test_title}}</p>
+                            <td class="test-body-column test-body-title" data-id="{{$test->essID}}">
+                                <p>{{$test->essTitle}}</p>
                             </td>
-                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
-                                <p>{{$test->test_instruction}}</p>
-                                <div class="question-labels">
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->essID}}">
+                                <p>{{$test->essInstruction}}</p>
+                                <!-- <div class="question-labels">
                                     @if(!is_null($test->Realistic))
                                     <div class="label r-label">Realistic</div>
                                     @endif
@@ -137,27 +137,24 @@
                                     @if($test->Unknown == 1)
                                     <div class="label u-label">Unknown</div>
                                     @endif
+                                </div> -->
+                            </td>
+                            <td class="test-body-column test-body-status" data-id="{{$test->essID}}">
+                                <div>
+                                    <p class="test-status-word">@if($test->essIsPublic == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
                                 </div>
                             </td>
-                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                            <td class="test-body-column test-body-points" data-id="{{$test->essID}}">
                                 <div>
-                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
-                                </div>
-                            </td>
-                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
-                                <div>
-                                    <p>{{$test->test_subject}}</p>
+                                    <p>{{$test->subjectName}}</p>
                                 </div>
                             </td>
                             <td class="test-body-buttons-column">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->essID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
-                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                        <p>Print</p>
-                                    </button>
-                                    <form method="POST" action="/tf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                    <form method="POST" action="/essay/{{$test->essID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
                                         <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
@@ -200,7 +197,7 @@
             function handleRowClick(event) {
                 const clickedColumn = event.currentTarget;
                 const columnData = clickedColumn.getAttribute('data-id');
-                window.location.href = "essay/" + columnData;
+                window.location.href = "/essay/" + columnData;
             }
 
             const buttons = document.querySelectorAll(".buttons-edit-button");
@@ -209,7 +206,7 @@
             buttons.forEach(function(button) {
                 button.onclick = function() {
                     const dataID = this.getAttribute("data-id");
-                    window.location.href = "essay/" + dataID + "/edit";
+                    window.location.href = "/essay/" + dataID + "/edit";
                 }
             });
 

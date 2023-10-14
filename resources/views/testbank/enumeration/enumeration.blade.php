@@ -154,9 +154,6 @@
                                     <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
-                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                        <p>Print</p>
-                                    </button>
                                     <form method="POST" action="/enumeration/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
@@ -197,7 +194,7 @@
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const columnData = clickedColumn.getAttribute('data-id');
-            window.location.href = "enumeration/" + columnData;
+            window.location.href = "/enumeration/" + columnData;
         }
 
         const columns = document.querySelectorAll('.test-body-column');
@@ -211,7 +208,7 @@
         buttons.forEach(function(button) {
             button.onclick = function() {
                 const dataID = this.getAttribute("data-id");
-                window.location.href = "enumeration/" + dataID + "/edit";
+                window.location.href = "/enumeration/" + dataID + "/edit";
             }
         });
     </script>

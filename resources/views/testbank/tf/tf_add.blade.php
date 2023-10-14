@@ -98,9 +98,9 @@
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
-                @error('instruction')
+                <p class="text-input-label label-margin-top">Description<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="description" required></textarea>
+                @error('description')
                 <div style="position: relative;">
                     <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
                     <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>

@@ -91,7 +91,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/tf/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/tf/{{$test->tfID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </a>
                 <div class="searchbar-container">
@@ -99,42 +99,42 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->tfTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->tfDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->tfTotal}}</span></p>
                 </div>
-                <form method="POST" action="/tf/{{$test->id}}/{{$question->id}}/edit" class="test-add-question-container" enctype="multipart/form-data">
+                <form method="POST" action="/tf/{{$test->tfID}}/{{$question->itmID}}/edit" class="test-add-question-container" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input" name="item_question">{{$question->item_question}}</textarea>
+                    <textarea class="text-input" name="item_question">{{$question->itmQuestion}}</textarea>
                     @error('item_question')
                     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
-                        <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $question->question_image }}" accept="image/*">
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->itmImage}}" readonly>
+                        <input type="file" id="imageInput" style="display: none;" name="imageInput" value="{{ $question->itmImage }}" accept="image/*">
                         <input type="hidden" name="imageChanged" id="imageChanged" value="0">
-                        <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($question->question_image))
+                        <button class="text-input-image-button" type="button" id="clearButton" @unless(!is_null($question->itmImage))
                             style="display: none;"
                             @endunless>Clear</button>
-                        <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($question->question_image))
+                        <button class="text-input-image-button" type="button" id="browseButton" @unless(is_null($question->itmImage))
                             style="display: none;"
                             @endunless>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                    <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
+                    <div id="imageContainer" @if(is_null($question->itmImage) || empty($question->itmImage))
                         style="display: none;"
                         @else
                         style="display: flex;"
                         @endif class="image-preview-container">
-                        <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
+                        <img id="selectedImage" src="/user_upload_images/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
                     </div>
                     <div id="optionsContainer">
                         @for($i = 1; $i <= $question->choices_number; $i++)
                             <p class="text-input-label">Option {{$i}}</p>
-                            <textarea class="summernote" name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'option_' . $i )}}</textarea>
+                            <textarea class="summernote" name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'itmOption' . $i )}}</textarea>
                             @error('option_1')
                             <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                             @enderror
@@ -145,13 +145,13 @@
                             <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
                             <select class="select-option" id="option-select" name="question_answer">
                                 @for($i = 1; $i <= $question->choices_number; $i++)
-                                    <option value="{{$i}}" @if($i==$question->question_answer) selected @endif>Option {{$i}}</option>
+                                    <option value="{{$i}}" @if($i==$question->itmAnswer) selected @endif>Option {{$i}}</option>
                                     @endfor
                             </select>
                         </div>
                         <div class="item-point-container">
                             <p class="text-input-label">Item Point(s) <span class="red-asterisk">*</span></p>
-                            <input type="text" class="point-input" value="{{$question->question_point}}" name="question_point">
+                            <input type="text" class="point-input" value="{{$question->itmPoints}}" name="question_point">
                         </div>
                     </div>
                     <button class="save-test-button">Save Quiz Item</button>

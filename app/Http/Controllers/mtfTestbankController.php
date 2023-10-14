@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\testbank;
+use App\Models\mtftests;
+use App\Models\mtfitems;
+use App\Models\subjects;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\Models\questions;
 use DOMDocument;
 use Illuminate\Support\Facades\File;
 
@@ -24,8 +25,8 @@ class mtfTestbankController extends Controller
         $search = $request->input('search');
 
         $currentUserId = Auth::user()->id;
-        $testsQuery = testbank::where('test_type', '=', 'mtf')
-            ->where('user_id', '=', $currentUserId);
+        $testsQuery = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
+            ->where('mtftests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
@@ -34,7 +35,7 @@ class mtfTestbankController extends Controller
             });
         }
 
-        $tests = $testsQuery->orderBy('id', 'desc')
+        $tests = $testsQuery->orderBy('mtfID', 'desc')
             ->get();
 
         return view('testbank.mtf.mtf', [
@@ -48,10 +49,10 @@ class mtfTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = testbank::where('user_id', $currentUserId)
-            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('test_subject')
-            ->pluck('test_subject')
+        $uniqueSubjects = subjects::where('user_id', $currentUserId)
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
             ->toArray();
         return view('testbank.mtf.mtf_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
@@ -65,24 +66,36 @@ class mtfTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::create([
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subject = subjects::where('subjectName', $request->input('subject'))
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => $request->input('subject'),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
+        mtftests::create([
             'user_id' => Auth::id(),
-            'test_type' => 'mtf',
-            'test_title' => $request->input('title'),
-            'test_question' => '',
-            'test_instruction' => $request->input('instruction'),
-            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
-            'test_image' => '',
-            'test_total_points' => 0,
-            'test_visible' => $request->has('share'),
-            'test_active' => 1,
+            'mtfTitle' => $request->input('title'),
+            'mtfDescription' => $request->input('description'),
+            'subjectID' => $subjectID,
+            'mtfIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/mtf');
@@ -93,7 +106,7 @@ class mtfTestbankController extends Controller
      */
     public function show(string $id)
     {
-        $test = testbank::find($id);
+        $test = mtftests::find($id);
         $isShared = $test->test_visible;
 
 
@@ -103,7 +116,7 @@ class mtfTestbankController extends Controller
         if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
-        $questions = questions::where('testbank_id', '=', $id)
+        $questions = mtfitems::where('mtfID', '=', $id)
             ->get();
         return view('testbank.mtf.mtf_test-description', [
             'test' => $test,
@@ -116,8 +129,7 @@ class mtfTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = testbank::find($id);
-
+        $test = mtftests::find($id);
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -146,7 +158,7 @@ class mtfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::find($id);
+        $testbank = mtftests::find($id);
         if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
@@ -155,9 +167,9 @@ class mtfTestbankController extends Controller
         }
 
         $testbank->update([
-            'test_title' => $request->input('title'),
-            'test_instruction' => $request->input('instruction'),
-            'test_visible' => $request->has('share'),
+            'mtfTitle' => $request->input('title'),
+            'mtfDescription' => $request->input('instruction'),
+            'mtfIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/mtf');
@@ -168,7 +180,7 @@ class mtfTestbankController extends Controller
      */
     public function destroy(string $id)
     {
-        $test = testbank::find($id);
+        $test = mtftests::find($id);
 
 
         if (is_null($test)) {
@@ -179,7 +191,7 @@ class mtfTestbankController extends Controller
         }
 
 
-        $questions = questions::where('testbank_id', $id)->get();
+        $questions = mtfitems::where('mtfID', $id)->get();
         foreach ($questions as $question) {
 
             $questionImage = $question->question_image;
@@ -199,7 +211,7 @@ class mtfTestbankController extends Controller
     }
     public function add_question_index(string $test_id)
     {
-        $test = testbank::find($test_id);
+        $test = mtftests::find($test_id);
 
 
         if (is_null($test)) {
@@ -215,7 +227,7 @@ class mtfTestbankController extends Controller
 
     public function add_question_show(string $test_id, string $question_id)
     {
-        $test = testbank::find($test_id);
+        $test = mtftests::find($test_id);
 
 
         if (is_null($test)) {
@@ -224,7 +236,7 @@ class mtfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $question = questions::find($question_id);
+        $question = mtfitems::find($question_id);
 
         return view('testbank.mtf.mtf_question_description', [
             'test' => $test,
@@ -237,7 +249,7 @@ class mtfTestbankController extends Controller
     public function add_question_store(Request $request, string $test_id)
     {
         $input = $request->all();
-        $test = testbank::find($test_id);
+        $test = mtftests::find($test_id);
 
 
         if (is_null($test)) {
@@ -261,49 +273,47 @@ class mtfTestbankController extends Controller
         $randomName = "";
         if ($request->hasFile('imageInput')) {
             do {
-                $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
-                $existingImage = questions::where('question_image', $randomName)->first();
+                $randomName = 'mtf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
+                $existingImage = mtfitems::where('question_image', $randomName)->first();
             } while ($existingImage);
             $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
         }
 
 
-        $question = questions::create([
-            'testbank_id' => $test_id,
-            'question_active' => 1,
-            'item_question' => $request->input('item_question'),
-            'question_image' => $request->hasFile('imageInput') ? $randomName : null,
+        $question = mtfitems::create([
+            'mtfID' => $test_id,
+            'itmQuestion' => $request->input('item_question'),
+            'itmImage' => $request->hasFile('imageInput') ? $randomName : null,
             'choices_number' => 2,
-            'question_answer' => $request->input('question_answer'),
-            'question_point' => $request->input('question_point'),
-            'explanation_point' => $request->input('explanation_point'),
+            'itmAnswer' => $request->input('question_answer'),
+            'itmPoints1' => $request->input('question_point'),
+            'itmPoints2' => $request->input('explanation_point'),
+            'itmPointsTotal' => $request->input('total_points'),
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
             $option = $request->input('option_' . $i);
-
-
             $question->update([
-                'option_' . $i => $option,
+                'itmOption' . $i => $option,
             ]);
         }
 
-        $questions = questions::where("testbank_id", "=", $test_id)->get();
+        $questions = mtfitems::where("mtfID", "=", $test_id)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_question_points = $question->itmPoints1 + $question->itmPoints2;
             $total_points += $total_question_points;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtfTotal' => $total_points,
         ]);
 
         return redirect('/mtf/' . $test_id);
 
-        // $test = testbank::find($test_id);
+        // $test = mtftests::find($test_id);
         // return view('testbank/mtf/mtf_add_question', [
         //     'test' => $test,
         // ]);
@@ -311,16 +321,16 @@ class mtfTestbankController extends Controller
 
     public function add_question_destroy(string $id)
     {
-        $question = questions::find($id);
+        $question = mtfitems::find($id);
         if (is_null($question)) {
             abort(404); // User does not own the test
         }
-        $test = testbank::find($question->testbank_id);
+        $test = mtftests::find($question->testbank_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
 
-        $questionImage = $question->question_image;
+        $questionImage = $question->itmImage;
         $imagePath = public_path('user_upload_images/' . $questionImage);
         if (File::exists($imagePath)) {
             // Delete the image file
@@ -331,17 +341,17 @@ class mtfTestbankController extends Controller
 
         $question->delete();
 
-        $questions = questions::where("testbank_id", "=", $test->id)->get();
+        $questions = mtfitems::where("testbank_id", "=", $test->id)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_question_points = $question->itmPoints1 + $question->itmPoints2;
             $total_points += $total_question_points;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtfTotal' => $total_points,
         ]);
 
         return back();
@@ -349,7 +359,7 @@ class mtfTestbankController extends Controller
 
     public function add_question_edit(string $test_id, string $question_id)
     {
-        $test = testbank::find($test_id);
+        $test = mtftests::find($test_id);
 
 
         if (is_null($test)) {
@@ -358,20 +368,18 @@ class mtfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $question = questions::find($question_id);
+        $question = mtfitems::find($question_id);
 
         return view('testbank.mtf.mtf_edit_question', [
             'test' => $test,
             'question' => $question,
         ]);
-
-        return back();
     }
 
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
         $input = $request->all();
-        $test = testbank::find($test_id);
+        $test = mtftests::find($test_id);
 
 
         if (is_null($test)) {
@@ -393,7 +401,7 @@ class mtfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $question = questions::find($question_id);
+        $question = mtfitems::find($question_id);
 
         $randomName = "";
         if ($request->input('imageChanged')) {
@@ -407,39 +415,40 @@ class mtfTestbankController extends Controller
             }
             if ($request->hasFile('imageInput')) {
                 do {
-                    $randomName = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
-                    $existingImage = questions::where('question_image', $randomName)->first();
+                    $randomName = 'mtf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
+                    $existingImage = mtfitems::where('itmImage', $randomName)->first();
                 } while ($existingImage);
                 $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
             }
         }
 
         $dataToUpdate = [
-            'item_question' => $request->input('item_question'),
+            'itmQuestion' => $request->input('item_question'),
             'choices_number' => 2,
-            'question_answer' => $request->input('question_answer'),
-            'question_point' => $request->input('question_point'),
-            'explanation_point' => $request->input('explanation_point'),
+            'itmAnswer' => $request->input('question_answer'),
+            'itmPoints1' => $request->input('question_point'),
+            'itmPoints2' => $request->input('explanation_point'),
+            'itmPointsTotal' => $request->input('explanation_point') + $request->input('question_point'),
         ];
 
 
         if ($request->input('imageChanged')) {
-            $dataToUpdate['question_image'] = $request->hasFile('imageInput') ? $randomName : null;
+            $dataToUpdate['itmImage'] = $request->hasFile('imageInput') ? $randomName : null;
         }
 
         $question->update($dataToUpdate);
 
-        $questions = questions::where("testbank_id", "=", $test_id)->get();
+        $questions = mtfitems::where("mtfID", "=", $test_id)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_question_points = $question->question_point + $question->explanation_point;
+            $total_question_points = $question->itmPoints1 + $question->itmPoints2;
             $total_points += $total_question_points;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtfTotal' => $total_points,
         ]);
 
         return redirect('/mtf/' . $test_id);

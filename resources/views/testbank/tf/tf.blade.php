@@ -99,7 +99,7 @@
                     <thead>
                         <tr class="test-table-header">
                             <th>Title</th>
-                            <th>Instruction</th>
+                            <th>Description</th>
                             <th>Status</th>
                             <th>Subject</th>
                             <th></th>
@@ -108,36 +108,37 @@
                     <tbody>
                         <!-- Table content goes here -->
                         @foreach ($tests as $test)
-                        @if ($test->test_active == 1)
                         <tr id="test-question-description">
-                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
-                                <p>{{$test->test_title}}</p>
+                            <td class="test-body-column test-body-title" data-id="{{$test->tfID}}">
+                                <p>{{$test->tfTitle}}</p>
                             </td>
-                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
-                                <p>{{$test->test_instruction}}</p>
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->tfID}}">
+                                <p>{{$test->tfDescription}}</p>
                             </td>
-                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                            <td class="test-body-column test-body-status" data-id="{{$test->tfID}}">
                                 <div>
-                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
+                                    <p class="test-status-word">@if($test->tfIsPublic == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
                                 </div>
                             </td>
-                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
+                            <td class="test-body-column test-body-points" data-id="{{$test->tfID}}">
                                 <div>
-                                    <p>{{$test->test_subject}}</p>
+                                    <p>{{$test->subjectName}}</p>
                                 </div>
                             </td>
                             <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->id}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-add-question-button" id="test-add-question" data-id="{{$test->tfID}}"><img src="/images/add-test-icon.png" class="test-body-buttons-icons">
                                         <p>Add Question</p>
                                     </button>
-                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->tfID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
-                                    <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                        <p>Print</p>
-                                    </button>
-                                    <form method="POST" action="/tf/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                    <form method="GET" action="/print/{{$test->tfID}}" class="button-delete-form" target="_blank">
+                                        <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
+                                            <p>Print</p>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="/tf/{{$test->tfID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
                                         <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
@@ -147,7 +148,6 @@
                                 </div>
                             </td>
                         </tr>
-                        @endif
                         @endforeach
                     </tbody>
                 </table>
@@ -176,13 +176,13 @@
 
         document.getElementById("test-add-question").onclick = function() {
             const dataID = this.getAttribute("data-id")
-            window.location.href = "tf/" + dataID + "/create_question";
+            window.location.href = "/tf/" + dataID + "/create_question";
         }
 
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const columnData = clickedColumn.getAttribute('data-id');
-            window.location.href = "tf/" + columnData;
+            window.location.href = "/tf/" + columnData;
         }
 
         const columns = document.querySelectorAll('.test-body-column');
@@ -196,7 +196,7 @@
         buttons.forEach(function(button) {
             button.onclick = function() {
                 const dataID = this.getAttribute("data-id");
-                window.location.href = "tf/" + dataID + "/edit";
+                window.location.href = "/tf/" + dataID + "/edit";
             }
         });
     </script>

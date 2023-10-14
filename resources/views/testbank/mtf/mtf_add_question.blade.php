@@ -91,7 +91,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mtf/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/mtf/{{$test->mtfID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -101,11 +101,11 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->mtfTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->mtfDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->mtfTotal}}</span></p>
                 </div>
-                <form method="POST" action="/mtf/{{$test->id}}/create_question" class="test-add-question-container" enctype="multipart/form-data" id="add-form">
+                <form method="POST" action="/mtf/{{$test->mtfID}}/create_question" class="test-add-question-container" enctype="multipart/form-data" id="add-form">
                     @csrf
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
                     <textarea class="text-input" name="item_question"></textarea>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="item-point-container">
                             <p class="text-input-label">Total Point(s) <span class="red-asterisk">*</span></p>
-                            <input type="text" class="point-input" value="0" readonly id="total-points">
+                            <input type="text" class="point-input" value="0" readonly id="total-points" name="total_points">
                         </div>
                     </div>
                     @error('explanation_point')

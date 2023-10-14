@@ -91,7 +91,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/mtf/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/mtf/{{$test->mtfID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button" ><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -101,34 +101,34 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->mtfTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->mtfDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->mtfTotal}}</span></p>
                 </div>
                 <div class="test-add-question-container">
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
-                    <textarea class="text-input" name="item_question" readonly>{{$question->item_question}}</textarea>
+                    <textarea class="text-input" name="item_question" readonly>{{$question->itmQuestion}}</textarea>
                     @error('item_question')
                     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                     @enderror
                     <p class="text-input-label">Attach an Image(Optional)</p>
                     <div>
-                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->question_image}}" readonly>
+                        <input type="text" class="text-input-attach-image" name="question_image" id="photoName" value="{{$question->itmImage}}" readonly>
                         <button class="text-input-image-button" type="button" id="browseButton" disabled>Browse</button>
                     </div>
                     <p class="text-supported-format">Supported formats: .jpg, .png, .gif</p>
-                    <div id="imageContainer" @if(is_null($question->question_image) || empty($question->question_image))
+                    <div id="imageContainer" @if(is_null($question->itmImage) || empty($question->itmImage))
                         style="display: none;"
                         @else
                         style="display: flex;"
                         @endif class="image-preview-container">
-                        <img id="selectedImage" src="/user_upload_images/{{$question->question_image}}" alt="Selected Image" class="image-preview">
+                        <img id="selectedImage" src="/user_upload_images/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
                     </div>
                     <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
                     @for($i = 1; $i <= $question->choices_number; $i++)
                         <div id="optionsContainer">
                             <p class="text-input-label">Option {{$i}}</p>
-                            <textarea class="summernote" readonly disabled name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'option_' . $i )}}</textarea>
+                            <textarea class="summernote" readonly disabled name="option_{{$i}}" id="option_{{$i}}">{{data_get($question, 'itmOption' . $i )}}</textarea>
                             @error('option_1')
                             <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                             @enderror
@@ -137,24 +137,24 @@
                         <div class="item-answer-points-container">
                             <div class="correct-answer-container">
                                 <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
-                                <input class="select-option" type="text" readonly value="Option {{$question->question_answer}}">
+                                <input class="select-option" type="text" readonly value="Option {{$question->itmAnswer}}">
                             </div>
                             <div class="item-point-container">
                                 <p class="text-input-label">Item Point(s) <span class="red-asterisk">*</span></p>
-                                <input type="text" class="point-input" id="point-input" value="{{$question->question_point}}" name="question_point" readonly>
+                                <input type="text" class="point-input" id="point-input" value="{{$question->itmPoints1}}" name="question_point" readonly>
                             </div>
                         </div>
                         <div class="item-answer-points-container">
                             <div class="correct-answer-container">
                                 <p class="text-input-label">Explanation Point(s) <span class="red-asterisk">*</span></p>
-                                <input type="text" class="select-option" value="{{$question->explanation_point}}" id="explanation-points" name="explanation_point" readonly>
+                                <input type="text" class="select-option" value="{{$question->itmPoints2}}" id="explanation-points" name="explanation_point" readonly>
                             </div>
                             <div class="item-point-container">
                                 <p class="text-input-label">Total Point(s) <span class="red-asterisk">*</span></p>
-                                <input type="text" class="point-input" value="{{$question->explanation_point + $question->question_point}}" readonly id="total-points" readonly>
+                                <input type="text" class="point-input" value="{{$question->itmPointsTotal}}" readonly id="total-points" readonly>
                             </div>
                         </div>
-                        <button class="save-test-button" id="edit-quiz-button" data-page="/mtf/{{$test->id}}/{{$question->id}}/edit">Edit Quiz Item</button>
+                        <button class="save-test-button" id="edit-quiz-button" data-page="/mtf/{{$test->mtfID}}/{{$question->itmID}}/edit">Edit Quiz Item</button>
                 </div>
             </div>
         </div>

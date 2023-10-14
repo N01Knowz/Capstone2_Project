@@ -98,9 +98,9 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->qzTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->qzDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->qzTotal}}</span></p>
                 </div>
                 <div class="test-questions-container">
                     <div class="test-questions-table-container">
@@ -119,12 +119,12 @@
                             <tbody>
                                 @foreach($questions as $question)
                                 <tr id="test-question-item-description">
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
+                                    <td class="question-description" data-test-id="{{$test->qzID}}" data-question-id="{{$question->itmID}}">
                                         <p>{{ $loop->index + 1}}</p>
                                     </td>
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->item_question}}</p>
-                                        <div class="question-labels">
+                                    <td class="question-description" data-test-id="{{$test->qzID}}" data-question-id="{{$question->itmID}}">
+                                        <p>{{$question->itmQuestion}}</p>
+                                        <!-- <div class="question-labels">
                                             @if(!is_null($question->Realistic))
                                             <div class="label r-label">Realistic</div>
                                             @endif
@@ -146,21 +146,21 @@
                                             @if($question->Unknown == 1)
                                             <div class="label u-label">Unknown</div>
                                             @endif
-                                        </div>
+                                        </div> -->
                                     </td>
-                                    <td class="question-description" data-test-id="{{$test->id}}" data-question-id="{{$question->id}}">
-                                        <p>{{$question->question_point}}</p>
+                                    <td class="question-description" data-test-id="{{$test->qzID}}" data-question-id="{{$question->itmID}}">
+                                        <p>{{$question->itmPoints}}</p>
                                     </td>
                                     @if(auth()->user()->id == $test->user_id)
                                     <td>
                                         <div class="questions-table-buttons-column-div">
 
-                                            <form action="/mcq/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                            <form action="/mcq/{{$test->qzID}}/{{$question->itmID}}/edit" method="GET" class="question-table-button-form">
                                                 <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
                                                     <p>Edit</p>
                                                 </button>
                                             </form>
-                                            <form action="/mcq/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                            <form action="/mcq/{{$question->itmID}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
                                                 @csrf
                                                 @method('delete')
                                                 <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">

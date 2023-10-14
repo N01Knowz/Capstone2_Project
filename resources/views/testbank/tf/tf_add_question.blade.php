@@ -91,7 +91,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/tf/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/tf/{{$test->tfID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">Back</button>
                 </a>
                 <div class="searchbar-container">
@@ -99,11 +99,11 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->tfTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->tfDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->tfTotal}}</span></p>
                 </div>
-                <form method="POST" action="/tf/{{$test->id}}/create_question" class="test-add-question-container" enctype="multipart/form-data" id="add-form">
+                <form method="POST" action="/tf/{{$test->tfID}}/create_question" class="test-add-question-container" enctype="multipart/form-data" id="add-form">
                     @csrf
                     <p class="text-input-label">Item Question <span class="red-asterisk">*</span></p>
                     <textarea class="text-input" name="item_question"></textarea>

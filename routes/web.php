@@ -8,6 +8,7 @@ use App\Http\Controllers\tfTestbankController;
 use App\Http\Controllers\mtfTestbankController;
 use App\Http\Controllers\enumerationTestbankController;
 use App\Http\Controllers\testMakerController;
+use App\Http\Controllers\testPageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -84,9 +85,8 @@ Route::get('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test
 Route::post('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_store']);
 Route::post('/test/{test_id}/{test_type}/add', [testMakerController::class, 'random_test_store']);
 
-Route::get('/testpage', function(){
-    return view('testview');
-});
+
+Route::get('/print/{test_id}', [testPageController::class, 'testPage']);
 
 
 require __DIR__.'/auth.php';
