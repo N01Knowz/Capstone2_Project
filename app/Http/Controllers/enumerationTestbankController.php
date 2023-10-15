@@ -93,7 +93,6 @@ class enumerationTestbankController extends Controller
             'user_id' => Auth::id(),
             'etTitle' => $request->input('title'),
             'etDescription' => $request->input('description'),
-            'etNumber' => 0,
             'subjectID' => $subjectID,
             'etIsPublic' => $request->has('share'),
         ]);

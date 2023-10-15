@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('etID');
             $table->longText('etTitle');
             $table->longText('etDescription')->nullable();
-            $table->integer('etNumber');
             $table->decimal('etTotal', 10, 2)->default(0.00);
             $table->boolean('etIsPublic');
             $table->unsignedBigInteger('subjectID')->nullable();
