@@ -90,22 +90,22 @@
                 <div class="searchbar-container">
                 </div>
             </div>
-            <form method="POST" action="/mcq/{{$test->id}}" class="test-body-content">
+            <form method="POST" action="/test/{{$test->tmID}}" class="test-body-content">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}">
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->tmTitle}}">
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction">{{$test->test_instruction}}</textarea>
-                @error('instruction')
+                <p class="text-input-label label-margin-top">Description<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="description">{{$test->tmDescription}}</textarea>
+                @error('description')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <div class="share-container">
-                    <input type="checkbox" @if($test->test_visible == '1') checked="true" @endif class="share-checkbox" name="share" >
+                    <input type="checkbox" @if($test->tmIsPublic == '1') checked="true" @endif class="share-checkbox" name="share" >
                     <p class="text-input-label">Share with other users</p>
                 </div>
                 <!-- <div class="criteria-point-container">

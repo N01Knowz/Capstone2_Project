@@ -115,9 +115,9 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
-                    <p class="test-profile-label">Question: <span class="test-profile-value">{{$test->test_question}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->mtTitle}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->mtTotal}}</span></p>
+                    <p class="test-profile-label">Description: <span class="test-profile-value">{{$test->mtDescription}}</span></p>
                 </div>
                 <div class="test-add-question-container">
                     <table>
@@ -138,19 +138,19 @@
                             @foreach($questions as $question)
                             <tr>
                                 <td>
-                                    <input class="mt-inputs" readonly type="text" value="{{$question->option_1}}">
+                                    <input class="mt-inputs" readonly type="text" value="{{$question->itmQuestion}}">
                                 </td>
-                                <td><input class="mt-inputs" readonly type="text" value="{{$question->item_question}}"></td>
-                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->question_point}}"></td>
+                                <td><input class="mt-inputs" readonly type="text" value="{{$question->itmAnswer}}"></td>
+                                <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->itmPoints}}"></td>
                                 @if(auth()->user()->id == $test->user_id)
                                 <td class="buttons-column">
                                     <div class="questions-table-buttons-column-div">
-                                        <form action="/matching/{{$test->id}}/{{$question->id}}/edit" method="GET" class="question-table-button-form">
+                                        <form action="/matching/{{$test->mtID}}/{{$question->itmID}}/edit" method="GET" class="question-table-button-form">
                                             <button class="questions-table-buttons buttons-edit-button"><img src="/images/edit-icon.png">
                                                 <p>Edit</p>
                                             </button>
                                         </form>
-                                        <form action="/matching/{{$question->id}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
+                                        <form action="/matching/{{$question->itmID}}/delete_question" method="POST" class="question-table-button-form" onsubmit="return confirmDelete();">
                                             @csrf
                                             @method('delete')
                                             <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">

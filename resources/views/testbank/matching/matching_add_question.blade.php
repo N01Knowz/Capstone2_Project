@@ -84,7 +84,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/matching/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/matching/{{$test->mtID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -96,12 +96,12 @@
                 @csrf
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}" readonly>
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->mtTitle}}" readonly>
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question/Instruction<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
+                <p class="text-input-label label-margin-top">Description<span class="red-asterisk"> *</span></p>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->mtDescription}}</textarea>
                 @error('instruction')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror

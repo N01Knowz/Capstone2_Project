@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\testbank;
+use App\Models\mttests;
+use App\Models\mtitems;
+use App\Models\subjects;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\Models\questions;
 use Illuminate\Support\Facades\File;
 
 class matchingTestbankController extends Controller
@@ -23,17 +24,17 @@ class matchingTestbankController extends Controller
         $search = $request->input('search');
 
         $currentUserId = Auth::user()->id;
-        $testsQuery = testbank::where('test_type', '=', 'matching')
-            ->where('user_id', '=', $currentUserId);
+        $testsQuery = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
+        ->where('mttests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
-                $query->where('test_title', 'LIKE', "%$search%")
-                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+                $query->where('mtTitle', 'LIKE', "%$search%")
+                    ->orWhere('mtDescription', 'LIKE', "%$search%");
             });
         }
 
-        $tests = $testsQuery->orderBy('id', 'desc')
+        $tests = $testsQuery->orderBy('mtID', 'desc')
         ->get();
         return view('testbank.matching.matching', [
             'tests' => $tests,
@@ -46,10 +47,10 @@ class matchingTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = testbank::where('user_id', $currentUserId)
-            ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('test_subject')
-            ->pluck('test_subject')
+        $uniqueSubjects = subjects::where('user_id', $currentUserId)
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
             ->toArray();
         return view('testbank.matching.matching_add', ['uniqueSubjects' => $uniqueSubjects]);
     }
@@ -63,7 +64,7 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'question' => 'required',
+            'description' => 'required',
         ]);
 
         $hasAtLeastOneItemText = false;
@@ -83,41 +84,50 @@ class matchingTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::create([
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subject = subjects::where('subjectName', $request->input('subject'))
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => $request->input('subject'),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
+        $testbank = mttests::create([
             'user_id' => Auth::id(),
-            'test_type' => 'matching',
-            'test_title' => $request->input('title'),
-            'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
-            'test_subject' => $request->input('subject') ? $request->input('subject') : "No Subject",
-            'test_image' => '',
-            'test_total_points' => 0,
-            'test_visible' => $request->has('share'),
-            'test_active' => 1,
+            'mtTitle' => $request->input('title'),
+            'mtDescription' => $request->input('description') ? $request->input('description') : '',
+            'subjectID' =>  $subjectID,
+            'mtIsPublic' => $request->has('share'),
         ]);
 
         for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
-            $question = questions::create([
-                'testbank_id' => $testbank->id,
-                'question_active' => 1,
-                'item_question' => $request->input('item_answer_' . $i),
-                'choices_number' => 1,
-                'question_answer' => 1,
-                'option_1' => $request->input('item_text_' . $i),
-                'question_point' => $request->input('item_point_' . $i),
+            $question = mtitems::create([
+                'mtID' => $testbank->mtID,
+                'itmAnswer' => $request->input('item_answer_' . $i),
+                'itmQuestion' => $request->input('item_text_' . $i),
+                'itmPoints' => $request->input('item_point_' . $i),
             ]);
         }
 
-        $questions = questions::where("testbank_id", "=", $testbank->id)->get();
+        $questions = mtitems::where("mtID", "=", $testbank->mtID)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_points += $question->itmPoints;
         }
 
         $testbank->update([
-            'test_total_points' => $total_points,
+            'mtTotal' => $total_points,
         ]);
 
         return redirect('/matching');
@@ -128,8 +138,8 @@ class matchingTestbankController extends Controller
      */
     public function show(string $id)
     {
-        $test = testbank::find($id);
-        $isShared = $test->test_visible;
+        $test = mttests::find($id);
+        $isShared = $test->mtIsPublic;
         // dd($test->user_id != Auth::id() && !$isShared);
 
 
@@ -139,7 +149,7 @@ class matchingTestbankController extends Controller
         if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
-        $questions = questions::where('testbank_id', '=', $id)
+        $questions = mtitems::where('mtID', '=', $id)
             ->get();
         return view('testbank.matching.matching_test-description', [
             'test' => $test,
@@ -152,7 +162,7 @@ class matchingTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = testbank::find($id);
+        $test = mttests::find($id);
 
 
         if (is_null($test)) {
@@ -175,14 +185,14 @@ class matchingTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'question' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::find($id);
+        $testbank = mttests::find($id);
         if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
@@ -191,10 +201,9 @@ class matchingTestbankController extends Controller
         }
 
         $testbank->update([
-            'test_title' => $request->input('title'),
-            'test_question' => $request->input('question'),
-            'test_instruction' => $request->input('instruction') ? $request->input('instruction') : '',
-            'test_visible' => $request->has('share'),
+            'mtTitle' => $request->input('title'),
+            'mtDescription' => $request->input('description') ? $request->input('description') : '',
+            'mtIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/matching');
@@ -205,8 +214,7 @@ class matchingTestbankController extends Controller
      */
     public function destroy(string $id)
     {
-        $test = testbank::find($id);
-
+        $test = mttests::find($id);
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -215,17 +223,7 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        
-        $testImage = $test->test_image;
-        $imagePath = public_path('user_upload_images/' . $testImage);
-        if (File::exists($imagePath)) {
-            // Delete the image file
-            File::delete($imagePath);
-            // Optionally, you can also remove the image filename from the database or update the question record here
-        }
-
-
-        questions::where('testbank_id', $id)->delete();
+        mtitems::where('mtID', $id)->delete();
         $test->delete();
 
         return back();
@@ -234,7 +232,7 @@ class matchingTestbankController extends Controller
 
     public function add_question_index(string $test_id)
     {
-        $test = testbank::find($test_id);
+        $test = mttests::find($test_id);
 
 
         if (is_null($test)) {
@@ -243,6 +241,7 @@ class matchingTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
         return view('testbank/matching/matching_add_question', [
             'test' => $test,
         ]);
@@ -259,40 +258,36 @@ class matchingTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $test = testbank::find($test_id);
+        $test = mttests::find($test_id);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
 
 
         for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
-            $question = questions::create([
-                'testbank_id' => $test_id,
-                'question_active' => 1,
-                'item_question' => $request->input('item_answer_' . $i),
-                'choices_number' => 1,
-                'question_answer' => 1,
-                'option_1' => $request->input('item_text_' . $i),
-                'question_point' => $request->input('item_point_' . $i) ? $request->input('item_point_' . $i) : 0,
+            $question = mtitems::create([
+                'mtID' => $test_id,
+                'itmAnswer' => $request->input('item_answer_' . $i),
+                'itmQuestion' => $request->input('item_text_' . $i),
+                'itmPoints' => $request->input('item_point_' . $i) ? $request->input('item_point_' . $i) : 0,
             ]);
         }
 
-
-        $questions = questions::where("testbank_id", "=", $test_id)->get();
+        $questions = mtitems::where("mtID", "=", $test_id)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_points += $question->itmPoints;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtTotal' => $total_points,
         ]);
 
         return redirect('/matching/' . $test_id);
 
-        // $test = testbank::find($test_id);
+        // $test = mttests::find($test_id);
         // return view('testbank/matching/matching_add_question', [
         //     'test' => $test,
         // ]);
@@ -300,27 +295,27 @@ class matchingTestbankController extends Controller
 
     public function add_question_destroy(string $id)
     {
-        $question = questions::find($id);
+        $question = mtitems::find($id);
         if (is_null($question)) {
             abort(404); // User does not own the test
         }
-        $test = testbank::find($question->testbank_id);
+        $test = mttests::find($question->mtID);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
 
         $question->delete();
 
-        $questions = questions::where("testbank_id", "=", $test->id)->get();
+        $questions = mtitems::where("mtID", "=", $test->mtID)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_points += $question->itmPoints;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtTotal' => $total_points,
         ]);
 
         return back();
@@ -328,7 +323,7 @@ class matchingTestbankController extends Controller
 
     public function add_question_edit(string $test_id, string $question_id)
     {
-        $test = testbank::find($test_id);
+        $test = mttests::find($test_id);
 
 
         if (is_null($test)) {
@@ -337,7 +332,7 @@ class matchingTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $question = questions::find($question_id);
+        $question = mtitems::find($question_id);
 
         return view('testbank.matching.matching_edit_question', [
             'test' => $test,
@@ -351,7 +346,7 @@ class matchingTestbankController extends Controller
     {
         $input = $request->all();
 
-        $test = testbank::find($test_id);
+        $test = mttests::find($test_id);
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -368,24 +363,24 @@ class matchingTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $question = questions::find($question_id);
+        $question = mtitems::find($question_id);
 
         $question->update([
-            'item_question' => $request->input('item_answer'),
-            'option_1' => $request->input('item_text'),
-            'question_point' => $request->input('item_point'),
+            'itmAnswer' => $request->input('item_answer'),
+            'itmQuestion' => $request->input('item_text'),
+            'itmPoints' => $request->input('item_point'),
         ]);
 
-        $questions = questions::where("testbank_id", "=", $test->id)->get();
+        $questions = mtitems::where("mtID", "=", $test->mtID)->get();
 
         $total_points = 0;
 
         foreach ($questions as $question) {
-            $total_points += $question->question_point;
+            $total_points += $question->itmPoints;
         }
 
         $test->update([
-            'test_total_points' => $total_points,
+            'mtTotal' => $total_points,
         ]);
 
         return redirect('/matching/' . $test_id);

@@ -21,14 +21,14 @@
                 <button class="add-item-modal-header-close" id="add_item_modal_header_close">x</button>
             </div>
             <div class="add-item-modal-body">
-                <form action="/enumeration/{{$test->id}}/create_question" method="POST" id="add_item_form">
+                <form action="/enumeration/{{$test->etID}}/create_question" method="POST" id="add_item_form">
                     @csrf
                     <p class="add-item-form-answer-label">Answer</p>
                     <input type="text" name="answer_text" class="add-item-text-input" required>
                     <br>
                     <div class="case-sensitive-container">
                         <input type="checkbox" name="case_sensitive_text">
-                        <p class="add-item-form-answer-label">This answer is case sensetive</p>
+                        <p class="add-item-form-answer-label">This answer is case sensitive</p>
                     </div>
                 </form>
             </div>
@@ -125,10 +125,9 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
-                    <p class="test-profile-label">Question: <span class="test-profile-value">{{$test->test_question}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->etTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->etDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->etTotal}}</span></p>
                 </div>
                 <div class="test-questions-container">
                     <div class="test-questions-table-container">
@@ -151,10 +150,10 @@
                                         <p>{{$loop->iteration}}</p>
                                     </td>
                                     <td>
-                                        <p>{{$question->item_question}}</p>
+                                        <p>{{$question->itmAnswer}}</p>
                                     </td>
                                     <td>
-                                        <p>@if($question->option_1 == "0")
+                                        <p>@if($question->itmIsCaseSensitive == "0")
                                             No
                                             @else
                                             Yes
@@ -163,7 +162,7 @@
                                     </td>
                                     @if(auth()->user()->id == $test->user_id)
                                     <td>
-                                        <form action="/enumeration/{{$question->id}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
+                                        <form action="/enumeration/{{$question->itmID}}/delete_question" method="POST" class="questions-table-buttons-column-div" onsubmit="return confirmDelete();">
                                             @csrf
                                             @method('delete')
                                             <button class="questions-table-buttons buttons-delete-button"><img src="/images/delete-icon.png">

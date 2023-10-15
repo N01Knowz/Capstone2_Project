@@ -108,14 +108,13 @@
                     <tbody>
                         <!-- Table content goes here -->
                         @foreach ($tests as $test)
-                        @if ($test->test_active == 1)
                         <tr id="test-question-description">
-                            <td class="test-body-column test-body-title" data-id="{{$test->id}}">
-                                <p>{{$test->test_title}}</p>
+                            <td class="test-body-column test-body-title" data-id="{{$test->etID}}">
+                                <p>{{$test->etTitle}}</p>
                             </td>
-                            <td class="test-body-column test-body-instruction" data-id="{{$test->id}}">
-                                <p>{{$test->test_instruction}}</p>
-                                <div class="question-labels">
+                            <td class="test-body-column test-body-instruction" data-id="{{$test->etID}}">
+                                <p>{{$test->etDescription}}</p>
+                                <!-- <div class="question-labels">
                                     @if(!is_null($test->Realistic))
                                     <div class="label r-label">Realistic</div>
                                     @endif
@@ -137,24 +136,24 @@
                                     @if($test->Unknown == 1)
                                     <div class="label u-label">Unknown</div>
                                     @endif
+                                </div> -->
+                            </td>
+                            <td class="test-body-column test-body-status" data-id="{{$test->etID}}">
+                                <div>
+                                    <p class="test-status-word">@if($test->etIsPublic == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
                                 </div>
                             </td>
-                            <td class="test-body-column test-body-status" data-id="{{$test->id}}">
+                            <td class="test-body-column test-body-points" data-id="{{$test->etID}}">
                                 <div>
-                                    <p class="test-status-word">@if($test->test_visible == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
-                                </div>
-                            </td>
-                            <td class="test-body-column test-body-points" data-id="{{$test->id}}">
-                                <div>
-                                    <p>{{$test->test_subject}}</p>
+                                    <p>{{$test->subjectName}}</p>
                                 </div>
                             </td>
                             <td class="test-body-buttons-column" id="test-bb">
                                 <div class="test-body-buttons-column-div">
-                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->id}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                                    <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->etID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                         <p>Edit</p>
                                     </button>
-                                    <form method="POST" action="/enumeration/{{$test->id}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                                    <form method="POST" action="/enumeration/{{$test->etID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                         @csrf
                                         @method('delete')
                                         <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
@@ -164,7 +163,6 @@
                                 </div>
                             </td>
                         </tr>
-                        @endif
                         @endforeach
                     </tbody>
                 </table>

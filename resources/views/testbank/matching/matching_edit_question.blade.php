@@ -84,7 +84,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/matching/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/matching/{{$test->mtID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -97,14 +97,12 @@
                 @method('PUT')
                 <input type="hidden" name="id" value="{{auth()->user()->id;}}">
                 <p class="text-input-label">Title<span class="red-asterisk"> *</span></p>
-                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->test_title}}" readonly>
+                <input type="text" class="textinput-base textarea-title text-input-background" name="title" value="{{$test->mtTitle}}" readonly>
                 @error('title')
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
-                <p class="text-input-label label-margin-top">Question</p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_question}}</textarea>
-                <p class="text-input-label label-margin-top">Instruction</p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->test_instruction}}</textarea>
+                <p class="text-input-label label-margin-top">Description</p>
+                <textarea class="textinput-base textarea-question text-input-background" name="instruction" readonly>{{$test->mtDescription}}</textarea>
                 <table>
                     <thead>
                         <tr>
@@ -121,9 +119,9 @@
                     </thead>
                     <tbody id="itemsContainer">
                         <tr>
-                            <td><input class="mt-inputs item_text" type="text" name="item_text" value="{{$question->option_1}}"></td>
-                            <td><input class="mt-inputs item_answer" type="text" name="item_answer" value="{{$question->item_question}}"></td>
-                            <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point" value="{{$question->question_point}}"></td>
+                            <td><input class="mt-inputs item_text" type="text" name="item_text" value="{{$question->itmQuestion}}"></td>
+                            <td><input class="mt-inputs item_answer" type="text" name="item_answer" value="{{$question->itmAnswer}}"></td>
+                            <td><input class="mt-inputs item_point" type="text" placeholder="0.00" name="item_point" value="{{$question->itmPoints}}"></td>
                         </tr>
                     </tbody>
                 </table>

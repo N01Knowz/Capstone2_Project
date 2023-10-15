@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\testbank;
-use App\Models\questions;
-use App\Models\testMaker;
+use App\Models\tmtests;
+use App\Models\tmEssay;
+use App\Models\tmQuizItems;
+use App\Models\tmTfItems;
+use App\Models\tmMtfItems;
+use App\Models\tmMt;
+use App\Models\tmEt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,17 +24,16 @@ class testMakerController extends Controller
         $search = $request->input('search');
 
         $currentUserId = Auth::user()->id;
-        $testsQuery = testbank::where('test_type', '=', 'testMaker')
-            ->where('user_id', '=', $currentUserId);
+        $testsQuery = tmtests::where('user_id', '=', $currentUserId);
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
-                $query->where('test_title', 'LIKE', "%$search%")
-                    ->orWhere('test_instruction', 'LIKE', "%$search%");
+                $query->where('tmTitle', 'LIKE', "%$search%")
+                    ->orWhere('tmDescription', 'LIKE', "%$search%");
             });
         }
 
-        $tests = $testsQuery->orderBy('id', 'desc')
+        $tests = $testsQuery->orderBy('tmID', 'desc')
             ->get();
 
         return view('testbank.test_maker.index', [
@@ -55,23 +58,18 @@ class testMakerController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::create([
+        $testbank = tmtests::create([
             'user_id' => Auth::id(),
-            'test_type' => 'testMaker',
-            'test_title' => $request->input('title'),
-            'test_question' => '',
-            'test_instruction' => $request->input('instruction'),
-            'test_image' => '',
-            'test_total_points' => 0,
-            'test_visible' => $request->has('share'),
-            'test_active' => 1,
+            'tmTitle' => $request->input('title'),
+            'tmDescription' => $request->input('description'),
+            'tmIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/test');
@@ -82,7 +80,7 @@ class testMakerController extends Controller
      */
     public function show(string $id)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
 
         $currentUserId = Auth::user()->id;
         $isShared = $test->test_visible;
@@ -95,26 +93,26 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        $questions = questions::where('testbank_id', '=', $id)
+        $questions = questions::where('tmID', '=', $id)
             ->get();
 
         $allTestQuery = testMaker::from(DB::raw('test_makers AS tm'))
             ->join('testbanks AS t', 't.id', '=', 'tm.test_id')
-            ->where('tm.testbank_id', $id)
+            ->where('tm.tmID', $id)
             ->select('t.*', 'tm.id as test_maker_ID')
             ->get();
 
         // dd($allTestQuery);
 
         $allQuestionQuery = testMaker::join('questions', 'questions.id', '=', 'question_id')
-            ->join('testbanks AS t', 't.id', '=', 'questions.testbank_id')
-            ->where('test_makers.testbank_id', $id)
+            ->join('testbanks AS t', 't.id', '=', 'questions.tmID')
+            ->where('test_makers.tmID', $id)
             ->select('questions.*', 'test_type', 'test_makers.id as test_maker_ID')
             ->get();
 
         // dd($allQuestionQuery);
 
-        $uniqueSubjects = testbank::where('user_id', $currentUserId)
+        $uniqueSubjects = tmtests::where('user_id', $currentUserId)
             ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
             ->distinct('test_subject')
             ->select('test_subject')
@@ -137,7 +135,7 @@ class testMakerController extends Controller
      */
     public function edit(string $id)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
 
 
         if (is_null($test)) {
@@ -160,14 +158,14 @@ class testMakerController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = testbank::find($id);
+        $testbank = tmtests::find($id);
         if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
@@ -176,9 +174,9 @@ class testMakerController extends Controller
         }
 
         $testbank->update([
-            'test_title' => $request->input('title'),
-            'test_instruction' => $request->input('instruction'),
-            'test_visible' => $request->has('share'),
+            'tmTitle' => $request->input('title'),
+            'tmDescription' => $request->input('description'),
+            'tmIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/test');
@@ -189,7 +187,7 @@ class testMakerController extends Controller
      */
     public function destroy(string $id)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
 
 
         if (is_null($test)) {
@@ -200,7 +198,7 @@ class testMakerController extends Controller
         }
 
 
-        testMaker::where('testbank_id', $id)->delete();
+        testMaker::where('tmID', $id)->delete();
         $test->delete();
 
         return back();
@@ -208,7 +206,7 @@ class testMakerController extends Controller
 
     public function add_test_index(Request $request, string $id, string $test_type)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
         $currentUserId = Auth::user()->id;
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
         $filterLabel = ['realistic_filter' => 'Realistic', 'investigative_filter' => 'Investigative', 'artistic_filter' => 'Artistic', 'social_filter' => 'Social', 'enterprising_filter' => 'Enterprising', 'conventional_filter' => 'Conventional'];
@@ -238,7 +236,7 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        $allTestQuery = testbank::select('testbanks.id', 'test_type', 'test_title', 'test_question', 'test_instruction', 'test_subject')
+        $allTestQuery = tmtests::select('testbanks.id', 'test_type', 'test_title', 'test_question', 'test_instruction', 'test_subject')
             ->addSelect(DB::raw('CASE WHEN tm.test_id IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'))
             ->leftJoin('test_makers AS tm', function ($join)  use ($currentUserId){
                 $join->on('testbanks.id', '=', 'tm.test_id')
@@ -272,7 +270,7 @@ class testMakerController extends Controller
         // dd($allTestQuery);
 
         $allQuestionQuery = questions::from(DB::raw('questions AS q'))
-            ->join('testbanks AS t', 't.id', '=', 'q.testbank_id')
+            ->join('testbanks AS t', 't.id', '=', 'q.tmID')
             ->leftJoin('test_makers AS tm', function ($join) {
                 $join->on('q.id', '=', 'tm.question_id');
             })
@@ -302,7 +300,7 @@ class testMakerController extends Controller
         // dd($allQuestionQuery);
 
 
-        $uniqueSubjects = testbank::where('user_id', $currentUserId)
+        $uniqueSubjects = tmtests::where('user_id', $currentUserId)
             ->where('test_subject', '!=', 'No Subject') // Exclude rows with 'No Subject'
             ->distinct('test_subject')
             ->pluck('test_subject')
@@ -321,7 +319,7 @@ class testMakerController extends Controller
 
     public function add_test_store(Request $request, string $id, string $test_type)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
 
         if (!in_array($test_type, $types_of_test)) {
@@ -340,7 +338,7 @@ class testMakerController extends Controller
             if (!empty($checkboxes)) {
                 foreach ($checkboxes as $checkbox) {
                     testMaker::create([
-                        'testbank_id' => $id,
+                        'tmID' => $id,
                         'question_id' => $checkbox,
                     ]);
                 }
@@ -352,7 +350,7 @@ class testMakerController extends Controller
             if (!empty($checkboxes)) {
                 foreach ($checkboxes as $checkbox) {
                     testMaker::create([
-                        'testbank_id' => $id,
+                        'tmID' => $id,
                         'test_id' => $checkbox,
                     ]);
                 }
@@ -364,7 +362,7 @@ class testMakerController extends Controller
 
     public function random_test_store(Request $request, string $id, string $test_type)
     {
-        $test = testbank::find($id);
+        $test = tmtests::find($id);
         $currentUserId = Auth::user()->id;
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
         $subjectFilter = $request->input('random_item_subject');
@@ -386,7 +384,7 @@ class testMakerController extends Controller
 
         if (in_array($test_type, ['tf', 'mtf', 'mcq'])) {
             $allQuestionQuery = questions::from(DB::raw('questions AS q'))
-                ->join('testbanks AS t', 't.id', '=', 'q.testbank_id')
+                ->join('testbanks AS t', 't.id', '=', 'q.tmID')
                 ->where('t.test_type', '=', $test_type)
                 ->where('t.user_id', '=', $currentUserId)
                 ->leftJoin('test_makers AS tm', 'q.id', '=', 'tm.question_id')
@@ -408,13 +406,13 @@ class testMakerController extends Controller
 
             foreach ($allQuestionQuery as $question) {
                 testMaker::create([
-                    'testbank_id' => $id,
+                    'tmID' => $id,
                     'question_id' => $question->id,
                 ]);
             }
             return redirect('/test/' . $id);
         } elseif (in_array($test_type, ['essay', 'enumeration', 'matching'])) {
-            $allTestQuery = testbank::where('testbanks.test_type', '=', $test_type)
+            $allTestQuery = tmtests::where('testbanks.test_type', '=', $test_type)
                 ->where('testbanks.user_id', '=', $currentUserId)
                 ->leftJoin('test_makers AS tm', 'testbanks.id', '=', 'tm.test_id')
                 ->whereNull('tm.test_id');
@@ -435,7 +433,7 @@ class testMakerController extends Controller
 
             foreach ($allTestQuery as $test) {
                 testMaker::create([
-                    'testbank_id' => $id,
+                    'tmID' => $id,
                     'test_id' => $test->id,
                 ]);
             }
@@ -447,7 +445,7 @@ class testMakerController extends Controller
     }
     public function destroy_question(string $test_id, string $test_makerID)
     {
-        $test = testbank::find($test_id);
+        $test = tmtests::find($test_id);
 
 
         if (is_null($test)) {
