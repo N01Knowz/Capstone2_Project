@@ -30,6 +30,7 @@ return new class extends Migration
             $table->integer('itmAnswer');
             $table->decimal('itmPoints', 10, 2)->default(0.00);
             $table->longText('itmImage')->nullable();
+            $table->boolean('labeled')->default(0);
             $table->timestamps();
         });
     }

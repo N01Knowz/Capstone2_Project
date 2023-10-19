@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\essays;
 use App\Models\subjects;
+use App\Models\analyticessaytags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -36,6 +37,23 @@ class essayTestbankController extends Controller
 
         $tests = $testsQuery->orderBy('essID', 'desc')
             ->get();
+
+
+        $tests->each(function ($tests) {
+            $tags = analyticessaytags::join('analytictags', 'analytictags.tagID', '=', 'analyticessaytags.tagID')
+                ->where('analyticessaytags.essID', $tests->essID)
+                ->get();
+            // dd($tests->essID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $tests->tags = $tagData;
+        });
+
         return view('testbank.essay.essay', [
             'tests' => $tests,
         ]);

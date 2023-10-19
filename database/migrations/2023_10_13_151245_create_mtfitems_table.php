@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('itmPoints2', 10, 2)->default(0.00);
             $table->decimal('itmPointsTotal', 10, 2)->default(0.00);
             $table->longText('itmImage')->nullable();
+            $table->boolean('labeled')->default(0);
             $table->timestamps();
         });
     }

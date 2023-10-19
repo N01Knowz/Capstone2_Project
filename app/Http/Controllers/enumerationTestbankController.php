@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ettests;
 use App\Models\etitems;
 use App\Models\subjects;
+use App\Models\analyticettags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -25,7 +26,7 @@ class enumerationTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = ettests::leftJoin('subjects', 'ettests.subjectID', '=', 'subjects.subjectID')
-        ->where('ettests.user_id', '=', $currentUserId);
+            ->where('ettests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
@@ -36,6 +37,21 @@ class enumerationTestbankController extends Controller
 
         $tests = $testsQuery->orderBy('etID', 'desc')
             ->get();
+
+        $tests->each(function ($tests) {
+            $tags = analyticettags::join('analytictags', 'analytictags.tagID', '=', 'analyticettags.tagID')
+                ->where('analyticettags.etID', $tests->etID)
+                ->get();
+            // dd($tests->etID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $tests->tags = $tagData;
+        });
 
         return view('testbank.enumeration.enumeration', [
             'tests' => $tests,

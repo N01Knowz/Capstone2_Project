@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\mtftests;
 use App\Models\mtfitems;
 use App\Models\subjects;
+use App\Models\analyticmtfitemtags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use DOMDocument;
@@ -118,6 +119,22 @@ class mtfTestbankController extends Controller
         }
         $questions = mtfitems::where('mtfID', '=', $id)
             ->get();
+
+        $questions->each(function ($questions) {
+            $tags = analyticmtfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticmtfitemtags.tagID')
+                ->where('analyticmtfitemtags.itmID', $questions->itmID)
+                ->get();
+            // dd($questions->itmID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $questions->tags = $tagData;
+        });
+
         return view('testbank.mtf.mtf_test-description', [
             'test' => $test,
             'questions' => $questions,

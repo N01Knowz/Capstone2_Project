@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\quizzes;
 use App\Models\quizitems;
 use App\Models\subjects;
+use App\Models\analyticquizitemtags;
 use DOMDocument;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -117,6 +118,22 @@ class mcqTestbankController extends Controller
         }
         $questions = quizitems::where('qzID', '=', $id)
             ->get();
+
+        $questions->each(function ($questions) {
+            $tags = analyticquizitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticquizitemtags.tagID')
+                ->where('analyticquizitemtags.itmID', $questions->itmID)
+                ->get();
+            // dd($questions->itmID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $questions->tags = $tagData;
+        });
+
         return view('testbank.mcq.mcq_test-description', [
             'test' => $test,
             'questions' => $questions,
@@ -207,13 +224,13 @@ class mcqTestbankController extends Controller
             for ($i = 1; $i <= 10; $i++) {
                 $oldOption = quizitems::where('itmID', $question->itmID)
                     ->value('itmOption' . $i);
-    
+
                 if ($oldOption) {
                     $oldDom = new DOMDocument();
                     @$oldDom->loadHTML($oldOption);
                     $oldImageFile = $oldDom->getElementsByTagName('img');
                 }
-    
+
                 if ($oldOption) {
                     foreach ($oldImageFile as $oldItem => $oldImage) {
                         $oldSrc = $oldImage->getAttribute('src');
@@ -452,7 +469,6 @@ class mcqTestbankController extends Controller
             'test' => $test,
             'question' => $question,
         ]);
-
     }
 
     public function add_question_update(Request $request, string $test_id, string $question_id)

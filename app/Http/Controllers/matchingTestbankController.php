@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\mttests;
 use App\Models\mtitems;
 use App\Models\subjects;
+use App\Models\analyticmttags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -36,6 +37,23 @@ class matchingTestbankController extends Controller
 
         $tests = $testsQuery->orderBy('mtID', 'desc')
         ->get();
+
+
+        $tests->each(function ($tests) {
+            $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+                ->where('analyticmttags.mtID', $tests->mtID)
+                ->get();
+            // dd($tests->mtID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $tests->tags = $tagData;
+        });
+
         return view('testbank.matching.matching', [
             'tests' => $tests,
         ]);

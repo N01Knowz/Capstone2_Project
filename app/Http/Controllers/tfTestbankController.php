@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\tftests;
 use App\Models\tfitems;
 use App\Models\subjects;
+use App\Models\analytictfitemtags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -37,7 +38,7 @@ class tfTestbankController extends Controller
 
         $tests = $testsQuery->orderBy('tfID', 'desc')
             ->get();
-            
+
         return view('testbank.tf.tf', [
             'tests' => $tests,
         ]);
@@ -118,6 +119,22 @@ class tfTestbankController extends Controller
         }
         $questions = tfitems::where('tfID', '=', $id)
             ->get();
+
+        $questions->each(function ($questions) {
+            $tags = analytictfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analytictfitemtags.tagID')
+                ->where('analytictfitemtags.itmID', $questions->itmID)
+                ->get();
+            // dd($questions->itmID);
+
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+
+
+            $questions->tags = $tagData;
+        });
+
         return view('testbank.tf.tf_test-description', [
             'test' => $test,
             'questions' => $questions,
@@ -130,7 +147,7 @@ class tfTestbankController extends Controller
     public function edit(string $id)
     {
         $test = tftests::find($id);
-        if(is_null($test)){
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -157,8 +174,8 @@ class tfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $testbank = tftests::find($id); 
-        if(is_null($testbank)){
+        $testbank = tftests::find($id);
+        if (is_null($testbank)) {
             abort(404); // User does not own the test
         }
         if ($testbank->user_id != Auth::id()) {
@@ -180,15 +197,15 @@ class tfTestbankController extends Controller
     public function destroy(string $id)
     {
         $test = tftests::find($id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        
+
         $questions = tfitems::where('tfID', $id)->get();
         foreach ($questions as $question) {
 
@@ -202,17 +219,17 @@ class tfTestbankController extends Controller
             }
             $question->delete();
         }
-        
+
         $test->delete();
-        
+
         return back();
     }
     public function add_question_index(string $test_id)
     {
         $test = tftests::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -226,8 +243,8 @@ class tfTestbankController extends Controller
     public function add_question_show(string $test_id, string $question_id)
     {
         $test = tftests::find($test_id);
-        
-        if(is_null($test)){
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -246,9 +263,9 @@ class tfTestbankController extends Controller
     public function add_question_store(Request $request, string $test_id)
     {
         $test = tftests::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -288,7 +305,7 @@ class tfTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->itmPoints;
         }
 
@@ -302,14 +319,14 @@ class tfTestbankController extends Controller
     public function add_question_destroy(string $id)
     {
         $question = tfitems::find($id);
-        if(is_null($question)){
+        if (is_null($question)) {
             abort(404); // User does not own the test
         }
         $test = tftests::find($question->tfID);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        
+
         $questionImage = $question->itmImage;
         $imagePath = public_path('user_upload_images/' . $questionImage);
         if (File::exists($imagePath)) {
@@ -325,7 +342,7 @@ class tfTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->itmPoints;
         }
 
@@ -339,9 +356,9 @@ class tfTestbankController extends Controller
     public function add_question_edit(string $test_id, string $question_id)
     {
         $test = tftests::find($test_id);
-        
-        
-        if(is_null($test)){
+
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -358,11 +375,11 @@ class tfTestbankController extends Controller
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
         $test = tftests::find($test_id);
-        if(is_null($test)){
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        
-        if(is_null($test)){
+
+        if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
@@ -418,7 +435,7 @@ class tfTestbankController extends Controller
 
         $total_points = 0;
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $total_points += $question->itmPoints;
         }
 

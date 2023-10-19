@@ -84,7 +84,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/test/{{$test->id}}" class="add-test-button-anchor">
+                <a href="/test/{{$test->tmID}}" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -133,16 +133,61 @@
                     @foreach($allTestQuery as $testQuery)
                     <div class="dropdown-container">
                         <div class="dropdown-header">
-                            <button class="dropdown-title" type="button" data-dropdown-icon="{{'dropdown-icon-' . $testQuery->id}}" data-dropdown-id="{{'dropdown-content-' . $testQuery->id}}" onclick="showDropdown()">
-                                {{$testQuery->test_title}}
-                                <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->id}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
+                            <button class="dropdown-title" type="button" onclick="showDropdown()"
+                                @if($testType == 'Essay')
+                                data-dropdown-icon="{{'dropdown-icon-' . $testQuery->essID}}" 
+                                data-dropdown-id="{{'dropdown-content-' . $testQuery->essID}}">
+                                @endif
+                                @if($testType == 'Matching')
+                                data-dropdown-icon="{{'dropdown-icon-' . $testQuery->mtID}}" 
+                                data-dropdown-id="{{'dropdown-content-' . $testQuery->mtID}}">
+                                @endif
+                                @if($testType == 'Enumeration')
+                                data-dropdown-icon="{{'dropdown-icon-' . $testQuery->etID}}" 
+                                data-dropdown-id="{{'dropdown-content-' . $testQuery->etID}}">
+                                @endif
+                                @if($testType == 'Essay')
+                                {{$testQuery->essTitle}}
+                                @endif
+                                @if($testType == 'Matching')
+                                {{$testQuery->mtTitle}}
+                                @endif
+                                @if($testType == 'Enumeration')
+                                {{$testQuery->etTitle}}
+                                @endif
+                                @if($testType == 'Essay')
+                                <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->essID}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
+                                @endif
+                                @if($testType == 'Matching')
+                                <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->mtID}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
+                                @endif
+                                @if($testType == 'Enumeration')
+                                <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->etID}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
+                                @endif
                             </button>
-                            <input type="checkbox"value="{{$testQuery->id}}" id="parent-checkbox-{{$testQuery->id}}" class="dropdown-checkbox" data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->id}}"  @if(!$testQuery->in_test_makers) name="test_checkbox_add[]" @endif  @if($testQuery->in_test_makers) checked disabled @endif @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf'])) onclick="toggleCheckboxes(this)"@endif>
+                            <input type="checkbox"value="{{$testQuery->essID}}" id="parent-checkbox-{{$testQuery->essID}}" class="dropdown-checkbox" 
+                            @if($testType == 'Essay')
+                            data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->essID}}"  
+                            @endif
+                            @if($testType == 'Matching')
+                            data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->mtID}}"  
+                            @endif
+                            @if($testType == 'Enumeration')
+                            data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->etID}}"  
+                            @endif
+                            @if(!$testQuery->in_test_makers) name="test_checkbox_add[]" @endif  @if($testQuery->in_test_makers) checked disabled @endif @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf'])) onclick="toggleCheckboxes(this)"@endif>
                         </div>
-                        <div class="dropdown-content" id="{{'dropdown-content-' . $testQuery->id}}" style="background-color: white;">
-                            @if($testQuery->test_type == 'essay')
-                            @foreach($allQuestionQuery as $questionQuery)
-                            @if($questionQuery->testbank_id == $testQuery->id)
+                        <div class="dropdown-content" style="background-color: white;"
+                            @if($testType == 'Essay')
+                            id="{{'dropdown-content-' . $testQuery->essID}}" >
+                            @endif
+                            @if($testType == 'Matching')
+                            id="{{'dropdown-content-' . $testQuery->mtID}}" >
+                            @endif
+                            @if($testType == 'Enumeration')
+                            id="{{'dropdown-content-' . $testQuery->etID}}" >
+                            @endif
+                            @if($testType == 'Essay')
                             <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
                             <table class="essay-table">
                                 <thead>
@@ -153,40 +198,38 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{$questionQuery->item_question}}</td>
-                                        <td>{{$questionQuery->question_point}}</td>
+                                        <td>{{$testQuery->essCriteria1}}</td>
+                                        <td>{{$testQuery->essScore1}}</td>
                                     </tr>
-                                    @if($questionQuery->option_1)
+                                    @if($testQuery->essCriteria2)
                                     <tr>
-                                        <td>{{$questionQuery->option_1}}</td>
-                                        <td>{{$questionQuery->option_2}}</td>
-                                    </tr>
-                                    @endif
-                                    @if($questionQuery->option_3)
-                                    <tr>
-                                        <td>{{$questionQuery->option_3}}</td>
-                                        <td>{{$questionQuery->option_4}}</td>
+                                        <td>{{$testQuery->essCriteria2}}</td>
+                                        <td>{{$testQuery->essScore2}}</td>
                                     </tr>
                                     @endif
-                                    @if($questionQuery->option_5)
+                                    @if($testQuery->essCriteria3)
                                     <tr>
-                                        <td>{{$questionQuery->option_5}}</td>
-                                        <td>{{$questionQuery->option_6}}</td>
+                                        <td>{{$testQuery->essCriteria3}}</td>
+                                        <td>{{$testQuery->essScore3}}</td>
                                     </tr>
                                     @endif
-                                    @if($questionQuery->option_7)
+                                    @if($testQuery->essCriteria4)
                                     <tr>
-                                        <td>{{$questionQuery->option_7}}</td>
-                                        <td>{{$questionQuery->option_8}}</td>
+                                        <td>{{$testQuery->essCriteria4}}</td>
+                                        <td>{{$testQuery->essScore4}}</td>
+                                    </tr>
+                                    @endif
+                                    @if($testQuery->essCriteria5)
+                                    <tr>
+                                        <td>{{$testQuery->essCriteria5}}</td>
+                                        <td>{{$testQuery->essScore5}}</td>
                                     </tr>
                                     @endif
                                 </tbody>
                             </table>
                             @endif
-                            @endforeach
-                            @endif
-                            @if($testQuery->test_type == 'enumeration')
-                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
+                            @if($testType == 'Enumeration')
+                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->etDescription}}</span></p>
                             <table class="essay-table">
                                 <thead>
                                     <tr>
@@ -196,18 +239,18 @@
                                 </thead>
                                 <tbody>
                                     @foreach($allQuestionQuery as $questionQuery)
-                                    @if($questionQuery->testbank_id == $testQuery->id)
+                                    @if($questionQuery->etID == $testQuery->etID)
                                     <tr>
-                                        <td>{{$questionQuery->item_question}}</td>
-                                        <td>{{$questionQuery->question_point}}</td>
+                                        <td>{{$questionQuery->itmAnswer}}</td>
+                                        <td>1</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                 </tbody>
                             </table>
                             @endif
-                            @if($testQuery->test_type == 'matching')
-                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
+                            @if($testType == 'Matching')
+                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->mtDescription}}</span></p>
                             <table class="essay-table">
                                 <thead>
                                     <tr>
@@ -218,18 +261,18 @@
                                 </thead>
                                 <tbody>
                                     @foreach($allQuestionQuery as $questionQuery)
-                                    @if($questionQuery->testbank_id == $testQuery->id)
+                                    @if($questionQuery->mtID == $testQuery->mtID)
                                     <tr>
-                                        <td>{{$questionQuery->option_1}}</td>
-                                        <td>{{$questionQuery->item_question}}</td>
-                                        <td>{{$questionQuery->question_point}}</td>
+                                        <td>{{$questionQuery->itmQuestion}}</td>
+                                        <td>{{$questionQuery->itmAnswer}}</td>
+                                        <td>{{$questionQuery->itmPoints}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                 </tbody>
                             </table>
                             @endif
-                            @if(in_array($testQuery->test_type, ['mcq', 'tf', 'mtf']))
+                            @if(in_array($testType, ['Mcq', 'Tf', 'Mtf']))
                             @foreach($allQuestionQuery as $questionQuery)
                             @if($questionQuery->testbank_id == $testQuery->id)
                             <div class="dropdown-question-header">
@@ -276,9 +319,11 @@
             if (targetElement) {
                 if (targetElement.style.display === 'block') {
                     targetElement.style.display = 'none';
+                    console.log(dropdownIcon);
                     dropdownIcon.textContent = '▼';
                 } else {
                     targetElement.style.display = 'block';
+                    console.log(dropdownIcon);
                     dropdownIcon.textContent = '▲';
                 }
             }

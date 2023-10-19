@@ -23,22 +23,22 @@
             </div>
             <div class="add-item-modal-body">
                 <div class="test-select-body-container">
-                    <a href="/test/{{$test->id}}/essay">
+                    <a href="/test/{{$test->tmID}}/essay">
                         <button class="select-type-test-button">Essay</button>
                     </a>
-                    <a href="/test/{{$test->id}}/mcq">
+                    <a href="/test/{{$test->tmID}}/mcq">
                         <button class="select-type-test-button">MCQ</button>
                     </a>
-                    <a href="/test/{{$test->id}}/tf">
+                    <a href="/test/{{$test->tmID}}/tf">
                         <button class="select-type-test-button">True or False</button>
                     </a>
-                    <a href="/test/{{$test->id}}/mtf">
+                    <a href="/test/{{$test->tmID}}/mtf">
                         <button class="select-type-test-button">Modified True or False</button>
                     </a>
-                    <a href="/test/{{$test->id}}/matching">
+                    <a href="/test/{{$test->tmID}}/matching">
                         <button class="select-type-test-button">Matching</button>
                     </a>
-                    <a href="/test/{{$test->id}}/enumeration">
+                    <a href="/test/{{$test->tmID}}/enumeration">
                         <button class="select-type-test-button">Enumeration</button>
                     </a>
                 </div>
@@ -56,11 +56,11 @@
                 <p class="add-random-item-enter-answer">Select Filters</p>
                 <button class="add-random-item-modal-header-close" id="add_random_item_modal_header_close">x</button>
             </div>
-            <form method="post" id="add_random_form" action="/test/{{$test->id}}/essay/add" class="add-random-item-modal-body">
+            <form method="post" id="add_random_form" action="/test/{{$test->tmID}}/essay/add" class="add-random-item-modal-body">
                 @csrf
                 <div class="random-item-filter">
                     <label for="random_item_filter" class="random-item-filter-input-label">Test Type:</label>
-                    <select name="" id="random_select_option" class="random-item-filter-input" data-test-id="{{$test->id}}" onchange="updateFormAction()">
+                    <select name="" id="random_select_option" class="random-item-filter-input" data-test-id="{{$test->tmID}}" onchange="updateFormAction()">
                         <option value="essay">Essay</option>
                         <option value="mcq">MCQ</option>
                         <option value="tf">True or False</option>
@@ -78,7 +78,7 @@
                     <select name="random_item_subject" id="" class="random-item-filter-input">
                         <option value=""></option>
                         @foreach($subjects as $subject)
-                        <option value="{{$subject->test_subject}}">{{$subject->test_subject}}</option>
+                        <option value="{{$subject->subjectName}}">{{$subject->subjectName}}</option>
                         @endforeach
                     </select>
                     <p class="text-supported-format">Leave blank for no subject.</p>
@@ -179,7 +179,7 @@
         </div>
         <div class="test-body">
             <div class="test-body-header">
-                <a href="/enumeration" class="add-test-button-anchor">
+                <a href="/test" class="add-test-button-anchor">
                     <button class="add-test-button" id="back-button"><img src="/images/back-icon.png" class="add-test-button-icon">
                         <p>Back</p>
                     </button>
@@ -195,9 +195,9 @@
             </div>
             <div class="test-body-content">
                 <div class="test-profile-container">
-                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->test_title}}</span></p>
-                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->test_instruction}}</span></p>
-                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->test_total_points}}</span></p>
+                    <p class="test-profile-label">Test name: <span class="test-profile-value">{{$test->tmTitle}}</span></p>
+                    <p class="test-profile-label">Test description: <span class="test-profile-value">{{$test->tmDescription}}</span></p>
+                    <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->tmTotal}}</span></p>
                 </div>
                 <div class="test-maker-tests-container">
                     <div class="test-maker-questions-container">
@@ -211,22 +211,20 @@
                             @php
                             $hasEssay = false;
                             @endphp
-                            @foreach($allTestQuery as $testQuery)
-                            @if($testQuery->test_type == 'essay')
+                            @foreach($essayQuestions as $testQuery)
                             @php
                             $hasEssay = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$testQuery->test_question}}
+                                    {{$testQuery->essQuestion}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$testQuery->tmessID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasEssay)
                             <p class="no-question-sentence">
@@ -246,22 +244,20 @@
                             @php
                             $hasMCQ = false;
                             @endphp
-                            @foreach($allQuestionQuery as $questionQuery)
-                            @if($questionQuery->test_type == 'mcq')
+                            @foreach($quizQuestions as $questionQuery)
                             @php
                             $hasMCQ = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$questionQuery->item_question}}
+                                    {{$questionQuery->itmQuestion}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$questionQuery->tmquizID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasMCQ)
                             <p class="no-question-sentence">
@@ -281,22 +277,20 @@
                             @php
                             $hasTF = false;
                             @endphp
-                            @foreach($allQuestionQuery as $questionQuery)
-                            @if($questionQuery->test_type == 'tf')
+                            @foreach($tfQuestions as $questionQuery)
                             @php
                             $hasTF = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$questionQuery->item_question}}
+                                    {{$questionQuery->itmQuestion}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$questionQuery->tmtfID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasTF)
                             <p class="no-question-sentence">
@@ -316,22 +310,20 @@
                             @php
                             $hasMTF = false;
                             @endphp
-                            @foreach($allQuestionQuery as $questionQuery)
-                            @if($questionQuery->test_type == 'mtf')
+                            @foreach($mtfQuestions as $questionQuery)
                             @php
                             $hasMTF = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$questionQuery->item_question}}
+                                    {{$questionQuery->itmQuestion}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$questionQuery->tmmtfID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasMTF)
                             <p class="no-question-sentence">
@@ -351,23 +343,20 @@
                             @php
                             $hasMatching = false;
                             @endphp
-                            @foreach($allTestQuery as $testQuery)
-                            @if($testQuery->test_type == 'matching')
+                            @foreach($matchingQuestions as $testQuery)
                             @php
                             $hasMatching = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$testQuery->test_question}}
+                                    {{$testQuery->mtDescription}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
-                                    
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$testQuery->tmmtID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasMatching)
                             <p class="no-question-sentence">
@@ -387,22 +376,20 @@
                             @php
                             $hasEnum = false;
                             @endphp
-                            @foreach($allTestQuery as $testQuery)
-                            @if($testQuery->test_type == 'enumeration')
+                            @foreach($enumerationQuestions as $testQuery)
                             @php
                             $hasEnum = true;
                             @endphp
                             <div class="dropdown-question-container">
                                 <div class="dropdown-question-content">
-                                    {{$testQuery->test_question}}
+                                    {{$testQuery->etDescription}}
                                 </div>
-                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->id}}/{{$testQuery->test_maker_ID}}/delete" onsubmit="return confirmDelete();">
+                                <form class="dropdown-del-btn-container" method="POST" action="/test/{{$test->tmID}}/{{$testQuery->tmetID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
                             </div>
-                            @endif
                             @endforeach
                             @if(!$hasEnum)
                             <p class="no-question-sentence">

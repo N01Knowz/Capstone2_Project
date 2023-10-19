@@ -33,6 +33,7 @@ return new class extends Migration
             $table->foreign('subjectID')->references('subjectID')->on('subjects');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->boolean('labeled')->default(0);
             $table->timestamps();
         });
     }

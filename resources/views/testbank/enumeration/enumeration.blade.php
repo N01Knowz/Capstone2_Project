@@ -114,29 +114,29 @@
                             </td>
                             <td class="test-body-column test-body-instruction" data-id="{{$test->etID}}">
                                 <p>{{$test->etDescription}}</p>
-                                <!-- <div class="question-labels">
-                                    @if(!is_null($test->Realistic))
+                                <div class="question-labels">
+                                    @isset(($test->tags['Realistic']))
                                     <div class="label r-label">Realistic</div>
-                                    @endif
-                                    @if(!is_null($test->Investigative))
+                                    @endisset
+                                    @isset(($test->tags['Investigative']))
                                     <div class="label i-label">Investigative</div>
-                                    @endif
-                                    @if(!is_null($test->Artistic))
+                                    @endisset
+                                    @isset(($test->tags['Artistic']))
                                     <div class="label a-label">Artistic</div>
-                                    @endif
-                                    @if(!is_null($test->Social))
+                                    @endisset
+                                    @isset(($test->tags['Social']))
                                     <div class="label s-label">Social</div>
-                                    @endif
-                                    @if(!is_null($test->Enterprising))
+                                    @endisset
+                                    @isset(($test->tags['Enterprising']))
                                     <div class="label e-label">Enterprising</div>
-                                    @endif
-                                    @if(!is_null($test->Conventional))
+                                    @endisset
+                                    @isset(($test->tags['Conventional']))
                                     <div class="label c-label">Conventional</div>
-                                    @endif
-                                    @if($test->Unknown == 1)
+                                    @endisset
+                                    @isset(($test->tags['Unknown']))
                                     <div class="label u-label">Unknown</div>
-                                    @endif
-                                </div> -->
+                                    @endisset
+                                </div>
                             </td>
                             <td class="test-body-column test-body-status" data-id="{{$test->etID}}">
                                 <div>

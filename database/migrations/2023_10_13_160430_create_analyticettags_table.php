@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('etID')->references('etID')->on('ettests');
             $table->unsignedBigInteger('tagID');
             $table->foreign('tagID')->references('tagID')->on('analytictags');
+            $table->decimal('similarity', 10, 2)->default(0.00);
             $table->boolean('isActive')->default(1);
         });
     }

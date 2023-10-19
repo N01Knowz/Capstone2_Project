@@ -124,29 +124,29 @@
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->qzID}}" data-question-id="{{$question->itmID}}">
                                         <p>{{$question->itmQuestion}}</p>
-                                        <!-- <div class="question-labels">
-                                            @if(!is_null($question->Realistic))
+                                        <div class="question-labels">
+                                            @isset(($question->tags['Realistic']))
                                             <div class="label r-label">Realistic</div>
-                                            @endif
-                                            @if(!is_null($question->Investigative))
+                                            @endisset
+                                            @isset(($question->tags['Investigative']))
                                             <div class="label i-label">Investigative</div>
-                                            @endif
-                                            @if(!is_null($question->Artistic))
+                                            @endisset
+                                            @isset(($question->tags['Artistic']))
                                             <div class="label a-label">Artistic</div>
-                                            @endif
-                                            @if(!is_null($question->Social))
+                                            @endisset
+                                            @isset(($question->tags['Social']))
                                             <div class="label s-label">Social</div>
-                                            @endif
-                                            @if(!is_null($question->Enterprising))
+                                            @endisset
+                                            @isset(($question->tags['Enterprising']))
                                             <div class="label e-label">Enterprising</div>
-                                            @endif
-                                            @if(!is_null($question->Conventional))
+                                            @endisset
+                                            @isset(($question->tags['Conventional']))
                                             <div class="label c-label">Conventional</div>
-                                            @endif
-                                            @if($question->Unknown == 1)
+                                            @endisset
+                                            @isset(($question->tags['Unknown']))
                                             <div class="label u-label">Unknown</div>
-                                            @endif
-                                        </div> -->
+                                            @endisset
+                                        </div>
                                     </td>
                                     <td class="question-description" data-test-id="{{$test->qzID}}" data-question-id="{{$question->itmID}}">
                                         <p>{{$question->itmPoints}}</p>

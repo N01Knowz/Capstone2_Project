@@ -99,7 +99,7 @@
                     <thead>
                         <tr class="test-table-header">
                             <th>Title</th>
-                            <th>description</th>
+                            <th>Description</th>
                             <th>Status</th>
                             <th>Total point(s)</th>
                             <th></th>
@@ -174,13 +174,13 @@
 
         document.getElementById("test-add-question").onclick = function() {
             const dataID = this.getAttribute("data-id")
-            window.location.href = "test/" + dataID + "/create_question";
+            window.location.href = "/test/" + dataID + "/create_question";
         }
 
         function handleRowClick(event) {
             const clickedColumn = event.currentTarget;
             const columnData = clickedColumn.getAttribute('data-id');
-            window.location.href = "test/" + columnData;
+            window.location.href = "/test/" + columnData;
         }
 
         const columns = document.querySelectorAll('.test-body-column');
@@ -194,7 +194,7 @@
         buttons.forEach(function(button) {
             button.onclick = function() {
                 const dataID = this.getAttribute("data-id");
-                window.location.href = "test/" + dataID + "/edit";
+                window.location.href = "/test/" + dataID + "/edit";
             }
         });
     </script>
