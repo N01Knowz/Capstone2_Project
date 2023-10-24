@@ -66,7 +66,7 @@ class mcqTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -76,14 +76,16 @@ class mcqTestbankController extends Controller
         $subjectID = null;
 
         if ($request->input('subject')) {
-            $subject = subjects::where('subjectName', $request->input('subject'))
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
                 ->where('user_id', Auth::id())
                 ->first();
             if ($subject) {
                 $subjectID = $subject->subjectID;
             } else {
                 $createSubject = subjects::create([
-                    'subjectName' => $request->input('subject'),
+                    'subjectName' => ucfirst($request->input('subject')),
                     'user_id' => Auth::id(),
                 ]);
                 $subjectID = $createSubject->subjectID;
@@ -93,7 +95,7 @@ class mcqTestbankController extends Controller
         $quizzes = quizzes::create([
             'user_id' => Auth::id(),
             'qzTitle' => $request->input('title'),
-            'qzDescription' => $request->input('instruction'),
+            'qzDescription' => $request->input('description'),
             'subjectID' => $subjectID,
             'qzIsPublic' => $request->has('share'),
         ]);
@@ -149,7 +151,7 @@ class mcqTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = quizzes::find($id);
+        $test = quizzes::leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')->where('qzID', $id)->select('quizzes.*', 'subjectName')->first();
 
 
         if (is_null($test)) {
@@ -158,7 +160,15 @@ class mcqTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $uniqueSubjects = subjects::where('user_id', Auth::id())
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
+            ->toArray();
+
         return view('testbank.mcq.mcq_edit', [
+            'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
         ]);
     }
@@ -172,7 +182,7 @@ class mcqTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -186,11 +196,31 @@ class mcqTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => ucfirst($request->input('subject')),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
 
         $testbank->update([
             'qzTitle' => $request->input('title'),
-            'qzDescription' => $request->input('instruction'),
+            'qzDescription' => $request->input('description'),
             'qzIsPublic' => $request->has('share'),
+            'subjectID' => $subjectID,
         ]);
 
         return redirect('/mcq');

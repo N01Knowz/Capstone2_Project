@@ -91,14 +91,16 @@ class enumerationTestbankController extends Controller
         $subjectID = null;
 
         if ($request->input('subject')) {
-            $subject = subjects::where('subjectName', $request->input('subject'))
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
                 ->where('user_id', Auth::id())
                 ->first();
             if ($subject) {
                 $subjectID = $subject->subjectID;
             } else {
                 $createSubject = subjects::create([
-                    'subjectName' => $request->input('subject'),
+                    'subjectName' => ucfirst($request->input('subject')),
                     'user_id' => Auth::id(),
                 ]);
                 $subjectID = $createSubject->subjectID;
@@ -144,7 +146,7 @@ class enumerationTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = ettests::find($id);
+        $test = ettests::leftJoin('subjects', 'ettests.subjectID', '=', 'subjects.subjectID')->where('etID', $id)->select('ettests.*', 'subjectName')->first();
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -153,7 +155,13 @@ class enumerationTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        $uniqueSubjects = subjects::where('user_id', Auth::id())
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
+            ->toArray();
         return view('testbank.enumeration.enumeration_edit', [
+            'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
         ]);
     }
@@ -181,11 +189,31 @@ class enumerationTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => ucfirst($request->input('subject')),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
 
         $testbank->update([
             'etTitle' => $request->input('title'),
             'etDescription' => $request->input('description'),
             'etIsPublic' => $request->has('share'),
+            'subjectID' => $subjectID,
         ]);
 
         return redirect('/enumeration');

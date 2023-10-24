@@ -99,7 +99,7 @@ class testMakerController extends Controller
         $test = tmtests::find($id);
 
         $currentUserId = Auth::user()->id;
-        $isShared = $test->test_visible;
+        $isShared = $test->tmIsPublic;
 
 
         if (is_null($test)) {

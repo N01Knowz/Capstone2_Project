@@ -106,19 +106,44 @@ class essayTestbankController extends Controller
         $subjectID = null;
 
         if ($request->input('subject')) {
-            $subject = subjects::where('subjectName', $request->input('subject'))
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
                 ->where('user_id', Auth::id())
                 ->first();
             if ($subject) {
                 $subjectID = $subject->subjectID;
             } else {
                 $createSubject = subjects::create([
-                    'subjectName' => $request->input('subject'),
+                    'subjectName' => ucfirst($request->input('subject')),
                     'user_id' => Auth::id(),
                 ]);
                 $subjectID = $createSubject->subjectID;
             }
         }
+
+
+
+        $testbank = essays::create([
+            'user_id' => Auth::id(),
+            'subjectID' => $subjectID,
+            'essTitle' => $request->input('title'),
+            'essQuestion' => $request->input('question'),
+            'essInstruction' => $request->input('instruction') ? $request->input('instruction') : '',
+            'essCriteria1' => $request->input('criteria_1'),
+            'essScore1' => $request->input('criteria_point_1'),
+            'essCriteria2' => $request->input('criteria_2'),
+            'essScore2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
+            'essCriteria3' => $request->input('criteria_3'),
+            'essScore3' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
+            'essCriteria4' => $request->input('criteria_4'),
+            'essScore4' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
+            'essCriteria5' => $request->input('criteria_5'),
+            'essScore5' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
+            'essImage' => $request->hasFile('imageInput') ? $randomName : null,
+            'essScoreTotal' => $request->input('total_points'),
+            'essIsPublic' => $request->has('share'),
+        ]);
 
 
         // $subject = subjects::where('subjectName', $request->input('subject'))
@@ -154,29 +179,7 @@ class essayTestbankController extends Controller
         //     }
         // }
 
-
-        $testbank = essays::create([
-            'user_id' => Auth::id(),
-            'subjectID' => $subjectID,
-            'essTitle' => $request->input('title'),
-            'essQuestion' => $request->input('question'),
-            'essInstruction' => $request->input('instruction') ? $request->input('instruction') : '',
-            'essCriteria1' => $request->input('criteria_1'),
-            'essScore1' => $request->input('criteria_point_1'),
-            'essCriteria2' => $request->input('criteria_2'),
-            'essScore2' => $request->input('criteria_2') ? $request->input('criteria_point_2') : 0,
-            'essCriteria3' => $request->input('criteria_3'),
-            'essScore3' => $request->input('criteria_3') ? $request->input('criteria_point_3') : 0,
-            'essCriteria4' => $request->input('criteria_4'),
-            'essScore4' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
-            'essCriteria5' => $request->input('criteria_5'),
-            'essScore5' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
-            'essImage' => $request->hasFile('imageInput') ? $randomName : null,
-            'essScoreTotal' => $request->input('total_points'),
-            'essIsPublic' => $request->has('share'),
-        ]);
-
-        return redirect('/essay');
+        return redirect('/essay')->with('store_success', "Test added successfully");
     }
 
     /**
@@ -204,14 +207,23 @@ class essayTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = essays::where('essID', $id)->first();
+        $test = essays::leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')->where('essID', $id)->select('essays.*', 'subjectName')->first();
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $uniqueSubjects = subjects::where('user_id', Auth::id())
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
+            ->toArray();
+
+        // dd($uniqueSubjects);
         return view('testbank.essay.essay_edit', [
+            'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
         ]);
     }
@@ -261,6 +273,26 @@ class essayTestbankController extends Controller
                 $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
             }
         }
+        
+
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => ucfirst($request->input('subject')),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
 
         $dataToUpdate = [
             'essTitle' => $request->input('title'),
@@ -278,6 +310,7 @@ class essayTestbankController extends Controller
             'essScore4' => $request->input('criteria_4') ? $request->input('criteria_point_4') : 0,
             'essCriteria5' => $request->input('criteria_5'),
             'essScore5' => $request->input('criteria_5') ? $request->input('criteria_point_5') : 0,
+            'subjectID' => $subjectID,
         ];
 
 
@@ -287,7 +320,7 @@ class essayTestbankController extends Controller
 
         $testbank->update($dataToUpdate);
 
-        return redirect('/essay');
+        return redirect('/essay')->with('update_success', "Test updated successfully");
     }
 
     /**

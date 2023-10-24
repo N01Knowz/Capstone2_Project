@@ -5,25 +5,41 @@
     --color3: #D95D39;
     --color4: #0E1428;
     --color5: #7B9E89;
-  }
+}
 
 /* CSS Reset */
-body, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-dl, dd, ol, ul, figure,
-hr, fieldset, legend {
-  margin: 0;
-  padding: 0;
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+dl,
+dd,
+ol,
+ul,
+figure,
+hr,
+fieldset,
+legend {
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  line-height: 1.6;
-  width: 100vw;
-  height: 100vh;
-  font-family: "Source Sans Pro", sans-serif;
+    line-height: 1.6;
+    width: 100vw;
+    height: 100vh;
+    font-family: "Source Sans Pro", sans-serif;
 }
 
-ol, ul {
-  list-style: none;
+ol,
+ul {
+    list-style: none;
 }
 
 .main-container {
@@ -45,7 +61,7 @@ ol, ul {
     align-items: end;
 }
 
-#logo{
+#logo {
     height: 55%;
 }
 
@@ -89,6 +105,7 @@ ol, ul {
 
 #label {
     font-weight: bold;
+    color: #464646;
 }
 
 .inputVariables {

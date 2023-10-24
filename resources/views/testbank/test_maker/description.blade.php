@@ -158,13 +158,15 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif style="
+                height: 60px;
+                width: 60px;" id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
                 <div class="setting-container">
-                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <img src="/images/icon-settings.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
                         <form action="/profile" method="get">
                             <button class="setting-profile">Profile</button>
@@ -185,12 +187,14 @@
                     </button>
                 </a>
                 <div class="add-item-button-container">
+                    @if(auth()->user()->id == $test->user_id)
                     <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
                         <p>Add Item</p>
                     </button>
                     <button class="add-test-question-button" id="add-random-test-button"><img src="/images/add-test-icon.png">
                         <p>Add Random Items</p>
                     </button>
+                    @endif
                 </div>
             </div>
             <div class="test-body-content">
@@ -219,11 +223,13 @@
                                 <div class="dropdown-question-content">
                                     {{$testQuery->essQuestion}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/essay/{{$test->tmID}}/{{$testQuery->tmessID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasEssay)
@@ -252,11 +258,13 @@
                                 <div class="dropdown-question-content">
                                     {{$questionQuery->itmQuestion}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/mcq/{{$test->tmID}}/{{$questionQuery->tmquizID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasMCQ)
@@ -285,11 +293,13 @@
                                 <div class="dropdown-question-content">
                                     {{$questionQuery->itmQuestion}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/tf/{{$test->tmID}}/{{$questionQuery->tmtfID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasTF)
@@ -318,11 +328,13 @@
                                 <div class="dropdown-question-content">
                                     {{$questionQuery->itmQuestion}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/mtf/{{$test->tmID}}/{{$questionQuery->tmmtfID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasMTF)
@@ -351,11 +363,13 @@
                                 <div class="dropdown-question-content">
                                     {{$testQuery->mtDescription}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/matching/{{$test->tmID}}/{{$testQuery->tmmtID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasMatching)
@@ -384,11 +398,13 @@
                                 <div class="dropdown-question-content">
                                     {{$testQuery->etDescription}}
                                 </div>
+                                @if(auth()->user()->id == $test->user_id)
                                 <form class="dropdown-del-btn-container" method="POST" action="/test/enumeration/{{$test->tmID}}/{{$testQuery->tmetID}}/delete" onsubmit="return confirmDelete();">
                                     @csrf
                                     @method('delete')
                                     <button class="dropdown-del-btn"><img src="/images/delete-icon.png" class="dropdown-del-btn-img"></button>
                                 </form>
+                                @endif
                             </div>
                             @endforeach
                             @if(!$hasEnum)

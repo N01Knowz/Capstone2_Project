@@ -77,14 +77,16 @@ class mtfTestbankController extends Controller
         $subjectID = null;
 
         if ($request->input('subject')) {
-            $subject = subjects::where('subjectName', $request->input('subject'))
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
                 ->where('user_id', Auth::id())
                 ->first();
             if ($subject) {
                 $subjectID = $subject->subjectID;
             } else {
                 $createSubject = subjects::create([
-                    'subjectName' => $request->input('subject'),
+                    'subjectName' => ucfirst($request->input('subject')),
                     'user_id' => Auth::id(),
                 ]);
                 $subjectID = $createSubject->subjectID;
@@ -146,7 +148,7 @@ class mtfTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = mtftests::find($id);
+        $test = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')->where('mtfID', $id)->select('mtftests.*', 'subjectName')->first();
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -154,7 +156,15 @@ class mtfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $uniqueSubjects = subjects::where('user_id', Auth::id())
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
+            ->toArray();
+
         return view('testbank.mtf.mtf_edit', [
+            'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
         ]);
     }
@@ -168,7 +178,7 @@ class mtfTestbankController extends Controller
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'instruction' => 'required',
+            'description' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -182,11 +192,31 @@ class mtfTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => ucfirst($request->input('subject')),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
 
         $testbank->update([
             'mtfTitle' => $request->input('title'),
-            'mtfDescription' => $request->input('instruction'),
+            'mtfDescription' => $request->input('description'),
             'mtfIsPublic' => $request->has('share'),
+            'subjectID' => $subjectID,
         ]);
 
         return redirect('/mtf');

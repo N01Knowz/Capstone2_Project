@@ -61,13 +61,15 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif style="
+    height: 60px;
+    width: 60px;" id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
                 <div class="setting-container">
-                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <img src="/images/icon-settings.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
                         <form action="/profile" method="get">
                             <button class="setting-profile">Profile</button>
@@ -97,12 +99,8 @@
                 <div class="alert alert-dange red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Description<span class="red-asterisk"> *</span></p>
-                <textarea class="textinput-base textarea-question text-input-background" name="instruction" required></textarea>
-                @error('instruction')
-                <div style="position: relative;">
-                    <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject">
-                    <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;"></ul>
-                </div>
+                <textarea class="textinput-base textarea-question text-input-background" name="description" required></textarea>
+                @error('description')
                 <div class="alert alert-danger red-asterisk">{{ $message }}</div>
                 @enderror
                 <p class="text-input-label label-margin-top">Subject</p>

@@ -26,7 +26,7 @@ class matchingTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
-        ->where('mttests.user_id', '=', $currentUserId);
+            ->where('mttests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
@@ -36,7 +36,7 @@ class matchingTestbankController extends Controller
         }
 
         $tests = $testsQuery->orderBy('mtID', 'desc')
-        ->get();
+            ->get();
 
 
         $tests->each(function ($tests) {
@@ -105,14 +105,16 @@ class matchingTestbankController extends Controller
         $subjectID = null;
 
         if ($request->input('subject')) {
-            $subject = subjects::where('subjectName', $request->input('subject'))
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
                 ->where('user_id', Auth::id())
                 ->first();
             if ($subject) {
                 $subjectID = $subject->subjectID;
             } else {
                 $createSubject = subjects::create([
-                    'subjectName' => $request->input('subject'),
+                    'subjectName' => ucfirst($request->input('subject')),
                     'user_id' => Auth::id(),
                 ]);
                 $subjectID = $createSubject->subjectID;
@@ -180,7 +182,7 @@ class matchingTestbankController extends Controller
      */
     public function edit(string $id)
     {
-        $test = mttests::find($id);
+        $test = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')->where('mtID', $id)->select('mttests.*', 'subjectName')->first();
 
 
         if (is_null($test)) {
@@ -189,7 +191,14 @@ class matchingTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+        $uniqueSubjects = subjects::where('user_id', Auth::id())
+            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+            ->distinct('subjectName')
+            ->pluck('subjectName')
+            ->toArray();
+
         return view('testbank.matching.matching_edit', [
+            'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
         ]);
     }
@@ -218,10 +227,30 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
+        $subjectID = null;
+
+        if ($request->input('subject')) {
+            $subjectName = strtolower($request->input('subject'));
+
+            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+                ->where('user_id', Auth::id())
+                ->first();
+            if ($subject) {
+                $subjectID = $subject->subjectID;
+            } else {
+                $createSubject = subjects::create([
+                    'subjectName' => ucfirst($request->input('subject')),
+                    'user_id' => Auth::id(),
+                ]);
+                $subjectID = $createSubject->subjectID;
+            }
+        }
+
         $testbank->update([
             'mtTitle' => $request->input('title'),
             'mtDescription' => $request->input('description') ? $request->input('description') : '',
             'mtIsPublic' => $request->has('share'),
+            'subjectID' => $subjectID,
         ]);
 
         return redirect('/matching');

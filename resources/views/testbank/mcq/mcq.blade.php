@@ -63,13 +63,15 @@
                 </a>
             </div>
             <div class="profile-container">
-                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif id="profile-pic">
+                <img @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif style="
+    height: 60px;
+    width: 60px;" id="profile-pic">
                 <div class="info">
                     <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}}</p>
                     <p id="profile-email">{{auth()->user()->email;}}</p>
                 </div>
                 <div class="setting-container">
-                    <img src="/images/icons8-gear-50.png" id="profile-setting-icon" onclick="toggleDropdown()">
+                    <img src="/images/icon-settings.png" id="profile-setting-icon" onclick="toggleDropdown()">
                     <div class="setting-dropdown-menu" id="dropdown-menu">
                         <form action="/profile" method="get">
                             <button class="setting-profile">Profile</button>
@@ -117,7 +119,8 @@
                             </td>
                             <td class="test-body-column test-body-status" data-id="{{$test->qzID}}">
                                 <div>
-                                    <p class="test-status-word">@if($test->qzIsPublic == 0) Private @else Public @endif</p><img src="/images/eye-icon-light.png" class="test-status-icon">
+                                    <p class="test-status-word" style="width: 3.5em;">@if($test->qzIsPublic == 0) Private @else Public @endif</p>
+                                    <img @if($test->qzIsPublic == 0) src="/images/closed-eye-icon-light.png" style="background-color: #C61D1F; padding: 0.1em;" @else src="/images/eye-icon-light.png" style="background-color: #2d9c18; padding: 0.1em;" @endif  class="test-status-icon">
                                 </div>
                             </td>
                             <td class="test-body-column test-body-points" data-id="{{$test->qzID}}">

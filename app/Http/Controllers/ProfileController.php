@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 class ProfileController extends Controller
 {
@@ -100,7 +101,7 @@ class ProfileController extends Controller
         // Validate the input
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed',
+            'new_password' => ['required', 'confirmed', Rules\Password::defaults()->mixedCase()->numbers()],
         ]);
     
         // Check if the current password is correct
