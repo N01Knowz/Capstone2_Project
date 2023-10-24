@@ -1,0 +1,149 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+  }
+
+.textinput-search {
+    width: 90%;
+    resize: none;
+    font-size: 1.1em;
+}
+
+
+.text-search-background {
+    padding: 0.5%;
+    border: 1px solid black;
+}
+
+.dropdown-container {
+    width: 96%;
+    margin-bottom: 1em;
+}
+
+.dropdown-header {
+    display: flex;
+    border: 1px solid black;
+    background-color: var(--color4);
+}
+
+.dropdown-title {
+    width: 98%;
+    border: 1px solid black;
+    font-size: 1.2em;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3em 0.5em 0.3em 0.5em;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.dropdown-checkbox {
+    transform: scale(1.8);
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+.testmaker-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.testmaker-buttons>button {
+    width: 20em;
+}
+
+.search-filter-button {
+    padding: 1em;
+    background-color: var(--color3);
+    font-weight: bolder;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 2em;
+}
+
+.dropdown-content {
+    border: 1px solid black;
+    padding: 0.2em 0.5em 0.5em 0.5em;
+    display: none;
+    background-color: gray;
+}
+
+.test-question-output {
+    font-weight: normal;
+}
+
+.essay-table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    border: 1px solid black;
+    /* Add a 1px solid border around the table */
+    margin-top: 0.5em;
+}
+
+th,
+td {
+    border: 1px solid black;
+    /* Add a 1px solid border around table cells (th and td) */
+    padding: 0.2em 0.5em 0.2em 0.5em;
+    /* Add padding to cells for spacing */
+}
+
+.essay-criteria-column {
+    width: 70%;
+}
+
+.dropdown-question-header {
+    display: flex;
+    border: 1px solid black;
+    background-color: white;
+}
+
+.dropdown-question-title {
+    width: 98%;
+    border: 1px solid black;
+    font-size: 1.2em;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-question-title-child {
+    cursor: default;
+}
+
+/* Target the even children of dropdown-content */
+.dropdown-content .dropdown-question-header:nth-child(even) {
+    background-color: #cccccc; /* Set the background color to gray */
+  }
+
+.filter-label-buttons {
+    padding: 0.8em 1.5em 0.8em 1.5em;
+    border-radius: 10px;
+    border: 1px solid black;
+    cursor: pointer;
+    width: 10em;
+}
+
+.filter-label-container {
+    display: flex;
+    gap: 1em;
+}
+
+.chosen-label-button {
+    background-color: #007bff; /* Change to the desired color for active state */
+    color: white; /* Change text color for better contrast */
+}
+

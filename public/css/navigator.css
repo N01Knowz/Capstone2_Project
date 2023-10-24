@@ -1,0 +1,189 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+/* CSS Reset */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+dl,
+dd,
+ol,
+ul,
+figure,
+hr,
+fieldset,
+legend {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    line-height: 1.6;
+    width: 100%;
+    height: 100%;
+    font-family: "Source Sans Pro", sans-serif;
+    position: relative;
+}
+
+.test-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+}
+
+.navigator {
+    background-color: var(--color4);
+    width: 20%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+}
+
+#logo-container {
+    width: 100%;
+    height: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color2);
+    font-weight: bolder;
+    font-size: 1.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#logo {
+    height: 80%;
+}
+
+.test-type {
+    color: white;
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    padding-left: 10%;
+    width: 85%;
+    font-size: 1em;
+}
+
+.test-link {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.test-icon {
+    height: 1.5em;
+    margin-right: 1em;
+}
+
+.chosen-type {
+    color: black;
+    background-color: var(--color1);
+    border-radius: 25px;
+    font-weight: bolder;
+}
+
+.profile-container {
+    height: 10%;
+    width: 100%;
+    margin-top: auto;
+    border-top: 1px solid var(--color2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2%;
+}
+
+#profile-pic {
+    margin-left: 1em;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
+
+.info {
+    overflow: hidden;
+}
+
+#profile-name {
+    color: white;
+}
+
+#profile-email {
+    color: gray;
+}
+
+#profile-setting-icon {
+    height: 1.5em;
+    width: 1.5em;
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+.setting-container {
+    display: flex;
+    position: relative;
+}
+
+.setting-dropdown-menu {
+    display: none;
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+    background-color: white;
+    flex-direction: column;
+    align-items: center;
+    width: 8em;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1;
+    text-align: center;
+}
+
+.setting-profile {
+    border: none;
+    border-bottom: 1px solid black;
+    width: 100%;
+    background-color: transparent;
+    font-size: 1.3em;
+}
+
+.setting-logout {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 1.3em;
+}
+
+.setting-dropdown-menu>*:hover {
+    background-color: var(--color1);
+    width: 100%;
+    cursor: pointer;
+}
+
+.setting-logout {
+    cursor: pointer;
+}
+
+.test-type:hover {
+    background-color: #3f3f3f;
+}
