@@ -1,0 +1,37 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+.criteria-points-table {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+.criteria-column {
+    width: 80%;
+}
+
+.points-column {
+    width: 20%;
+}
+
+.criteria-point-input {
+    background-color: #fffbfb;
+    padding: 0.6em;
+    border: 1px solid black;
+    margin-bottom: 1em;
+}
+
+.point-input {
+    width: 77%;
+}
+
+.criteria-input {
+    width: 98%;
+}

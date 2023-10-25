@@ -1,0 +1,128 @@
+.test-body {
+    height: 100%;
+    width: 80%;
+}
+
+.test-body-content {
+    display: flex;
+    margin-top: 3%;
+    justify-content: center;
+}
+
+.test-body-table {
+    width: 95%;
+    font-size: 1em;
+}
+
+.test-body-table>tbody>tr:hover {
+    background-color: #ffcc66;
+    cursor: pointer;
+}
+
+.test-body-table>thead>tr>th {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.test-body-table>tbody>tr>td {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+thead {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+}
+
+.test-body-status>div {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.test-status-word {
+    background-color: #7B9E89;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    height: 1.5em;
+    border-radius: 25px;
+}
+
+.test-status-icon {
+    background-color: #D95D39;
+    height: 1.5em;
+    width: 1.5em;
+    border-radius: 50%;
+    padding: 1em;
+}
+
+.test-body-points {
+    font-weight: bold;
+}
+
+th,
+td {
+    text-align: left;
+}
+
+.test-body-buttons-column-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2%;
+}
+
+.test-body-buttons-column-div>button {
+    width: 20%;
+}
+
+.test-body-buttons-column-div>form {
+    width: 20%;
+}
+
+.test-body-buttons {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 25px;
+    gap: 0.5em;
+    font-weight: bolder;
+    padding: 0.3em;
+    cursor: pointer;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    width: 100%;
+}
+
+
+.test-body-buttons-icons {
+    height: 2em;
+}
+
+.buttons-add-question-button {
+    background-color: #d95d39;
+}
+
+.buttons-edit-button {
+    background-color: #5177ff;
+    color: white;
+}
+
+.buttons-print-button {
+    background-color: #f0a202;
+}
+
+.buttons-delete-button {
+    background-color: #ed3838;
+    color: white;
+}

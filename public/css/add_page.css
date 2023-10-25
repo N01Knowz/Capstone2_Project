@@ -1,0 +1,137 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+.test-body {
+    height: 100%;
+    width: 80%;
+}
+
+.test-body-content {
+    margin-top: 1%;
+    margin-left: 2%;
+    height: 80%;
+    margin-bottom: 5em;
+}
+
+.text-input-label {
+    font-weight: bolder;
+}
+
+.red-asterisk {
+    color: red;
+}
+
+.textinput-base {
+    width: 95%;
+    resize: none;
+    font-size: 1.1em;
+}
+
+.label-margin-top {
+    margin-top: 2%;
+}
+
+
+.text-input-background {
+    background-color: #fffbfb;
+    padding: 0.5%;
+    border: 1px solid black;
+}
+
+.textarea-title {
+    height: 5%;
+}
+
+.textarea-question {
+    height: 9%;
+}
+
+.textarea-instruction {
+    height: 9%;
+}
+
+.text-input-attach-image {
+    width: 90%;
+}
+
+.text-input-image-button {
+    width: 5%;
+    padding: 0.5%;
+    cursor: pointer;
+}
+
+.text-supported-format {
+    color: gray;
+    font-size: 0.7em;
+    margin-bottom: 1%;
+}
+
+.share-container {
+    display: flex;
+    gap: 0.5%;
+    align-items: center;
+    margin-bottom: 2%;
+}
+
+.share-checkbox {
+    height: 1.5em;
+    width: 1.5em;
+}
+
+
+.save-test-button {
+    padding: 1em;
+    background-color: var(--color2);
+    font-weight: bolder;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 2em;
+}
+
+.image-preview-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview {
+    height: 500px;
+    width: 500px;
+    margin-bottom: 10px;
+}
+
+#suggestions {
+    list-style: none;
+    width: 95%;
+    padding: 0.5%;
+    border: 1px solid #ccc;
+    background-color: white;
+    /* Background color */
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+
+#suggestions li {
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    /* Bottom border for each suggestion */
+}
+
+#suggestions li:last-child {
+    border-bottom: none;
+    /* Remove border for the last suggestion */
+}
+
+#suggestions li:hover {
+    background-color: lightgray;
+}
+
