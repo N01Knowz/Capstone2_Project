@@ -197,35 +197,41 @@
                                 <span class="dropdown-icon" id="{{'dropdown-icon-' . $testQuery->mtfID}}">▼</span> <!-- Dropdown icon (downward-pointing arrow) -->
                                 @endif
                             </button>
-                            <input type="checkbox" value="{{$testQuery->essID}}" 
+                            <input type="checkbox"
                             @if($testType == 'Essay')
+                            value="{{$testQuery->essID}}" 
                             id="parent-checkbox-{{$testQuery->essID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->essID}}"  
                             @endif
                             @if($testType == 'Matching')
+                            value="{{$testQuery->mtID}}" 
                             id="parent-checkbox-{{$testQuery->mtID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->mtID}}"  
                             @endif
                             @if($testType == 'Enumeration')
+                            value="{{$testQuery->etID}}" 
                             id="parent-checkbox-{{$testQuery->etID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->etID}}"  
                             @endif
                             @if($testType == 'Mcq')
+                            value="{{$testQuery->qzID}}" 
                             id="parent-checkbox-{{$testQuery->qzID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->qzID}}"  
                             @endif
                             @if($testType == 'Tf')
+                            value="{{$testQuery->tftests}}" 
                             id="parent-checkbox-{{$testQuery->tfID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->tfID}}"  
                             @endif
                             @if($testType == 'Mtf')
+                            value="{{$testQuery->mtfID}}" 
                             id="parent-checkbox-{{$testQuery->mtfID}}" class="dropdown-checkbox" 
                             data-dropdown-checkboxes="dropdown-questions-checkbox-{{$testQuery->mtfID}}"  
                             @endif
                             @if(!$testQuery->in_test_makers) name="test_checkbox_add[]" @endif 
-                            @if($testType == 'Essay')
-                            @endif
                             @if($testQuery->in_test_makers) checked disabled @endif @if(in_array($testType, ['Mcq', 'Tf', 'Mtf'])) onclick="toggleCheckboxes(this)"@endif>
+                        
+                            @if(!$testQuery->in_test_makers) I am in test maker@endif 
                         </div>
                         <div class="dropdown-content" style="background-color: white;"
                             @if($testType == 'Essay')
@@ -247,7 +253,7 @@
                             id="{{'dropdown-content-' . $testQuery->mtfID}}" >
                             @endif
                             @if($testType == 'Essay')
-                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->test_question}}</span></p>
+                            <p class="text-input-label">Question: <span class="test-question-output">{{$testQuery->essQuestion}}</span></p>
                             <table class="essay-table">
                                 <thead>
                                     <tr>

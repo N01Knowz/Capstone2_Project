@@ -14,9 +14,18 @@
 </head>
 
 <body>
-    <!-- <h1>Your id is: {{auth()->user()->id;}}</h1> -->
     <div class="test-container">
-        <div class="navigator">
+        <div class="header-navigator-container">
+            <div class="menu-icon-container" onclick="toggleNavigator()">
+                <img src="/images/menu-icon-light.png" alt="" class="menu-icon">
+            </div>
+            <div class="header-navigator-profile">
+                <img class="header-navigator-profile-image" @if(is_null(auth()->user()->user_image)) src="/images/profile.png" @else src="/user_upload_images/{{auth()->user()->user_image}}" @endif>
+                <p id="profile-name">{{auth()->user()->first_name;}} {{auth()->user()->last_name;}} ▼</p>
+            </div>
+        </div>
+        <div class="modal-background" onclick="toggleNavigator()" id="modal-navigator"></div>
+        <div class="navigator" id="navigator">
             <div id="logo-container">
                 <img src="/images/logo.png" id="logo">
                 <p>Test Bank</p>
@@ -190,6 +199,40 @@
     </script>
     @endif
     <script>
+        function toggleNavigator() {
+            var dropdown = document.getElementById("navigator");
+            var modalNavigator = document.getElementById("modal-navigator");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "flex";
+            } else {
+                dropdown.style.display = "none";
+            }
+            if (modalNavigator.style.display === "none" || modalNavigator.style.display === "") {
+                modalNavigator.style.display = "block";
+            } else {
+                modalNavigator.style.display = "none";
+            }
+        }
+
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown-menu");
+            var showButton = document.getElementById("profile-setting-icon");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+                document.addEventListener('click', (event) => clickOutsideHandler(event, dropdown, showButton));
+            } else {
+                dropdown.style.display = "none";
+                document.removeEventListener('click', clickOutsideHandler);
+            }
+        }
+
+        function clickOutsideHandler(event, element, showButton) {
+            if (!element.contains(event.target) && event.target !== showButton) {
+                element.style.display = 'none';
+                document.removeEventListener('click', clickOutsideHandler);
+            }
+        }
+
         function confirmDelete() {
             if (confirm("Are you sure you want to delete this record?")) {
                 // User clicked OK, proceed with form submission
@@ -199,17 +242,6 @@
                 return false;
             }
         }
-
-        function toggleDropdown() {
-            var dropdown = document.getElementById("dropdown-menu");
-            if (dropdown.style.display === "none" || dropdown.style.display === "") {
-                dropdown.style.display = "block";
-            } else {
-                dropdown.style.display = "none";
-            }
-        }
-
-
 
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -234,37 +266,7 @@
                 column.addEventListener('click', handleRowClick);
             });
         });
-
-        // function chosenTestType(newTestTypeId) {
-        //     const oldDivElement = document.querySelector('.chosen-type');
-        //     if (oldDivElement) {
-        //         oldDivElement.classList.remove('chosen-type');
-        //         flipIconColor(oldDivElement);
-        //     }
-
-        //     console.log(newTestTypeId);
-        //     const newDivElement = document.getElementById(newTestTypeId);
-        //     newDivElement.classList.add('chosen-type');
-        //     flipIconColor(newDivElement);
-        // }
-
-        // function flipIconColor(divElement) {
-        //     if (divElement) {
-        //         const testIconId = divElement.getAttribute('data-icon-id');
-        //         const iconElement = document.getElementById(testIconId);
-
-        //         const getIconLight = iconElement.getAttribute('data-icon-light');
-        //         const getIconDark = iconElement.getAttribute('data-icon-dark');
-
-        //         if (divElement.classList.contains('chosen-type')) {
-        //             iconElement.src = getIconDark;
-        //         } else {
-        //             iconElement.src = getIconLight;
-        //         }
-        //     }
-        // }
     </script>
-    <!-- <script src="/javascript/index.js"></script> -->
 </body>
 
 </html>

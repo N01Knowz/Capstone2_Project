@@ -10,17 +10,11 @@
 </head>
 <body>
     <div class="main-container">
-        <div class="logoBackground">
-            <div class="comLogo">
-                <img src="images/logoWhite.png" id="logo">
-            </div>
-            <div class="photoBooks">
-                <img src="images/background.png" id="background"></div>
-        </div>
-        <form method="POST" action="{{ route('register') }}" class="loginContainer">
+        <img src="/images/logo.png" class="register-image">
+        <form method="POST" action="{{ route('register') }}" class="registerContainer">
             @csrf
             <p id="registrationWord">Registration</p>
-            <div class="loginForm">
+            <div class="registerForm">
                 <p id="label">First Name</p>
                 <input type="text" name="first_name" class="inputVariables">
                 <p id="label">Last Name</p>
@@ -42,7 +36,7 @@
                 @endif
                 <button id="sign-up-button">Sign Up</button>
             </div>
-            <p id="login-sentence">Already have an account? <span><a href="/">Sign In</a></span></p>
+            <p id="register-sentence">Already have an account? <span><a href="/">Sign In</a></span></p>
         </form>
     </div>
 </body>

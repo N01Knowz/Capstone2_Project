@@ -1,8 +1,14 @@
 
 .test-body {
     margin-left: 20%;
-    width: 80%;
     min-height: 90vh;
+}
+
+@media (max-width: 1000px) {
+    .test-body {
+        margin-left: 0%;
+        width: 100%;
+    }
 }
 
 .test-body-header {
@@ -24,9 +30,10 @@
 }
 
 .add-test-button {
-    width: 20em;
+    width: 100%;
     height: 40px;
-    padding: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     margin: 0;
     border: none;
     cursor: pointer;
@@ -74,7 +81,8 @@
     background-color: var(--color1);
     border-radius: 25px;
     height: 40px;
-    padding: 0;
+    padding-left: 1%;
+    padding-right: 1%;
     margin: 0;
     border: none;
     width: 20%;
@@ -99,10 +107,11 @@
     display: inline-flex;
 }
 
-
 .question-labels {
     display: flex;
+    flex-wrap: wrap;
 }
+
 
 .label {
     padding: 0.3em;

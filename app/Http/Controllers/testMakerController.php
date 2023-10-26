@@ -137,22 +137,22 @@ class testMakerController extends Controller
 
         // dd($uniqueSubjects);
 
-        $essayQuestions = tmEssay::join('essays', 'essays.essID', 'tm_essays.essID')
+        $essayQuestions = tmEssay::join('essays', 'essays.essID', 'tm_essays.essID')->join('tmtests', 'tmtests.tmID', 'tm_essays.tmID')->where('tmtests.tmID', $id)
             ->get();
 
-        $matchingQuestions = tmMt::join('mttests', 'mttests.mtID', 'tm_mts.mtID')
+        $matchingQuestions = tmMt::join('mttests', 'mttests.mtID', 'tm_mts.mtID')->join('tmtests', 'tmtests.tmID', 'tm_mts.tmID')->where('tmtests.tmID', $id)
             ->get();
 
-        $enumerationQuestions = tmEt::join('ettests', 'ettests.etID', 'tm_ets.etID')
+        $enumerationQuestions = tmEt::join('ettests', 'ettests.etID', 'tm_ets.etID')->join('tmtests', 'tmtests.tmID', 'tm_ets.tmID')->where('tmtests.tmID', $id)
             ->get();
 
-        $quizQuestions = tmQuizItems::join('quizitems', 'quizitems.itmID', 'tm_quiz_items.itmID')
+        $quizQuestions = tmQuizItems::join('quizitems', 'quizitems.itmID', 'tm_quiz_items.itmID')->join('tmtests', 'tmtests.tmID', 'tm_quiz_items.tmID')->where('tmtests.tmID', $id)
             ->get();
 
-        $tfQuestions = tmTfItems::join('tfitems', 'tfitems.itmID', 'tm_tf_items.itmID')
+        $tfQuestions = tmTfItems::join('tfitems', 'tfitems.itmID', 'tm_tf_items.itmID')->join('tmtests', 'tmtests.tmID', 'tm_tf_items.tmID')->where('tmtests.tmID', $id)
             ->get();
 
-        $mtfQuestions = tmMtfItems::join('mtfitems', 'mtfitems.itmID', 'tm_mtf_items.itmID')
+        $mtfQuestions = tmMtfItems::join('mtfitems', 'mtfitems.itmID', 'tm_mtf_items.itmID')->join('tmtests', 'tmtests.tmID', 'tm_mtf_items.tmID')->where('tmtests.tmID', $id)
             ->get();
 
         return view('testbank.test_maker.description', [
@@ -713,13 +713,14 @@ class testMakerController extends Controller
                         ]);
                     }
                     if ($test_type == "enumeration") {
-                        tmEssay::create([
+                        tmEt::create([
                             'tmID' => $id,
                             'etID' => $checkbox,
                         ]);
                     }
+                    dd($checkbox);
                     if ($test_type == "matching") {
-                        tmEssay::create([
+                        tmMt::create([
                             'tmID' => $id,
                             'mtID' => $checkbox,
                         ]);
