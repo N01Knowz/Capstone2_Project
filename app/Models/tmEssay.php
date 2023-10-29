@@ -15,4 +15,8 @@ class tmEssay extends Model
         "tmID",
         "essID",
     ];
+    public function essays()
+    {
+        return $this->belongsTo(essays::class)->onDelete('cascade');
+    }
 }

@@ -17,7 +17,7 @@ class analyticquizitemtags extends Model
         "isActive",
     ];
 
-    public function quizItem()
+    public function quizitems()
     {
         return $this->belongsTo(quizitems::class)->onDelete('cascade');
     }

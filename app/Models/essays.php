@@ -31,4 +31,13 @@ class essays extends Model
         "subjectID",
         "user_id",
     ];
+    public function analyticessaytags()
+    {
+        return $this->hasMany(analyticessaytags::class)->onDelete('cascade');
+    }
+    
+    public function tmEssay()
+    {
+        return $this->hasMany(tmEssay::class)->onDelete('cascade');
+    }
 }

@@ -38,8 +38,10 @@ class mcqTestbankController extends Controller
 
         $tests = $testsQuery->orderBy('qzID', 'desc')
             ->get();
+        $testPage = 'mcq';
         return view('testbank.mcq.mcq', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -54,7 +56,12 @@ class mcqTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
-        return view('testbank.mcq.mcq_add', ['uniqueSubjects' => $uniqueSubjects]);
+
+        $testPage = 'mcq';
+        return view('testbank.mcq.mcq_add', [
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage,
+        ]);
     }
 
     /**
@@ -136,14 +143,13 @@ class mcqTestbankController extends Controller
             $questions->tags = $tagData;
         });
 
+
+        $testPage = 'mcq';
         return view('testbank.mcq.mcq_test-description', [
             'test' => $test,
             'questions' => $questions,
+            'testPage' => $testPage,
         ]);
-        // $test = testbank::find($id);
-        // return view('testbank.mcq.mcq_test-description', [
-        //     'test' => $test,
-        // ]);
     }
 
     /**
@@ -167,9 +173,12 @@ class mcqTestbankController extends Controller
             ->pluck('subjectName')
             ->toArray();
 
+
+        $testPage = 'mcq';
         return view('testbank.mcq.mcq_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -292,8 +301,11 @@ class mcqTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testPage = 'mcq';
         return view('testbank/mcq/mcq_add_question', [
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -310,9 +322,12 @@ class mcqTestbankController extends Controller
         }
         $question = quizitems::find($question_id);
 
+
+        $testPage = 'mcq';
         return view('testbank.mcq.mcq_question_description', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
 
         return back();
@@ -414,11 +429,6 @@ class mcqTestbankController extends Controller
         ]);
 
         return redirect('/mcq/' . $test_id);
-
-        // $test = testbank::find($test_id);
-        // return view('testbank/mcq/mcq_add_question', [
-        //     'test' => $test,
-        // ]);
     }
 
     public function add_question_destroy(string $id)
@@ -495,9 +505,12 @@ class mcqTestbankController extends Controller
         }
         $question = quizitems::find($question_id);
 
+
+        $testPage = 'mcq';
         return view('testbank.mcq.mcq_edit_question', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
     }
 

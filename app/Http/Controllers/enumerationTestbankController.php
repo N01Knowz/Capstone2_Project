@@ -53,8 +53,11 @@ class enumerationTestbankController extends Controller
             $tests->tags = $tagData;
         });
 
+
+        $testPage = 'enumeration';
         return view('testbank.enumeration.enumeration', [
             'tests' => $tests,
+            'testPage' => $testPage
         ]);
     }
 
@@ -69,7 +72,11 @@ class enumerationTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
-        return view('testbank.enumeration.enumeration_add', ['uniqueSubjects' => $uniqueSubjects]);
+        
+        $testPage = 'enumeration';
+        return view('testbank.enumeration.enumeration_add', [
+            'uniqueSubjects' => $uniqueSubjects
+        ]);
     }
 
     /**
@@ -135,9 +142,12 @@ class enumerationTestbankController extends Controller
         }
         $questions = etitems::where('etID', '=', $id)
             ->get();
+        
+        $testPage = 'enumeration';
         return view('testbank.enumeration.enumeration_test-description', [
             'test' => $test,
             'questions' => $questions,
+            'testPage' => $testPage
         ]);
     }
 
@@ -160,9 +170,12 @@ class enumerationTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
+        
+        $testPage = 'enumeration';
         return view('testbank.enumeration.enumeration_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage
         ]);
     }
 

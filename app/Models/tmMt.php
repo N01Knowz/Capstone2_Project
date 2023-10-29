@@ -15,4 +15,8 @@ class tmMt extends Model
         "tmID",
         "mtID",
     ];
+    public function mttests()
+    {
+        return $this->belongsTo(mttests::class)->onDelete('cascade');
+    }
 }

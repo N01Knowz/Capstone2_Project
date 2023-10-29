@@ -16,4 +16,9 @@ class analyticmtfitemtags extends Model
         "tagID",
         "isActive",
     ];
+
+    public function mtfitems()
+    {
+        return $this->belongsTo(mtfitems::class)->onDelete('cascade');
+    }
 }

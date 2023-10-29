@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mtitems', function (Blueprint $table) {
             $table->id('itmID');
             $table->unsignedBigInteger('mtID');
-            $table->foreign('mtID')->references('mtID')->on('mttests');
+            $table->foreign('mtID')->references('mtID')->on('mttests')->onDelete('cascade');
             $table->longText('itmQuestion')->nullable();
             $table->longText('itmAnswer');
             $table->decimal('itmPoints', 10, 2)->default(0.00);

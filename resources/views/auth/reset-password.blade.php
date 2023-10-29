@@ -1,39 +1,61 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="{{ asset('css/reset-password.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<body>
+    <div class="reset-password-container">
+        <img src="/images/logo.png" class="login-image">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('password.store') }}" class="reset-password-form">
+            @csrf
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <!-- Password Reset Token -->
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+            <!-- Email Address -->
+            <div class="">
+                <label for="email" class="label">Email: {{$request->email}}</label>
+                <input id="email" class="block mt-1 w-full" type="hidden" name="email" value="{{$request->email}}" required autocomplete="username" />
+            </div>
+            @error('email')
+            <div style="color: red;">{{ $message }}</div>
+            @enderror
+            <!-- Password -->
+            <div class="input-container">
+                <label for="password" class="label">Password:</label>
+                <div class="flex-input">
+                    <input id="password" class="input" type="password" name="password" required autocomplete="new-password">
+                </div>
+            </div>
+            @error('password')
+            <div style="color: red;">{{ $message }}</div>
+            @enderror
+            <!-- Confirm Password -->
+            <div class="input-container">
+                <label for="password_confirmation" class="label">Confirm Password:</label>
+                <div class="flex-input">
+                    <input id="password_confirmation" class="input" type="password" name="password_confirmation" required autocomplete="new-password">
+                </div>
+            </div>
+            @error('password_confirmation')
+            <div style="color: red;">{{ $message }}</div>
+            @enderror
+            <div>
+                <button class="reset-button">
+                    Reset Password
+                </button>
+            </div>
+        </form>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+    </div>
+</body>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>

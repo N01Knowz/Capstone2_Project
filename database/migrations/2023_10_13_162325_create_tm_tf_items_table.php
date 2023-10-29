@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('tm_tf_items', function (Blueprint $table) {
             $table->id('tmtfID');
             $table->unsignedBigInteger('tmID');
-            $table->foreign('tmID')->references('tmID')->on('tmtests');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->unsignedBigInteger('itmID');
-            $table->foreign('itmID')->references('itmID')->on('tfitems');
+            $table->foreign('itmID')->references('itmID')->on('tfitems')->onDelete('cascade');
             $table->timestamps();
         });
     }

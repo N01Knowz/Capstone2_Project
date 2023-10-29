@@ -20,4 +20,13 @@ class ettests extends Model
         "subjectID",
         "user_id",
     ];
+    public function analyticettags()
+    {
+        return $this->hasMany(analyticettags::class)->onDelete('cascade');
+    }
+    
+    public function tmEt()
+    {
+        return $this->hasMany(tmEt::class)->onDelete('cascade');
+    }
 }

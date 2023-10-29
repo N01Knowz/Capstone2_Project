@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('quizitems', function (Blueprint $table) {
             $table->id('itmID');
             $table->unsignedBigInteger('qzID');
-            $table->foreign('qzID')->references('qzID')->on('quizzes');
+            $table->foreign('qzID')->references('qzID')->on('quizzes')->onDelete('cascade');
             $table->longText('itmQuestion');
             $table->longText('itmOption1')->nullable();
             $table->longText('itmOption2')->nullable();

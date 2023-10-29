@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('tm_essays', function (Blueprint $table) {
             $table->id('tmessID');
             $table->unsignedBigInteger('tmID');
-            $table->foreign('tmID')->references('tmID')->on('tmtests');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->unsignedBigInteger('essID');
-            $table->foreign('essID')->references('essID')->on('essays');
+            $table->foreign('essID')->references('essID')->on('essays')->onDelete('cascade');
             $table->timestamps();
         });
     }

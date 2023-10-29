@@ -21,4 +21,12 @@ class tfitems extends Model
         "itmPoints",
         "itmImage",
     ];
+    public function analytictfitemtags()
+    {
+        return $this->hasMany(analytictfitemtags::class)->onDelete('cascade');
+    }
+    public function tmTfItems()
+    {
+        return $this->hasMany(tmTfItems::class)->onDelete('cascade');
+    }
 }

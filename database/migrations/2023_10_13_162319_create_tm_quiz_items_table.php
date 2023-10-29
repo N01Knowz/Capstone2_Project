@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('tm_quiz_items', function (Blueprint $table) {
             $table->id('tmquizID');
             $table->unsignedBigInteger('tmID');
-            $table->foreign('tmID')->references('tmID')->on('tmtests');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->unsignedBigInteger('itmID');
-            $table->foreign('itmID')->references('itmID')->on('quizitems');
+            $table->foreign('itmID')->references('itmID')->on('quizitems')->onDelete('cascade');
             $table->timestamps();
         });
     }

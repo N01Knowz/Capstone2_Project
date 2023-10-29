@@ -15,4 +15,8 @@ class tmEt extends Model
         "tmID",
         "etID",
     ];
+    public function ettests()
+    {
+        return $this->belongsTo(ettests::class)->onDelete('cascade');
+    }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('etitems', function (Blueprint $table) {
             $table->id('itmID');
             $table->unsignedBigInteger('etID');
-            $table->foreign('etID')->references('etID')->on('ettests');
+            $table->foreign('etID')->references('etID')->on('ettests')->onDelete('cascade');
             $table->longText('itmAnswer');
             $table->boolean('itmIsCaseSensitive');
             $table->timestamps();

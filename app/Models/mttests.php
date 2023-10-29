@@ -19,4 +19,13 @@ class mttests extends Model
         "subjectID",
         "user_id",
     ];
+    public function analyticmttags()
+    {
+        return $this->hasMany(analyticmttags::class)->onDelete('cascade');
+    }
+    
+    public function tmMt()
+    {
+        return $this->hasMany(tmMt::class)->onDelete('cascade');
+    }
 }

@@ -16,4 +16,8 @@ class analyticettags extends Model
         "tagID",
         "isActive",
     ];
+    public function ettests()
+    {
+        return $this->belongsTo(ettests::class)->onDelete('cascade');
+    }
 }

@@ -15,4 +15,9 @@ class tmMtfItems extends Model
         "tmID",
         "itmID",
     ];
+
+    public function mtfitems()
+    {
+        return $this->belongsTo(mtfitems::class)->onDelete('cascade');
+    }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mtfitems', function (Blueprint $table) {
             $table->id('itmID');
             $table->unsignedBigInteger('mtfID');
-            $table->foreign('mtfID')->references('mtfID')->on('mtftests');
+            $table->foreign('mtfID')->references('mtfID')->on('mtftests')->onDelete('cascade');
             $table->longText('itmQuestion');
             $table->longText('itmOption1')->default('True');
             $table->longText('itmOption2')->default('False');

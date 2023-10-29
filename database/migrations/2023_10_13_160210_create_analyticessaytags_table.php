@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('analyticessaytags', function (Blueprint $table) {
             $table->id('esstgID');
             $table->unsignedBigInteger('essID');
-            $table->foreign('essID')->references('essID')->on('essays');
+            $table->foreign('essID')->references('essID')->on('essays')->onDelete('cascade');
             $table->unsignedBigInteger('tagID');
             $table->foreign('tagID')->references('tagID')->on('analytictags');
             $table->decimal('similarity', 10, 2)->default(0.00);

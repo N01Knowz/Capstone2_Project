@@ -16,4 +16,9 @@ class analytictfitemtags extends Model
         "tagID",
         "isActive",
     ];
+
+    public function tfitems()
+    {
+        return $this->belongsTo(tfitems::class)->onDelete('cascade');
+    }
 }

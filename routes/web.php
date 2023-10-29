@@ -9,6 +9,7 @@ use App\Http\Controllers\mtfTestbankController;
 use App\Http\Controllers\enumerationTestbankController;
 use App\Http\Controllers\testMakerController;
 use App\Http\Controllers\testPageController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/login');
 });
+
+Auth::routes([
+    'verify' => true
+]);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

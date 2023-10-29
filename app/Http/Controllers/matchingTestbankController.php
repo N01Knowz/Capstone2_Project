@@ -54,8 +54,11 @@ class matchingTestbankController extends Controller
             $tests->tags = $tagData;
         });
 
+        
+        $testPage = 'matching';
         return view('testbank.matching.matching', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -70,7 +73,12 @@ class matchingTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
-        return view('testbank.matching.matching_add', ['uniqueSubjects' => $uniqueSubjects]);
+        
+        $testPage = 'matching';
+        return view('testbank.matching.matching_add', [
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage,
+        ]);
     }
 
     /**
@@ -171,9 +179,12 @@ class matchingTestbankController extends Controller
         }
         $questions = mtitems::where('mtID', '=', $id)
             ->get();
+        
+        $testPage = 'matching';
         return view('testbank.matching.matching_test-description', [
             'test' => $test,
             'questions' => $questions,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -197,9 +208,12 @@ class matchingTestbankController extends Controller
             ->pluck('subjectName')
             ->toArray();
 
+        
+        $testPage = 'matching';
         return view('testbank.matching.matching_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -289,7 +303,10 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
+        
+        $testPage = 'matching';
         return view('testbank/matching/matching_add_question', [
+            'testPage' => $testPage,
             'test' => $test,
         ]);
     }
@@ -334,10 +351,6 @@ class matchingTestbankController extends Controller
 
         return redirect('/matching/' . $test_id);
 
-        // $test = mttests::find($test_id);
-        // return view('testbank/matching/matching_add_question', [
-        //     'test' => $test,
-        // ]);
     }
 
     public function add_question_destroy(string $id)
@@ -381,9 +394,12 @@ class matchingTestbankController extends Controller
         }
         $question = mtitems::find($question_id);
 
+        
+        $testPage = 'matching';
         return view('testbank.matching.matching_edit_question', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
 
         return back();

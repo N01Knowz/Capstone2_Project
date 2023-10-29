@@ -32,7 +32,7 @@ class NewPasswordController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()->mixedCase()->numbers()],
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -54,7 +54,7 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
+                    ? redirect()->route('login')->with('reset_success', "Password reset successful.")
                     : back()->withInput($request->only('email'))
                             ->withErrors(['email' => __($status)]);
     }

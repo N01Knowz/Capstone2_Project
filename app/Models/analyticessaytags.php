@@ -16,4 +16,9 @@ class analyticessaytags extends Model
         "tagID",
         "isActive",
     ];
+
+    public function essays()
+    {
+        return $this->belongsTo(essays::class)->onDelete('cascade');
+    }
 }

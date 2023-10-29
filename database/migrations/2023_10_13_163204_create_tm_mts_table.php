@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('tm_mts', function (Blueprint $table) {
             $table->id('tmmtID');
             $table->unsignedBigInteger('tmID');
-            $table->foreign('tmID')->references('tmID')->on('tmtests');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->unsignedBigInteger('mtID');
-            $table->foreign('mtID')->references('mtID')->on('mttests');
+            $table->foreign('mtID')->references('mtID')->on('mttests')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -54,8 +54,11 @@ class essayTestbankController extends Controller
             $tests->tags = $tagData;
         });
 
+        $testPage = 'essay';
+
         return view('testbank.essay.essay', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -70,8 +73,12 @@ class essayTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
+        $testPage = 'essay';
 
-        return view('testbank.essay.essay_add', ['uniqueSubjects' => $uniqueSubjects]);
+        return view('testbank.essay.essay_add', [
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage
+        ]);
     }
 
     /**
@@ -197,8 +204,10 @@ class essayTestbankController extends Controller
         if ($test->user_id != Auth::id() && !$isShared) {
             abort(403); // User does not own the test
         }
+        $testPage = 'essay';
         return view('testbank.essay.essay_test-description', [
             'test' => $test,
+            'testPage' => $testPage
         ]);
     }
 
@@ -220,11 +229,13 @@ class essayTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
+        $testPage = 'essay';
 
         // dd($uniqueSubjects);
         return view('testbank.essay.essay_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage
         ]);
     }
 
@@ -273,7 +284,7 @@ class essayTestbankController extends Controller
                 $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
             }
         }
-        
+
 
         $subjectID = null;
 

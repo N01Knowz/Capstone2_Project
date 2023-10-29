@@ -39,8 +39,11 @@ class tfTestbankController extends Controller
         $tests = $testsQuery->orderBy('tfID', 'desc')
             ->get();
 
+
+        $testPage = 'tf';
         return view('testbank.tf.tf', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -55,7 +58,12 @@ class tfTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
-        return view('testbank.tf.tf_add', ['uniqueSubjects' => $uniqueSubjects]);
+
+        $testPage = 'tf';
+        return view('testbank.tf.tf_add', [
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage,
+        ]);
     }
 
     /**
@@ -137,9 +145,12 @@ class tfTestbankController extends Controller
             $questions->tags = $tagData;
         });
 
+
+        $testPage = 'tf';
         return view('testbank.tf.tf_test-description', [
             'test' => $test,
             'questions' => $questions,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -160,9 +171,12 @@ class tfTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
+
+        $testPage = 'tf';
         return view('testbank.tf.tf_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -261,8 +275,11 @@ class tfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testPage = 'tf';
         return view('testbank/tf/tf_add_question', [
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -278,9 +295,12 @@ class tfTestbankController extends Controller
         }
         $question = tfitems::find($question_id);
 
+
+        $testPage = 'tf';
         return view('testbank.tf.tf_question_description', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
 
         return back();
@@ -392,9 +412,12 @@ class tfTestbankController extends Controller
         }
         $question = tfitems::find($question_id);
 
+
+        $testPage = 'tf';
         return view('testbank.tf.tf_edit_question', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
     }
 

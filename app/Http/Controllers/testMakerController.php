@@ -32,6 +32,10 @@ use Illuminate\Support\Facades\DB;
 
 class testMakerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -52,8 +56,11 @@ class testMakerController extends Controller
         $tests = $testsQuery->orderBy('tmID', 'desc')
             ->get();
 
+
+        $testPage = 'test';
         return view('testbank.test_maker.index', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -62,7 +69,11 @@ class testMakerController extends Controller
      */
     public function create()
     {
-        return view('testbank.test_maker.add');
+
+        $testPage = 'test';
+        return view('testbank.test_maker.add', [
+            'testPage' => $testPage,
+        ]);
     }
 
     /**
@@ -155,6 +166,8 @@ class testMakerController extends Controller
         $mtfQuestions = tmMtfItems::join('mtfitems', 'mtfitems.itmID', 'tm_mtf_items.itmID')->join('tmtests', 'tmtests.tmID', 'tm_mtf_items.tmID')->where('tmtests.tmID', $id)
             ->get();
 
+
+        $testPage = 'test';
         return view('testbank.test_maker.description', [
             'test' => $test,
             // 'questions' => $questions,
@@ -167,6 +180,7 @@ class testMakerController extends Controller
             'tfQuestions' => $tfQuestions,
             'mtfQuestions' => $mtfQuestions,
             'subjects' => $uniqueSubjects,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -183,7 +197,10 @@ class testMakerController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testPage = 'test';
         return view('testbank.test_maker.edit', [
+            'testPage' => $testPage,
             'test' => $test,
         ]);
     }
@@ -287,9 +304,10 @@ class testMakerController extends Controller
         if ($test_type == 'essay') {
             $allTestQuery = essays::leftJoin('tm_essays', 'tm_essays.essID', '=', 'essays.essID')
                 ->leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')
+                ->leftjoin('tmtests', 'tm_essays.tmID', '=', 'tmtests.tmID')
                 ->where('essays.user_id', '=', $currentUserId)
                 ->select('essays.*', 'subjects.subjectName')
-                ->addSelect(DB::raw('CASE WHEN tm_essays.tmessID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'));
+                ->addSelect(DB::raw('CASE WHEN tm_essays.tmessID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
 
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('essTitle', 'LIKE', "%$searchTitle%");
@@ -344,9 +362,10 @@ class testMakerController extends Controller
         if ($test_type == 'matching') {
             $allTestQuery = mttests::leftJoin('tm_mts', 'tm_mts.mtID', '=', 'mttests.mtID')
                 ->leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
+                ->leftjoin('tmtests', 'tm_mts.tmID', '=', 'tmtests.tmID')
                 ->where('mttests.user_id', '=', $currentUserId)
                 ->select('mttests.*', 'subjects.subjectName')
-                ->addSelect(DB::raw('CASE WHEN tm_mts.tmmtID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'));
+                ->addSelect(DB::raw('CASE WHEN tm_mts.tmmtID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
 
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('mtTitle', 'LIKE', "%$searchTitle%");
@@ -404,9 +423,10 @@ class testMakerController extends Controller
         if ($test_type == 'enumeration') {
             $allTestQuery = ettests::leftJoin('tm_ets', 'tm_ets.etID', '=', 'ettests.etID')
                 ->leftJoin('subjects', 'ettests.subjectID', '=', 'subjects.subjectID')
+                ->leftjoin('tmtests', 'tm_ets.tmID', '=', 'tmtests.tmID')
                 ->where('ettests.user_id', '=', $currentUserId)
                 ->select('ettests.*', 'subjects.subjectName')
-                ->addSelect(DB::raw('CASE WHEN tm_ets.tmetID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'));
+                ->addSelect(DB::raw('CASE WHEN tm_ets.tmetID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
 
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('etTitle', 'LIKE', "%$searchTitle%");
@@ -478,9 +498,10 @@ class testMakerController extends Controller
 
             $allQuestionQuery = quizzes::join('quizitems', 'quizzes.qzID', '=', 'quizitems.qzID')
                 ->leftJoin('tm_quiz_items', 'tm_quiz_items.itmID', '=', 'quizitems.itmID')
+                ->leftjoin('tmtests', 'tm_quiz_items.tmID', '=', 'tmtests.tmID')
                 ->where('quizzes.user_id', '=', $currentUserId)
                 ->select('quizitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_quiz_items.tmquizID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'))
+                ->addSelect(DB::raw('CASE WHEN tm_quiz_items.tmquizID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
                 ->get();
 
             $allQuestionQuery->each(function ($allQuestionQuery) {
@@ -539,9 +560,10 @@ class testMakerController extends Controller
 
             $allQuestionQuery = tftests::join('tfitems', 'tftests.tfID', '=', 'tfitems.tfID')
                 ->leftJoin('tm_tf_items', 'tm_tf_items.itmID', '=', 'tfitems.itmID')
+                ->leftjoin('tmtests', 'tm_tf_items.tmID', '=', 'tmtests.tmID')
                 ->where('tftests.user_id', '=', $currentUserId)
                 ->select('tfitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_tf_items.tmtfID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'))
+                ->addSelect(DB::raw('CASE WHEN tm_tf_items.tmtfID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
                 ->get();
 
             $allQuestionQuery->each(function ($allQuestionQuery) {
@@ -600,9 +622,10 @@ class testMakerController extends Controller
 
             $allQuestionQuery = mtftests::join('mtfitems', 'mtftests.mtfID', '=', 'mtfitems.mtfID')
                 ->leftJoin('tm_mtf_items', 'tm_mtf_items.itmID', '=', 'mtfitems.itmID')
+                ->leftjoin('tmtests', 'tm_mtf_items.tmID', '=', 'tmtests.tmID')
                 ->where('mtftests.user_id', '=', $currentUserId)
                 ->select('mtfitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_mtf_items.tmmtfID IS NOT NULL THEN 1 ELSE NULL END AS in_test_makers'))
+                ->addSelect(DB::raw('CASE WHEN tm_mtf_items.tmmtfID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
                 ->get();
 
             $allQuestionQuery->each(function ($allQuestionQuery) {
@@ -651,12 +674,15 @@ class testMakerController extends Controller
             ->pluck('subjectName')
             ->toArray();
 
+
+        $testPage = 'test';
         return view('testbank.test_maker.add_question', [
             'test' => $test,
             'allTestQuery' => $allTestQuery,
             'allQuestionQuery' => $allQuestionQuery,
             'testType' => ucfirst($test_type),
-            'uniqueSubjects' => $uniqueSubjects
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -718,7 +744,7 @@ class testMakerController extends Controller
                             'etID' => $checkbox,
                         ]);
                     }
-                    dd($checkbox);
+                    // dd($checkbox);
                     if ($test_type == "matching") {
                         tmMt::create([
                             'tmID' => $id,
@@ -1158,7 +1184,7 @@ class testMakerController extends Controller
         $this->update_score($test_id);
         return back();
     }
-    
+
     public function update_score(string $id)
     {
         $test_types = [

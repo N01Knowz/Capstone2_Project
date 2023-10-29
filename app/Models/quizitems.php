@@ -34,4 +34,8 @@ class quizitems extends Model
     {
         return $this->hasMany(analyticquizitemtags::class)->onDelete('cascade');
     }
+    public function tmQuizItems()
+    {
+        return $this->hasMany(tmQuizItems::class)->onDelete('cascade');
+    }
 }

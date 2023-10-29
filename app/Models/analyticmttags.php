@@ -16,4 +16,8 @@ class analyticmttags extends Model
         "tagID",
         "isActive",
     ];
+    public function mttests()
+    {
+        return $this->belongsTo(mttests::class)->onDelete('cascade');
+    }
 }

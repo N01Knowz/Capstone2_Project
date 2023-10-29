@@ -33,6 +33,9 @@
                 </div>
                 @endif
             </form>
+            <a href="/forgot-password">
+                <p class="forgot-password-sentence">Forgot password?</p>
+            </a>
         </div>
         <p id="register-sentence">New to ADA? <span><a href="register">Sign Up</a></span></p>
     </div>
@@ -41,6 +44,12 @@
         var message = "{{ session('password_changed') }}";
         var title = "Successfully Changed Password";
         alert(title + "\n\n" + message);
+    </script>
+    @endif
+    @if(session('reset_success'))
+    <script>
+        var message = "{{ session('reset_success') }}";
+        alert(message);
     </script>
     @endif
 </body>

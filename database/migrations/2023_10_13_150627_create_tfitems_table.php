@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tfitems', function (Blueprint $table) {
             $table->id('itmID');
             $table->unsignedBigInteger('tfID');
-            $table->foreign('tfID')->references('tfID')->on('tftests');
+            $table->foreign('tfID')->references('tfID')->on('tftests')->onDelete('cascade');
             $table->longText('itmQuestion');
             $table->longText('itmOption1')->default('True');
             $table->longText('itmOption2')->default('False');

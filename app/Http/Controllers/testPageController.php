@@ -19,6 +19,10 @@ use App\Models\tmEt;
 
 class testPageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
     public function testPage(string $test_type, string $id)
     {
         $test_tables = [

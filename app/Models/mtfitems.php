@@ -23,4 +23,13 @@ class mtfitems extends Model
         "itmPointsTotal",
         "itmImage",
     ];
+    
+    public function analyticmtfitemtags()
+    {
+        return $this->hasMany(analyticmtfitemtags::class)->onDelete('cascade');
+    }
+    public function tmMtfItems()
+    {
+        return $this->hasMany(tmMtfItems::class)->onDelete('cascade');
+    }
 }

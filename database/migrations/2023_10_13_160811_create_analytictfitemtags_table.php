@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('analytictfitemtags', function (Blueprint $table) {
             $table->id('tftgID');
             $table->unsignedBigInteger('itmID');
-            $table->foreign('itmID')->references('itmID')->on('tfitems');
+            $table->foreign('itmID')->references('itmID')->on('tfitems')->onDelete('cascade');
             $table->unsignedBigInteger('tagID');
             $table->foreign('tagID')->references('tagID')->on('analytictags');
             $table->decimal('similarity', 10, 2)->default(0.00);

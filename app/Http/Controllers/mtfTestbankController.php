@@ -39,8 +39,11 @@ class mtfTestbankController extends Controller
         $tests = $testsQuery->orderBy('mtfID', 'desc')
             ->get();
 
+
+        $testPage = 'mtf';
         return view('testbank.mtf.mtf', [
             'tests' => $tests,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -55,7 +58,12 @@ class mtfTestbankController extends Controller
             ->distinct('subjectName')
             ->pluck('subjectName')
             ->toArray();
-        return view('testbank.mtf.mtf_add', ['uniqueSubjects' => $uniqueSubjects]);
+
+        $testPage = 'mtf';
+        return view('testbank.mtf.mtf_add', [
+            'uniqueSubjects' => $uniqueSubjects,
+            'testPage' => $testPage,
+        ]);
     }
 
     /**
@@ -137,9 +145,12 @@ class mtfTestbankController extends Controller
             $questions->tags = $tagData;
         });
 
+
+        $testPage = 'mtf';
         return view('testbank.mtf.mtf_test-description', [
             'test' => $test,
             'questions' => $questions,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -163,9 +174,12 @@ class mtfTestbankController extends Controller
             ->pluck('subjectName')
             ->toArray();
 
+
+        $testPage = 'mtf';
         return view('testbank.mtf.mtf_edit', [
             'uniqueSubjects' => $uniqueSubjects,
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -192,7 +206,7 @@ class mtfTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        
+
         $subjectID = null;
 
         if ($request->input('subject')) {
@@ -267,8 +281,11 @@ class mtfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
+
+        $testPage = 'mtf';
         return view('testbank/mtf/mtf_add_question', [
             'test' => $test,
+            'testPage' => $testPage,
         ]);
     }
 
@@ -285,9 +302,12 @@ class mtfTestbankController extends Controller
         }
         $question = mtfitems::find($question_id);
 
+
+        $testPage = 'mtf';
         return view('testbank.mtf.mtf_question_description', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
 
         return back();
@@ -359,11 +379,6 @@ class mtfTestbankController extends Controller
         ]);
 
         return redirect('/mtf/' . $test_id);
-
-        // $test = mtftests::find($test_id);
-        // return view('testbank/mtf/mtf_add_question', [
-        //     'test' => $test,
-        // ]);
     }
 
     public function add_question_destroy(string $id)
@@ -417,9 +432,12 @@ class mtfTestbankController extends Controller
         }
         $question = mtfitems::find($question_id);
 
+
+        $testPage = 'mtf';
         return view('testbank.mtf.mtf_edit_question', [
             'test' => $test,
             'question' => $question,
+            'testPage' => $testPage,
         ]);
     }
 

@@ -15,4 +15,9 @@ class tmQuizItems extends Model
         "tmID",
         "itmID",
     ];
+    
+    public function quizitems()
+    {
+        return $this->belongsTo(quizitems::class)->onDelete('cascade');
+    }
 }

@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('tm_ets', function (Blueprint $table) {
             $table->id('tmetID');
             $table->unsignedBigInteger('tmID');
-            $table->foreign('tmID')->references('tmID')->on('tmtests');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->unsignedBigInteger('etID');
-            $table->foreign('etID')->references('etID')->on('ettests');
+            $table->foreign('etID')->references('etID')->on('ettests')->onDelete('cascade');
             $table->timestamps();
         });
     }
