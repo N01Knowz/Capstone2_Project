@@ -43,7 +43,7 @@
         @else
         style="display: flex;"
         @endif class="image-preview-container">
-        <img id="selectedImage" src="/user_upload_images/{{$test->essImage}}" alt="Selected Image" class="image-preview">
+        <img id="selectedImage" src="/user_upload_images/{{auth()->user()->id;}}/{{$test->essImage}}" alt="Selected Image" class="image-preview">
     </div>
     <div class="share-container">
         <input type="checkbox" class="share-checkbox" name="share" disabled @if($test->essIsPublic) checked @endif>

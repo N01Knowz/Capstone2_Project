@@ -10,6 +10,7 @@ use App\Models\analytictfitemtags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 
 class tfTestbankController extends Controller
@@ -17,7 +18,106 @@ class tfTestbankController extends Controller
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
     }
+
+    public function publish(string $id)
+    {
+        $test = tftests::find($id);
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $test->update([
+            'tfIsPublic' => 1,
+        ]);
+        return back()->with('publish', 'Record successfully published. Now it will be seen by students.');
+    }
+
+    public function add_multiple_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+        $test = tftests::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $validator = Validator::make($input, [
+            'tf_items' => 'required|file|mimes:xlsx,xls',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $header = ['Question', 'Item Point(s)', 'Answer Number'];
+        $file = $request->file('tf_items');
+
+        // Load the Excel file using IOFactory
+        $spreadsheet = IOFactory::load($file);
+
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        $headerRow = true;
+        $rowIndex = 0;
+        $skippedRows = 0;
+
+        foreach ($rows as $row) {
+            $columnIndex = -1;
+            if ($headerRow) {
+                foreach ($row as $cell) {
+                    $columnIndex++;
+                    if ($cell == $header[$columnIndex]) {
+                        continue;
+                    } else {
+                        return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+                    }
+                }
+                $headerRow = false;
+                continue;
+            }
+
+            if (is_null($row[0]) || is_null($row[2])) {
+                $skippedRows++;
+                break;
+            }
+            if (!in_array($row[2], ['1', '0'])) {
+                $skippedRows++;
+                break;
+            }
+
+            tfitems::create([
+                'tfID' => $test_id,
+                'itmQuestion' => $row[0],
+                'itmAnswer' => $row[2] == '1' ? 1 : 2,
+                'itmPoints' => is_null($row[1]) ? 1 : $row[1],
+                'itmOption1' => "True",
+                'itmOption2' => "False",
+            ]);
+            $rowIndex++;
+        }
+
+        $questions = tfitems::where("tfID", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->itmPoints;
+        }
+
+        $test->update([
+            'tfTotal' => $total_points,
+        ]);
+
+        return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -27,6 +127,8 @@ class tfTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = tftests::leftJoin('subjects', 'tftests.subjectID', '=', 'subjects.subjectID')
+            ->select('tftests.*', 'subjects.*')
+            ->withCount('tfItems')
             ->where('tftests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
@@ -36,14 +138,38 @@ class tfTestbankController extends Controller
             });
         }
 
-        $tests = $testsQuery->orderBy('tfID', 'desc')
-            ->get();
+        $subjects = subjects::all();
+        $filterSubjects = [];
+        $testsQuery->where(function ($query) use ($subjects, $request, &$filterSubjects) {
+            foreach ($subjects as $subject) {
+                $subjectInputName = $subject->subjectID . 'subject';
 
+                if ($request->input($subjectInputName)) {
+                    $filterSubjects[] = $subject->subjectID;
+                    $query->orWhere('tftests.subjectID', $subject->subjectID);
+                }
+            }
+        });
+        $published =  is_null($request->input('sort-publish')) ? 2 : $request->input('sort-publish');
+
+        if (in_array($request->input('sort-publish'), ['0', '1'])) {
+            $testsQuery = $testsQuery->where('tfIsPublic', $published);
+        }
+
+
+        $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
+        $tests = $testsQuery->orderBy('tfID', $sortDate)
+            ->paginate(13);
 
         $testPage = 'tf';
         return view('testbank.tf.tf', [
             'tests' => $tests,
             'testPage' => $testPage,
+            'searchInput' => $search,
+            'subjects' => $subjects,
+            'filterSubjects' => $filterSubjects,
+            'sortDate' => $sortDate,
+            'published' => $published,
         ]);
     }
 
@@ -53,11 +179,8 @@ class tfTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+
+        $uniqueSubjects = subjects::all();
 
         $testPage = 'tf';
         return view('testbank.tf.tf_add', [
@@ -82,31 +205,13 @@ class tfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
 
         tftests::create([
             'user_id' => Auth::id(),
             'tfTitle' => $request->input('title'),
             'tfDescription' => $request->input('description'),
-            'subjectID' => $subjectID,
-            'tfIsPublic' => $request->has('share'),
+            'subjectID' => $request->input('subject'),
+            'tfIsPublic' => 0,
         ]);
 
         return redirect('/tf');
@@ -118,13 +223,12 @@ class tfTestbankController extends Controller
     public function show(string $id)
     {
         $test = tftests::find($id);
-        $isShared = $test->tfIsPublic;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id() && !$isShared) {
+        if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
         $questions = tfitems::where('tfID', '=', $id)
@@ -166,11 +270,8 @@ class tfTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $uniqueSubjects = subjects::where('user_id', Auth::id())
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+
+        $uniqueSubjects = subjects::all();
 
         $testPage = 'tf';
         return view('testbank.tf.tf_edit', [
@@ -203,29 +304,11 @@ class tfTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $subjectID = null;
 
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
         $testbank->update([
             'tfTitle' => $request->input('title'),
             'tfDescription' => $request->input('description'),
-            'tfIsPublic' => $request->has('share'),
-            'subjectID' => $subjectID,
+            'subjectID' => $request->input('subject'),
         ]);
 
         return redirect('/tf');
@@ -250,7 +333,12 @@ class tfTestbankController extends Controller
         foreach ($questions as $question) {
 
             $questionImage = $question->question_image;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -335,7 +423,7 @@ class tfTestbankController extends Controller
                 $randomName = 'tf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                 $existingImage = tfitems::where('itmImage', $randomName)->first();
             } while ($existingImage);
-            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
         }
 
         $question = tfitems::create([
@@ -374,7 +462,12 @@ class tfTestbankController extends Controller
         }
 
         $questionImage = $question->itmImage;
-        $imagePath = public_path('user_upload_images/' . $questionImage);
+        $folderPath = public_path('user_upload_images/' . Auth::id());
+
+        if (!File::exists($folderPath)) {
+            File::makeDirectory($folderPath, 0777, true, true);
+        }
+        $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
         if (File::exists($imagePath)) {
             // Delete the image file
             File::delete($imagePath);
@@ -451,7 +544,12 @@ class tfTestbankController extends Controller
         $randomName = "";
         if ($request->input('imageChanged')) {
             $questionImage = $question->question_image;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -463,7 +561,7 @@ class tfTestbankController extends Controller
                     $randomName = 'tf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                     $existingImage = tfitems::where('itmImage', $randomName)->first();
                 } while ($existingImage);
-                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+                $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
             }
         }
 

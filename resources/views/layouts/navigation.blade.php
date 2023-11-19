@@ -39,12 +39,12 @@
                 <img src="/images/logo.png" id="logo">
                 <p>Test Bank</p>
             </div>
-            <div class="test-type @if(isset($testPage) && $testPage === 'essay') chosen-type @endif" id="essay-test" data-icon-id="essay-icon">
+            <!-- <div class="test-type @if(isset($testPage) && $testPage === 'essay') chosen-type @endif" id="essay-test" data-icon-id="essay-icon">
                 <a class="test-link" href="/essay" onclick="chosenTestType('essay-test')">
                     <img @if(isset($testPage) && $testPage === 'essay') src="/images/essay-icon-dark.png" @else src="/images/essay-icon-light.png" @endif class="test-icon" data-icon-light="/images/essay-icon-light.png" data-icon-dark="/images/essay-icon-dark.png" id="essay-icon">
                     <p>Essay Tests</p>
                 </a>
-            </div>
+            </div> -->
             <div class="test-type @if(isset($testPage) && $testPage === 'mcq') chosen-type @endif" id="mcq-test" data-icon-id="mcq-icon">
                 <a class="test-link" href="/mcq" onclick="chosenTestType('mcq-test')">
                     <img @if(isset($testPage) && $testPage === 'mcq') src="/images/mcq-icon-dark.png" @else src="/images/mcq-icon-light.png" @endif class="test-icon" data-icon-light="/images/mcq-icon-light.png" data-icon-dark="/images/mcq-icon-dark.png" id="mcq-icon">
@@ -57,12 +57,12 @@
                     <p>True or False Tests</p>
                 </a>
             </div>
-            <div class="test-type  @if(isset($testPage) && $testPage === 'mtf') chosen-type @endif" id="mtf-test" data-icon-id="mtf-icon">
+            <!-- <div class="test-type  @if(isset($testPage) && $testPage === 'mtf') chosen-type @endif" id="mtf-test" data-icon-id="mtf-icon">
                 <a class="test-link" href="/mtf" onclick="chosenTestType('mtf-test')">
                     <img @if(isset($testPage) && $testPage === 'mtf') src="/images/tf-icon-dark.png" @else src="/images/tf-icon-light.png" @endif class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="mtf-icon">
                     <p>Modified True or False Tests</p>
                 </a>
-            </div>
+            </div> -->
             <div class="test-type  @if(isset($testPage) && $testPage === 'matching') chosen-type @endif" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
                     <img @if(isset($testPage) && $testPage === 'matching') src="/images/matching-icon-dark.png" @else src="/images/matching-icon-light.png" @endif class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">

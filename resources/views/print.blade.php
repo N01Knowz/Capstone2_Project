@@ -150,7 +150,7 @@ $test_tables = [
                     </li>
                     <br>
                     @endif
-                    @endfor
+                @endfor
             </ul>
         </div>
         @endforeach
@@ -258,7 +258,7 @@ $test_tables = [
                     </tr>
                     @endif
                 </tbody>
-            </table>    
+            </table>
         </div>
         @endforeach
     </div>
@@ -286,7 +286,7 @@ $test_tables = [
                     @endif
                     @endforeach
                 </tbody>
-            </table>    
+            </table>
         </div>
         @endforeach
     </div>
@@ -319,7 +319,7 @@ $test_tables = [
                     @endif
                     @endforeach
                 </tbody>
-            </table>    
+            </table>
         </div>
         @endforeach
     </div>

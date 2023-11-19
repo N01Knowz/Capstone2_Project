@@ -19,4 +19,8 @@ class tftests extends Model
         "subjectID",
         "user_id",
     ];
+    public function tfItems()
+    {
+        return $this->hasMany(tfitems::class, 'tfID', 'tfID');
+    }
 }

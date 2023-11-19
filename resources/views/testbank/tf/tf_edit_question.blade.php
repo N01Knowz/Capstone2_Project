@@ -55,7 +55,7 @@
             @else
             style="display: flex;"
             @endif class="image-preview-container">
-            <img id="selectedImage" src="/user_upload_images/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
+            <img id="selectedImage" src="/user_upload_images/{{auth()->user()->id;}}/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
         </div>
         <div id="optionsContainer">
             @for($i = 1; $i <= $question->choices_number; $i++)

@@ -15,6 +15,7 @@ class essayTestbankController extends Controller
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
     }
     /**
      * Display a listing of the resource.
@@ -107,7 +108,7 @@ class essayTestbankController extends Controller
                 $randomName = 'ess_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
                 $existingImage = essays::where('essImage', $randomName)->first();
             } while ($existingImage);
-            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
         }
 
         $subjectID = null;
@@ -269,7 +270,13 @@ class essayTestbankController extends Controller
         $randomName = "";
         if ($request->input('imageChanged')) {
             $testImage = $testbank->essImage;
-            $imagePath = public_path('user_upload_images/' . $testImage);
+
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $testImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -281,7 +288,7 @@ class essayTestbankController extends Controller
                     $randomName = 'ess_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'tst.' . $request->file('imageInput')->getClientOriginalExtension();
                     $existingImage = essays::where('essImage', $randomName)->first();
                 } while ($existingImage);
-                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+                $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
             }
         }
 
@@ -350,7 +357,12 @@ class essayTestbankController extends Controller
         }
 
         $testImage = $test->essImage;
-        $imagePath = public_path('user_upload_images/' . $testImage);
+        $folderPath = public_path('user_upload_images/' . Auth::id());
+
+        if (!File::exists($folderPath)) {
+            File::makeDirectory($folderPath, 0777, true, true);
+        }
+        $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $testImage);
         if (File::exists($imagePath)) {
             // Delete the image file
             File::delete($imagePath);

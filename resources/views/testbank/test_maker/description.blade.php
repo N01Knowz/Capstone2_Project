@@ -20,18 +20,18 @@
         </div>
         <div class="add-item-modal-body">
             <div class="test-select-body-container">
-                <a href="/test/{{$test->tmID}}/essay">
+                <!-- <a href="/test/{{$test->tmID}}/essay">
                     <button class="select-type-test-button">Essay</button>
-                </a>
+                </a> -->
                 <a href="/test/{{$test->tmID}}/mcq">
                     <button class="select-type-test-button">MCQ</button>
                 </a>
                 <a href="/test/{{$test->tmID}}/tf">
                     <button class="select-type-test-button">True or False</button>
                 </a>
-                <a href="/test/{{$test->tmID}}/mtf">
+                <!-- <a href="/test/{{$test->tmID}}/mtf">
                     <button class="select-type-test-button">Modified True or False</button>
-                </a>
+                </a> -->
                 <a href="/test/{{$test->tmID}}/matching">
                     <button class="select-type-test-button">Matching</button>
                 </a>
@@ -58,10 +58,10 @@
             <div class="random-item-filter">
                 <label for="random_item_filter" class="random-item-filter-input-label">Test Type:</label>
                 <select name="" id="random_select_option" class="random-item-filter-input" data-test-id="{{$test->tmID}}" onchange="updateFormAction()">
-                    <option value="essay">Essay</option>
-                    <option value="mcq">MCQ</option>
+                    <!-- <option value="essay">Essay</option> -->
+                    <option value="mcq">Multiple Choices Question</option>
                     <option value="tf">True or False</option>
-                    <option value="mtf">Modified True or False</option>
+                    <!-- <option value="mtf">Modified True or False</option> -->
                     <option value="matching">Matching</option>
                     <option value="enumeration">Enumeration</option>
                 </select>
@@ -132,7 +132,7 @@
         <p class="test-profile-label">Total point(s): <span class="test-profile-value">{{$test->tmTotal}}</span></p>
     </div>
     <div class="test-maker-tests-container">
-        <div class="test-maker-questions-container">
+        <!-- <div class="test-maker-questions-container">
             <div class="dropdown-header">
                 <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-essay')">
                     Essay Tests Questions
@@ -166,7 +166,7 @@
                 </p>
                 @endif
             </div>
-        </div>
+        </div> -->
         <div class="test-maker-questions-container">
             <div class="dropdown-header">
                 <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-mcq')">
@@ -237,7 +237,7 @@
                 @endif
             </div>
         </div>
-        <div class="test-maker-questions-container">
+        <!-- <div class="test-maker-questions-container">
             <div class="dropdown-header">
                 <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-mtf')">
                     Modified True or False Tests Questions
@@ -271,7 +271,7 @@
                 </p>
                 @endif
             </div>
-        </div>
+        </div> -->
         <div class="test-maker-questions-container">
             <div class="dropdown-header">
                 <button class="dropdown-title" type="button" onclick="showDropdown('dropdown-content-matching')">

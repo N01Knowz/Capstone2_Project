@@ -1,0 +1,49 @@
+.body-content {
+    display: flex;
+    margin-top: 3em;
+    height: 70%;
+    align-items: center;
+    flex-direction: column;
+}
+.take-test-body{
+    width: 600px;
+    border: 2px solid black;
+    border-radius: 25px;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 1em;
+}
+ul.custom-list {
+    margin-left: 1em;
+    list-style-type: upper-alpha; /* Use 'upper-alpha' for uppercase letters (A, B, C, ...) */
+}
+.item-options {
+    display: flex;
+}
+
+.item-options-form {
+    align-self: center;
+}
+
+.test-content{
+    display: flex;
+    flex-direction: column;
+}
+
+.test-item-cell {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.et-answers {
+    margin: 0.5em 0;
+}
+
+.finish-test-button {
+    padding: 0.5em;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+}

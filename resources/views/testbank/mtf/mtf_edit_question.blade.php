@@ -15,6 +15,15 @@
 <link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/mcq_add_question.css">
 @endpush
+@if ($errors->any())
+<div class="alert alert-danger" style="color: red;">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 @section('content')
 <div class="test-body-header">
     <a href="/mtf/{{$test->mtfID}}" class="add-test-button-anchor">
@@ -57,7 +66,7 @@
             @else
             style="display: flex;"
             @endif class="image-preview-container">
-            <img id="selectedImage" src="/user_upload_images/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
+            <img id="selectedImage" src="/user_upload_images/{{auth()->user()->id;}}/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
         </div>
         <div id="optionsContainer">
             @for($i = 1; $i <= $question->choices_number; $i++)
@@ -74,7 +83,7 @@
                 <select class="select-option" id="option-select" name="question_answer">
                     @for($i = 1; $i <= $question->choices_number; $i++)
                         <option value="{{$i}}" @if($i==$question->itmAnswer) selected @endif>Option {{$i}}</option>
-                        @endfor
+                    @endfor
                 </select>
             </div>
             <div class="item-point-container">

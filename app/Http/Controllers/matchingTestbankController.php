@@ -9,13 +9,106 @@ use App\Models\subjects;
 use App\Models\analyticmttags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class matchingTestbankController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
+    }
+
+    public function publish(string $id)
+    {
+        $test = mttests::find($id);
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $test->update([
+            'mtIsPublic' => 1,
+        ]);
+        return back()->with('publish', 'Record successfully published. Now it will be seen by students.');
+    }
+
+    public function add_multiple_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+        $test = mttests::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $validator = Validator::make($input, [
+            'matching_items' => 'required|file|mimes:xlsx,xls',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $header = ['Item Text', 'Item Answer', 'Item Points'];
+        $file = $request->file('matching_items');
+
+        // Load the Excel file using IOFactory
+        $spreadsheet = IOFactory::load($file);
+
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        $headerRow = true;
+        $rowIndex = 0;
+        $skippedRows = 0;
+
+        foreach ($rows as $row) {
+            $columnIndex = -1;
+            if ($headerRow) {
+                foreach ($row as $cell) {
+                    $columnIndex++;
+                    if ($cell == $header[$columnIndex]) {
+                        continue;
+                    } else {
+                        return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+                    }
+                }
+                $headerRow = false;
+                continue;
+            }
+
+            if (is_null($row[1])) {
+                $skippedRows++;
+                break;
+            }
+
+            mtitems::create([
+                'mtID' => $test_id,
+                'itmQuestion' => $row[0],
+                'itmAnswer' => $row[1],
+                'itmPoints' => is_null($row[2]) ? 1 : $row[2],
+            ]);
+
+            $rowIndex++;
+        }
+
+        $questions = mtitems::where("mtID", "=", $test->mtID)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->itmPoints;
+        }
+
+        $test->update([
+            'mtTotal' => $total_points,
+        ]);
+
+        return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
     }
     /**
      * Display a listing of the resource.
@@ -26,6 +119,8 @@ class matchingTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
+            ->select('mttests.*', 'subjects.*')
+            ->withCount('mtItems')
             ->where('mttests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
@@ -35,8 +130,29 @@ class matchingTestbankController extends Controller
             });
         }
 
-        $tests = $testsQuery->orderBy('mtID', 'desc')
-            ->get();
+        $subjects = subjects::all();
+        $filterSubjects = [];
+
+        $testsQuery->where(function ($query) use ($subjects, $request, &$filterSubjects) {
+            foreach ($subjects as $subject) {
+                $subjectInputName = $subject->subjectID . 'subject';
+
+                if ($request->input($subjectInputName)) {
+                    $filterSubjects[] = $subject->subjectID;
+                    $query->orWhere('mttests.subjectID', $subject->subjectID);
+                }
+            }
+        });
+
+        $published =  is_null($request->input('sort-publish')) ? 2 : $request->input('sort-publish');
+
+        if (in_array($request->input('sort-publish'), ['0', '1'])) {
+            $testsQuery = $testsQuery->where('mtIsPublic', $published);
+        }
+
+        $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
+        $tests = $testsQuery->orderBy('mtID', $sortDate)
+            ->paginate(13);
 
 
         $tests->each(function ($tests) {
@@ -54,11 +170,16 @@ class matchingTestbankController extends Controller
             $tests->tags = $tagData;
         });
 
-        
+
         $testPage = 'matching';
         return view('testbank.matching.matching', [
             'tests' => $tests,
             'testPage' => $testPage,
+            'searchInput' => $search,
+            'subjects' => $subjects,
+            'filterSubjects' => $filterSubjects,
+            'sortDate' => $sortDate,
+            'published' => $published,
         ]);
     }
 
@@ -68,12 +189,9 @@ class matchingTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
-        
+
+        $uniqueSubjects = subjects::all();
+
         $testPage = 'matching';
         return view('testbank.matching.matching_add', [
             'uniqueSubjects' => $uniqueSubjects,
@@ -93,70 +211,52 @@ class matchingTestbankController extends Controller
             'description' => 'required',
         ]);
 
-        $hasAtLeastOneItemText = false;
+        // $hasAtLeastOneItemText = false;
 
-        for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
-            if ($request->input('item_text_' . $i)) {
-                $hasAtLeastOneItemText = true;
-                break;
-            }
-        }
+        // for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
+        //     if ($request->input('item_text_' . $i)) {
+        //         $hasAtLeastOneItemText = true;
+        //         break;
+        //     }
+        // }
 
-        if (!$hasAtLeastOneItemText) {
-            return redirect()->back()->withErrors(['no_item' => 'There should be at least 1 text item'])->withInput();
-        }
+        // if (!$hasAtLeastOneItemText) {
+        //     return redirect()->back()->withErrors(['no_item' => 'There should be at least 1 text item'])->withInput();
+        // }
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
 
         $testbank = mttests::create([
             'user_id' => Auth::id(),
             'mtTitle' => $request->input('title'),
             'mtDescription' => $request->input('description') ? $request->input('description') : '',
-            'subjectID' =>  $subjectID,
-            'mtIsPublic' => $request->has('share'),
+            'subjectID' =>  $request->input('subject'),
+            'mtIsPublic' => 0,
         ]);
 
-        for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
-            $question = mtitems::create([
-                'mtID' => $testbank->mtID,
-                'itmAnswer' => $request->input('item_answer_' . $i),
-                'itmQuestion' => $request->input('item_text_' . $i),
-                'itmPoints' => $request->input('item_point_' . $i),
-            ]);
-        }
+        // for ($i = 1; $i <= intval($request->input('numChoicesInput')); $i++) {
+        //     $question = mtitems::create([
+        //         'mtID' => $testbank->mtID,
+        //         'itmAnswer' => $request->input('item_answer_' . $i),
+        //         'itmQuestion' => $request->input('item_text_' . $i),
+        //         'itmPoints' => $request->input('item_point_' . $i),
+        //     ]);
+        // }
 
-        $questions = mtitems::where("mtID", "=", $testbank->mtID)->get();
+        // $questions = mtitems::where("mtID", "=", $testbank->mtID)->get();
 
-        $total_points = 0;
+        // $total_points = 0;
 
-        foreach ($questions as $question) {
-            $total_points += $question->itmPoints;
-        }
+        // foreach ($questions as $question) {
+        //     $total_points += $question->itmPoints;
+        // }
 
-        $testbank->update([
-            'mtTotal' => $total_points,
-        ]);
+        // $testbank->update([
+        //     'mtTotal' => $total_points,
+        // ]);
 
         return redirect('/matching');
     }
@@ -167,19 +267,18 @@ class matchingTestbankController extends Controller
     public function show(string $id)
     {
         $test = mttests::find($id);
-        $isShared = $test->mtIsPublic;
         // dd($test->user_id != Auth::id() && !$isShared);
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id() && !$isShared) {
+        if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
         $questions = mtitems::where('mtID', '=', $id)
             ->get();
-        
+
         $testPage = 'matching';
         return view('testbank.matching.matching_test-description', [
             'test' => $test,
@@ -202,13 +301,10 @@ class matchingTestbankController extends Controller
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $uniqueSubjects = subjects::where('user_id', Auth::id())
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
 
-        
+        $uniqueSubjects = subjects::all();
+
+
         $testPage = 'matching';
         return view('testbank.matching.matching_edit', [
             'uniqueSubjects' => $uniqueSubjects,
@@ -241,30 +337,29 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $subjectID = null;
+        // $subjectID = null;
 
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
+        // if ($request->input('subject')) {
+        //     $subjectName = strtolower($request->input('subject'));
 
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
+        //     $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
+        //         ->where('user_id', Auth::id())
+        //         ->first();
+        //     if ($subject) {
+        //         $subjectID = $subject->subjectID;
+        //     } else {
+        //         $createSubject = subjects::create([
+        //             'subjectName' => ucfirst($request->input('subject')),
+        //             'user_id' => Auth::id(),
+        //         ]);
+        //         $subjectID = $createSubject->subjectID;
+        //     }
+        // }
 
         $testbank->update([
             'mtTitle' => $request->input('title'),
             'mtDescription' => $request->input('description') ? $request->input('description') : '',
-            'mtIsPublic' => $request->has('share'),
-            'subjectID' => $subjectID,
+            'subjectID' => $request->input('subject'),
         ]);
 
         return redirect('/matching');
@@ -303,7 +398,7 @@ class matchingTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        
+
         $testPage = 'matching';
         return view('testbank/matching/matching_add_question', [
             'testPage' => $testPage,
@@ -350,7 +445,6 @@ class matchingTestbankController extends Controller
         ]);
 
         return redirect('/matching/' . $test_id);
-
     }
 
     public function add_question_destroy(string $id)
@@ -394,7 +488,7 @@ class matchingTestbankController extends Controller
         }
         $question = mtitems::find($question_id);
 
-        
+
         $testPage = 'matching';
         return view('testbank.matching.matching_edit_question', [
             'test' => $test,

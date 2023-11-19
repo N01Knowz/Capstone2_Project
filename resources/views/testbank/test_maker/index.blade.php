@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="/css/navigator.css">
 <link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/tf.css">
+<link rel="stylesheet" href="/css/filter.css">
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 @endpush
 @section('content')
@@ -16,11 +17,12 @@
         </button>
     </form>
     <form method="GET" action="" class="searchbar-container">
-        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
+        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
         <button class="search-button">Search</button>
     </form>
 </div>
 <div class="test-body-content">
+    @include('layouts.filter_testmaker')
     <table class="test-body-table">
         <thead>
             <tr class="test-table-header">
@@ -54,6 +56,13 @@
                 </td>
                 <td class="test-body-buttons-column" id="test-bb">
                     <div class="test-body-buttons-column-div">
+                        <form method="POST" action="/mcq/{{$test->qzID}}/publish" class="button-delete-form" onsubmit="return confirmPublish();">
+                            @csrf
+                            @method('PUT')
+                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-publish-button @endif"><img src="/images/publish-icon-dark.png" class="test-body-buttons-icons">
+                                <p>Publish</p>
+                            </button>
+                        </form>
                         <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->tmID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
                             <p>Edit</p>
                         </button>
@@ -85,6 +94,11 @@
             // User clicked Cancel, prevent form submission
             return false;
         }
+    }
+
+    function noItemsPublish() {
+        alert("There's no item for this record.");
+        return false;
     }
 
     function handleRowClick(event) {

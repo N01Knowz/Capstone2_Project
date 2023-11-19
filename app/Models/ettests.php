@@ -29,4 +29,8 @@ class ettests extends Model
     {
         return $this->hasMany(tmEt::class)->onDelete('cascade');
     }
+    public function etItems()
+    {
+        return $this->hasMany(etitems::class, 'etID', 'etID');
+    }
 }

@@ -21,4 +21,8 @@ class mtftests extends Model
         "subjectID",
         "user_id",
     ];
+    public function mtfItems()
+    {
+        return $this->hasMany(mtfitems::class, 'mtfID', 'mtfID');
+    }
 }

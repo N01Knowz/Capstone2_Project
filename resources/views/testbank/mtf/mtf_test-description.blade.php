@@ -6,7 +6,60 @@
 <link rel="stylesheet" href="/css/navigator.css">
 <link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/test_description.css">
+<link rel="stylesheet" href="/css/mtf_test_description.css">
 @endpush
+@if ($errors->any())
+@foreach ($errors->all() as $error)
+<script>
+    alert("{{ $error }}");
+</script>
+@endforeach
+@endif
+@if(session('wrong_template'))
+<script>
+    var message = "{{ session('wrong_template') }}";
+    alert(message);
+</script>
+@endif
+@if(session('success'))
+<script>
+    var message = "{{ session('success') }}";
+    alert(message);
+</script>
+@endif
+@section('modal-contents')
+<div class="add-item-container" id="add_item_container">
+    <div class="add-item-sub-container" id="add_item_sub_container">
+        <div class="add-item-modal-header">
+            <p class="add-item-enter-answer">Download template <span><a href="{{ route('mtf-excel') }}" class="btn btn-primary">here</a></span></p>
+            <button class="add-item-modal-header-close" id="add_item_modal_header_close">x</button>
+        </div>
+        <div class="add-item-modal-body">
+            <div class="add-item-modal-body-content">
+                <strong>Guide: Write below the header and make sure to use the template.</strong>
+                <ul>
+                    <li><strong>Question:</strong> Question of the item <strong>(Required)</strong></li>
+                    <li><strong>Item Points:</strong> Points for the item <strong>(1 point if blank)</strong></li>
+                    <li><strong>Explanation Points:</strong> Points for the explanation <strong>(1 point if blank)</strong></li>
+                    <li><strong>Answer Number:</strong> Number representing the correct answer choice. <strong>0 is False, 1 is True. (Required)</strong></li>
+                    <li><strong>If there are questions that fails to follow the template. It will be skipped and not be uploaded</strong></li>
+                </ul>
+                <form action="/mtf/{{$test->mtfID}}/create_multiple_questions" method="POST" id="add_item_form" class="upload-form" enctype="multipart/form-data">
+                    @csrf
+                    <strong>Upload items here.</strong>
+                    <input type="file" name="mtf_items" accept=".xlsx, .xls">
+                </form>
+            </div>
+        </div>
+        <div class="add-item-modal-footer">
+            <div class="add-item-buttons-container">
+                <button form="add_item_form" class="add-item-save-button add-item-modal-button" id="save-quiz-button">Upload</button>
+                <button id="add_item_close_button" class="add-item-close-button add-item-modal-button">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
 @section('content')
 <div class="test-body-header">
     <a href="/mtf" class="add-test-button-anchor">
@@ -15,10 +68,17 @@
         </button>
     </a>
     <div class="searchbar-container">
+        @if(!$test->mtfIsPublic)
         @if(auth()->user()->id == $test->user_id)
         <button class="add-test-question-button" id="add_item_button"><img src="/images/add-test-icon.png">
             <p>Add Test Item</p>
         </button>
+        @endif
+        @if(auth()->user()->id == $test->user_id)
+        <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
+            <p>Add Multiple Item</p>
+        </button>
+        @endif
         @endif
     </div>
 </div>
@@ -38,7 +98,9 @@
                         <th class="questions-table-question-column">Question</th>
                         <th class="questions-table-point-column">Point(s)</th>
                         @if(auth()->user()->id == $test->user_id)
+                        @if(!$test->mtfIsPublic)
                         <th class="questions-table-buttons-column"></th>
+                        @endif
                         @endif
                     </tr>
                 </thead>
@@ -78,6 +140,7 @@
                             <p>{{$question->itmPointsTotal}}</p>
                         </td>
                         @if(auth()->user()->id == $test->user_id)
+                        @if(!$test->mtfIsPublic)
                         <td>
                             <div class="questions-table-buttons-column-div">
                                 <form action="/mtf/{{$test->mtfID}}/{{$question->itmID}}/edit" method="GET" class="question-table-button-form">
@@ -94,6 +157,7 @@
                                 </form>
                             </div>
                         </td>
+                        @endif
                         @endif
                     </tr>
                     @endforeach
@@ -141,5 +205,22 @@
             return false;
         }
     }
+    const add_item_container = document.getElementById('add_item_container');
+    const add_item_sub_container = document.getElementById('add_item_sub_container');
+    const add_item_modal_header_close = document.getElementById('add_item_modal_header_close');
+    const add_item_close_button = document.getElementById('add_item_close_button');
+    document.getElementById('add-test-button').addEventListener('click', function() {
+        add_item_container.style.display = "flex";
+        setTimeout(() => {
+            add_item_sub_container.classList.add("show");
+        }, 10);
+    });
+
+    add_item_container.addEventListener("click", function(event) {
+        if (event.target === add_item_container || event.target === add_item_modal_header_close || event.target === add_item_close_button) {
+            add_item_container.style.display = "none";
+            add_item_sub_container.classList.remove("show");
+        }
+    });
 </script>
 @endsection

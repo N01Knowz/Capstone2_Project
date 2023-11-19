@@ -28,4 +28,8 @@ class mttests extends Model
     {
         return $this->hasMany(tmMt::class)->onDelete('cascade');
     }
+    public function mtItems()
+    {
+        return $this->hasMany(mtitems::class, 'mtID', 'mtID');
+    }
 }

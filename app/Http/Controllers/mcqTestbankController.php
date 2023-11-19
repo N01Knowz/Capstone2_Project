@@ -11,12 +11,15 @@ use DOMDocument;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 class mcqTestbankController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
     }
     /**
      * Display a listing of the resource.
@@ -27,8 +30,9 @@ class mcqTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = quizzes::leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')
+            ->select('quizzes.*', 'subjects.*')
+            ->withCount('quizItems')
             ->where('quizzes.user_id', '=', $currentUserId);
-
         if (!empty($search)) {
             $testsQuery->where(function ($query) use ($search) {
                 $query->where('qzTitle', 'LIKE', "%$search%")
@@ -36,12 +40,43 @@ class mcqTestbankController extends Controller
             });
         }
 
-        $tests = $testsQuery->orderBy('qzID', 'desc')
-            ->get();
         $testPage = 'mcq';
+
+        $subjects = subjects::all();
+        $filterSubjects = [];
+
+        $testsQuery->where(function ($query) use ($subjects, $request, &$filterSubjects) {
+            foreach ($subjects as $subject) {
+                $subjectInputName = $subject->subjectID . 'subject';
+
+                if ($request->input($subjectInputName)) {
+                    $filterSubjects[] = $subject->subjectID;
+                    $query->orWhere('quizzes.subjectID', $subject->subjectID);
+                }
+            }
+        });
+
+        $published =  is_null($request->input('sort-publish')) ? 2 : $request->input('sort-publish');
+
+        if (in_array($request->input('sort-publish'), ['0', '1'])) {
+            $testsQuery->where('qzIsPublic', $published);
+        }
+
+        $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
+        $tests = $testsQuery->orderBy('qzID', $sortDate)
+            ->paginate(13);
+        // dd($tests);
+
+        // dd($tests);
+        // dd($request->input('sort-date'));
         return view('testbank.mcq.mcq', [
             'tests' => $tests,
             'testPage' => $testPage,
+            'searchInput' => $search,
+            'subjects' => $subjects,
+            'filterSubjects' => $filterSubjects,
+            'sortDate' => $sortDate,
+            'published' => $published,
         ]);
     }
 
@@ -51,11 +86,7 @@ class mcqTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+        $uniqueSubjects = subjects::all();
 
         $testPage = 'mcq';
         return view('testbank.mcq.mcq_add', [
@@ -80,31 +111,12 @@ class mcqTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
-
         $quizzes = quizzes::create([
             'user_id' => Auth::id(),
             'qzTitle' => $request->input('title'),
             'qzDescription' => $request->input('description'),
-            'subjectID' => $subjectID,
-            'qzIsPublic' => $request->has('share'),
+            'subjectID' => $request->input('subject'),
+            'qzIsPublic' => 0,
         ]);
 
         return redirect('/mcq');
@@ -116,13 +128,12 @@ class mcqTestbankController extends Controller
     public function show(string $id)
     {
         $test = quizzes::find($id);
-        $isShared = $test->tfIsPublic;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id() && !$isShared) {
+        if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
         $questions = quizitems::where('qzID', '=', $id)
@@ -167,12 +178,7 @@ class mcqTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $uniqueSubjects = subjects::where('user_id', Auth::id())
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
-
+        $uniqueSubjects = subjects::all();
 
         $testPage = 'mcq';
         return view('testbank.mcq.mcq_edit', [
@@ -205,34 +211,30 @@ class mcqTestbankController extends Controller
         if ($testbank->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
 
 
         $testbank->update([
             'qzTitle' => $request->input('title'),
             'qzDescription' => $request->input('description'),
-            'qzIsPublic' => $request->has('share'),
-            'subjectID' => $subjectID,
+            'subjectID' => $request->input('subject'),
         ]);
 
         return redirect('/mcq');
+    }
+
+    public function publish(string $id)
+    {
+        $test = quizzes::find($id);
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $test->update([
+            'qzIsPublic' => 1,
+        ]);
+        return back()->with('publish', 'Record successfully published. Now it will be seen by students.');
     }
 
     /**
@@ -254,7 +256,12 @@ class mcqTestbankController extends Controller
         foreach ($questions as $question) {
 
             $questionImage = $question->itmImage;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -333,6 +340,104 @@ class mcqTestbankController extends Controller
         return back();
     }
 
+    public function add_multiple_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+        $test = quizzes::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $validator = Validator::make($input, [
+            'mcq_items' => 'required|file|mimes:xlsx,xls',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $header = ['Question', 'Item Point(s)', 'Answer Number', 'Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6', 'Option 7', 'Option 8', 'Option 9', 'Option 10'];
+        $file = $request->file('mcq_items');
+
+        // Load the Excel file using IOFactory
+        $spreadsheet = IOFactory::load($file);
+
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        $headerRow = true;
+        $rowIndex = 0;
+        $skippedRows = 0;
+
+        foreach ($rows as $row) {
+            $columnIndex = -1;
+            if ($headerRow) {
+                foreach ($row as $cell) {
+                    $columnIndex++;
+                    if ($cell == $header[$columnIndex]) {
+                        continue;
+                    } else {
+                        return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+                    }
+                }
+                $headerRow = false;
+                continue;
+            }
+
+            if (is_null($row[0]) || is_null($row[2]) || is_null($row[3])) {
+                $skippedRows++;
+                // echo ('Row: ' . $rowIndex + 2 . " skipped");
+                // echo ("<br>");
+                break;
+            }
+            // echo ('Row: ' . $rowIndex + 2 . " accepted");
+            // echo ("<br>");
+            // break;
+            $choices = 0;
+            for ($i = 3; $i < 13; $i++) {
+                if (!is_null($row[$i])) {
+                    $choices++;
+                }
+            }
+
+            quizitems::create([
+                'qzID' => $test_id,
+                'itmQuestion' => $row[0],
+                'choices_number' => $choices,
+                'itmAnswer' => $row[2],
+                'itmPoints' => is_null($row[1]) ? 1 : $row[1],
+                'itmOption1' => '<p>' . $row[3] . "</p>",
+                'itmOption2' => is_null($row[4]) ? null : '<p>' . $row[4] . "</p>",
+                'itmOption3' => is_null($row[5]) ? null : '<p>' . $row[5] . "</p>",
+                'itmOption4' => is_null($row[6]) ? null : '<p>' . $row[6] . "</p>",
+                'itmOption5' => is_null($row[7]) ? null : '<p>' . $row[7] . "</p>",
+                'itmOption6' => is_null($row[8]) ? null : '<p>' . $row[8] . "</p>",
+                'itmOption7' => is_null($row[9]) ? null : '<p>' . $row[9] . "</p>",
+                'itmOption8' => is_null($row[10]) ? null : '<p>' . $row[10] . "</p>",
+                'itmOption9' => is_null($row[11]) ? null : '<p>' . $row[11] . "</p>",
+                'itmOption10' => is_null($row[12]) ? null : '<p>' . $row[12] . "</p>",
+            ]);
+            $rowIndex++;
+        }
+
+        $questions = quizitems::where("qzID", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_points += $question->itmPoints;
+        }
+
+        $test->update([
+            'qzTotal' => $total_points,
+        ]);
+
+        return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
+    }
+
     public function add_question_store(Request $request, string $test_id)
     {
         $input = $request->all();
@@ -363,7 +468,7 @@ class mcqTestbankController extends Controller
                 $randomName = 'mcq_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                 $existingImage = quizitems::where('itmImage', $randomName)->first();
             } while ($existingImage);
-            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
         }
 
         $question = quizitems::create([
@@ -397,7 +502,7 @@ class mcqTestbankController extends Controller
                 $uploadpath = public_path('user_upload_images');
                 $filename = time() . '_' . uniqid() . '.' . $imageType;
                 file_put_contents($uploadpath . '/' . $filename, $imageData);
-                $image->setAttribute('src', '/user_upload_images/' . $filename);
+                $image->setAttribute('src', '/user_upload_images/' . Auth::id() . $filename);
             }
 
             $bodyContent = '';
@@ -443,7 +548,12 @@ class mcqTestbankController extends Controller
         }
 
         $questionImage = $question->itmImage;
-        $imagePath = public_path('user_upload_images/' . $questionImage);
+        $folderPath = public_path('user_upload_images/' . Auth::id());
+
+        if (!File::exists($folderPath)) {
+            File::makeDirectory($folderPath, 0777, true, true);
+        }
+        $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
         if (File::exists($imagePath)) {
             // Delete the image file
             File::delete($imagePath);
@@ -543,7 +653,12 @@ class mcqTestbankController extends Controller
         $randomName = "";
         if ($request->input('imageChanged')) {
             $questionImage = $question->question_image;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -555,7 +670,7 @@ class mcqTestbankController extends Controller
                     $randomName = 'mcq_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                     $existingImage = quizitems::where('itmImage', $randomName)->first();
                 } while ($existingImage);
-                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+                $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
             }
         }
 
@@ -634,7 +749,7 @@ class mcqTestbankController extends Controller
                         $imageData = base64_decode($srcData);
                         $filename = time() . '_' . uniqid() . '.' . $imageType;
                         file_put_contents($uploadpath . '/' . $filename, $imageData);
-                        $image->setAttribute('src', '/user_upload_images/' . $filename);
+                        $image->setAttribute('src', '/user_upload_images/' . Auth::id() . $filename);
                     }
                 }
                 $bodyContent = '';

@@ -47,7 +47,7 @@
             @else
             style="display: flex;"
             @endif class="image-preview-container">
-            <img id="selectedImage" src="/user_upload_images/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
+            <img id="selectedImage" src="/user_upload_images/{{auth()->user()->id;}}/{{$question->itmImage}}" alt="Selected Image" class="image-preview">
         </div>
         <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
         @for($i = 1; $i <= $question->choices_number; $i++)

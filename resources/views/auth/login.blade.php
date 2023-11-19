@@ -46,6 +46,12 @@
         alert(title + "\n\n" + message);
     </script>
     @endif
+    @if(session('deactivated'))
+    <script>
+        var message = "{{ session('deactivated') }}";
+        alert(message);
+    </script>
+    @endif
     @if(session('reset_success'))
     <script>
         var message = "{{ session('reset_success') }}";

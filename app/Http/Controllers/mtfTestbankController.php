@@ -11,13 +11,121 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use DOMDocument;
 use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class mtfTestbankController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
     }
+
+    public function publish(string $id)
+    {
+        $test = mtftests::find($id);
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $test->update([
+            'mtfIsPublic' => 1,
+        ]);
+        return back()->with('publish', 'Record successfully published. Now it will be seen by students.');
+    }
+
+
+    public function add_multiple_store(Request $request, string $test_id)
+    {
+        $input = $request->all();
+        $test = mtftests::find($test_id);
+
+
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+
+        $validator = Validator::make($input, [
+            'mtf_items' => 'required|file|mimes:xlsx,xls',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $header = ['Question', 'Item Point(s)', 'Explanation Point(s)', 'Answer Number'];
+        $file = $request->file('mtf_items');
+
+        // Load the Excel file using IOFactory
+        $spreadsheet = IOFactory::load($file);
+
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        $headerRow = true;
+        $rowIndex = 0;
+        $skippedRows = 0;
+
+        foreach ($rows as $row) {
+            $columnIndex = -1;
+            if ($headerRow) {
+                foreach ($row as $cell) {
+                    $columnIndex++;
+                    if ($cell == $header[$columnIndex]) {
+                        continue;
+                    } else {
+                        return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+                    }
+                }
+                $headerRow = false;
+                continue;
+            }
+
+            if (is_null($row[0]) || is_null($row[3])) {
+                $skippedRows++;
+                break;
+            }
+            if (!in_array($row[3], ['1', '0'])) {
+                $skippedRows++;
+                break;
+            }
+
+            $total_points = 0;
+            is_null($row[1]) ? $total_points += 1 : $total_points += $row[1];
+            is_null($row[2]) ? $total_points += 1 : $total_points += $row[2];
+
+            mtfitems::create([
+                'itmPointsTotal' => $total_points,
+                'mtfID' => $test_id,
+                'itmQuestion' => $row[0],
+                'itmAnswer' => $row[3] == '1' ? 1 : 2,
+                'choices_number' => 2,
+                'itmPoints1' => is_null($row[1]) ? 1 : $row[1],
+                'itmPoints2' => is_null($row[2]) ? 1 : $row[2],
+            ]);
+
+            $rowIndex++;
+        }
+
+        $questions = mtfitems::where("mtfID", "=", $test_id)->get();
+
+        $total_points = 0;
+
+        foreach ($questions as $question) {
+            $total_question_points = $question->itmPoints1 + $question->itmPoints2;
+            $total_points += $total_question_points;
+        }
+
+        $test->update([
+            'mtfTotal' => $total_points,
+        ]);
+
+        return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -27,6 +135,8 @@ class mtfTestbankController extends Controller
 
         $currentUserId = Auth::user()->id;
         $testsQuery = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
+            ->select('mtftests.*', 'subjects.*')
+            ->withCount('mtfItems')
             ->where('mtftests.user_id', '=', $currentUserId);
 
         if (!empty($search)) {
@@ -35,15 +145,39 @@ class mtfTestbankController extends Controller
                     ->orWhere('test_instruction', 'LIKE', "%$search%");
             });
         }
-
-        $tests = $testsQuery->orderBy('mtfID', 'desc')
-            ->get();
-
-
         $testPage = 'mtf';
+
+        $subjects = subjects::all();
+        $filterSubjects = [];
+
+        $testsQuery->where(function ($query) use ($subjects, $request, &$filterSubjects) {
+            foreach ($subjects as $subject) {
+                $subjectInputName = $subject->subjectID . 'subject';
+
+                if ($request->input($subjectInputName)) {
+                    $filterSubjects[] = $subject->subjectID;
+                    $query->orWhere('mtftests.subjectID', $subject->subjectID);
+                }
+            }
+        });
+
+        $published =  is_null($request->input('sort-publish')) ? 2 : $request->input('sort-publish');
+
+        if (in_array($request->input('sort-publish'), ['0', '1'])) {
+            $testsQuery = $testsQuery->where('mtfIsPublic', $published);
+        }
+
+        $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
+        $tests = $testsQuery->orderBy('mtfID', $sortDate)
+            ->paginate(13);
         return view('testbank.mtf.mtf', [
             'tests' => $tests,
             'testPage' => $testPage,
+            'searchInput' => $search,
+            'subjects' => $subjects,
+            'filterSubjects' => $filterSubjects,
+            'sortDate' => $sortDate,
+            'published' => $published,
         ]);
     }
 
@@ -53,11 +187,8 @@ class mtfTestbankController extends Controller
     public function create()
     {
         $currentUserId = Auth::user()->id;
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+
+        $uniqueSubjects = subjects::all();
 
         $testPage = 'mtf';
         return view('testbank.mtf.mtf_add', [
@@ -82,31 +213,12 @@ class mtfTestbankController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
-
         mtftests::create([
             'user_id' => Auth::id(),
             'mtfTitle' => $request->input('title'),
             'mtfDescription' => $request->input('description'),
-            'subjectID' => $subjectID,
-            'mtfIsPublic' => $request->has('share'),
+            'subjectID' => $request->input('subject'),
+            'mtfIsPublic' => 0,
         ]);
 
         return redirect('/mtf');
@@ -118,13 +230,12 @@ class mtfTestbankController extends Controller
     public function show(string $id)
     {
         $test = mtftests::find($id);
-        $isShared = $test->test_visible;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id() && !$isShared) {
+        if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
         $questions = mtfitems::where('mtfID', '=', $id)
@@ -168,11 +279,8 @@ class mtfTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $uniqueSubjects = subjects::where('user_id', Auth::id())
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+
+        $uniqueSubjects = subjects::all();
 
 
         $testPage = 'mtf';
@@ -207,30 +315,10 @@ class mtfTestbankController extends Controller
             abort(403); // User does not own the test
         }
 
-        $subjectID = null;
-
-        if ($request->input('subject')) {
-            $subjectName = strtolower($request->input('subject'));
-
-            $subject = subjects::whereRaw('LOWER(subjectName) = ?', [$subjectName])
-                ->where('user_id', Auth::id())
-                ->first();
-            if ($subject) {
-                $subjectID = $subject->subjectID;
-            } else {
-                $createSubject = subjects::create([
-                    'subjectName' => ucfirst($request->input('subject')),
-                    'user_id' => Auth::id(),
-                ]);
-                $subjectID = $createSubject->subjectID;
-            }
-        }
-
         $testbank->update([
             'mtfTitle' => $request->input('title'),
             'mtfDescription' => $request->input('description'),
-            'mtfIsPublic' => $request->has('share'),
-            'subjectID' => $subjectID,
+            'subjectID' => $request->input('subject'),
         ]);
 
         return redirect('/mtf');
@@ -256,7 +344,12 @@ class mtfTestbankController extends Controller
         foreach ($questions as $question) {
 
             $questionImage = $question->question_image;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -343,7 +436,7 @@ class mtfTestbankController extends Controller
                 $randomName = 'mtf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                 $existingImage = mtfitems::where('question_image', $randomName)->first();
             } while ($existingImage);
-            $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+            $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
         }
 
 
@@ -387,13 +480,18 @@ class mtfTestbankController extends Controller
         if (is_null($question)) {
             abort(404); // User does not own the test
         }
-        $test = mtftests::find($question->testbank_id);
+        $test = mtftests::find($question->mtfID);
         if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
 
         $questionImage = $question->itmImage;
-        $imagePath = public_path('user_upload_images/' . $questionImage);
+        $folderPath = public_path('user_upload_images/' . Auth::id());
+
+        if (!File::exists($folderPath)) {
+            File::makeDirectory($folderPath, 0777, true, true);
+        }
+        $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
         if (File::exists($imagePath)) {
             // Delete the image file
             File::delete($imagePath);
@@ -403,7 +501,7 @@ class mtfTestbankController extends Controller
 
         $question->delete();
 
-        $questions = mtfitems::where("testbank_id", "=", $test->id)->get();
+        $questions = mtfitems::where("mtfID", "=", $test->id)->get();
 
         $total_points = 0;
 
@@ -471,7 +569,12 @@ class mtfTestbankController extends Controller
         $randomName = "";
         if ($request->input('imageChanged')) {
             $questionImage = $question->question_image;
-            $imagePath = public_path('user_upload_images/' . $questionImage);
+            $folderPath = public_path('user_upload_images/' . Auth::id());
+
+            if (!File::exists($folderPath)) {
+                File::makeDirectory($folderPath, 0777, true, true);
+            }
+            $imagePath = public_path('user_upload_images/' . Auth::id() . '/' . $questionImage);
             if (File::exists($imagePath)) {
                 // Delete the image file
                 File::delete($imagePath);
@@ -483,7 +586,7 @@ class mtfTestbankController extends Controller
                     $randomName = 'mtf_' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 30) . 'qst.' . $request->file('imageInput')->getClientOriginalExtension();
                     $existingImage = mtfitems::where('itmImage', $randomName)->first();
                 } while ($existingImage);
-                $request->file('imageInput')->move(public_path('user_upload_images'), $randomName);
+                $request->file('imageInput')->move(public_path('user_upload_images/' . Auth::id()), $randomName);
             }
         }
 

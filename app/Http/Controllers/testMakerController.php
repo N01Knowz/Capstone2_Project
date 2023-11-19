@@ -35,6 +35,7 @@ class testMakerController extends Controller
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        $this->middleware('isTeacher');
     }
     /**
      * Display a listing of the resource.
@@ -52,8 +53,9 @@ class testMakerController extends Controller
                     ->orWhere('tmDescription', 'LIKE', "%$search%");
             });
         }
+        $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
 
-        $tests = $testsQuery->orderBy('tmID', 'desc')
+        $tests = $testsQuery->orderBy('tmID', $sortDate)
             ->get();
 
 
@@ -61,6 +63,8 @@ class testMakerController extends Controller
         return view('testbank.test_maker.index', [
             'tests' => $tests,
             'testPage' => $testPage,
+            'searchInput' => $search,
+            'sortDate' => $sortDate,
         ]);
     }
 
@@ -69,7 +73,6 @@ class testMakerController extends Controller
      */
     public function create()
     {
-
         $testPage = 'test';
         return view('testbank.test_maker.add', [
             'testPage' => $testPage,
@@ -96,7 +99,7 @@ class testMakerController extends Controller
             'user_id' => Auth::id(),
             'tmTitle' => $request->input('title'),
             'tmDescription' => $request->input('description'),
-            'tmIsPublic' => $request->has('share'),
+            'tmIsPublic' => 0,
         ]);
 
         return redirect('/test');
@@ -110,13 +113,12 @@ class testMakerController extends Controller
         $test = tmtests::find($id);
 
         $currentUserId = Auth::user()->id;
-        $isShared = $test->tmIsPublic;
 
 
         if (is_null($test)) {
             abort(404); // User does not own the test
         }
-        if ($test->user_id != Auth::id() && !$isShared) {
+        if ($test->user_id != Auth::id()) {
             abort(403); // User does not own the test
         }
 
@@ -140,11 +142,7 @@ class testMakerController extends Controller
 
         // dd($allQuestionQuery);
 
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->select('subjectName')
-            ->get();
+        $uniqueSubjects = subjects::all();
 
         // dd($uniqueSubjects);
 
@@ -232,7 +230,6 @@ class testMakerController extends Controller
         $testbank->update([
             'tmTitle' => $request->input('title'),
             'tmDescription' => $request->input('description'),
-            'tmIsPublic' => $request->has('share'),
         ]);
 
         return redirect('/test');
@@ -283,9 +280,10 @@ class testMakerController extends Controller
         if ($searchTitle) {
             // dd($searchTitle);
         }
-        if ($subjectFilter) {
-            // dd($subjectFilter);
-        }
+
+        // if ($subjectFilter == '1' || is_null($subjectFilter)) {
+        //     dd($subjectFilter);
+        // }
 
 
         if (!in_array($test_type, $types_of_test)) {
@@ -312,7 +310,7 @@ class testMakerController extends Controller
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('essTitle', 'LIKE', "%$searchTitle%");
             }
-            if ($subjectFilter) {
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
                 $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
             }
 
@@ -370,7 +368,7 @@ class testMakerController extends Controller
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('mtTitle', 'LIKE', "%$searchTitle%");
             }
-            if ($subjectFilter) {
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
                 $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
             }
 
@@ -431,7 +429,7 @@ class testMakerController extends Controller
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('etTitle', 'LIKE', "%$searchTitle%");
             }
-            if ($subjectFilter) {
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
                 $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
             }
 
@@ -481,21 +479,6 @@ class testMakerController extends Controller
         }
 
         if ($test_type == 'mcq') {
-            $allTestQuery = quizzes::leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')
-                ->where('quizzes.user_id', '=', $currentUserId)
-                ->select('quizzes.*', 'subjects.subjectName');
-
-            if ($searchTitle) {
-                $allTestQuery = $allTestQuery->where('qzTitle', 'LIKE', "%$searchTitle%");
-            }
-            if ($subjectFilter) {
-                $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
-            }
-
-            $allTestQuery = $allTestQuery->orderBy('quizzes.qzID', 'desc')
-                ->get();
-
-
             $allQuestionQuery = quizzes::join('quizitems', 'quizzes.qzID', '=', 'quizitems.qzID')
                 ->leftJoin('tm_quiz_items', 'tm_quiz_items.itmID', '=', 'quizitems.itmID')
                 ->leftjoin('tmtests', 'tm_quiz_items.tmID', '=', 'tmtests.tmID')
@@ -540,23 +523,23 @@ class testMakerController extends Controller
                     return $labelNumbers == $labelFiltered;
                 });
             }
-        }
-
-        if ($test_type == 'tf') {
-            $allTestQuery = tftests::leftJoin('subjects', 'tftests.subjectID', '=', 'subjects.subjectID')
-                ->where('tftests.user_id', '=', $currentUserId)
-                ->select('tftests.*', 'subjects.subjectName');
+            $allTestQuery = quizzes::leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')
+                ->where('quizzes.user_id', '=', $currentUserId)
+                ->whereIn('quizzes.qzID', $allQuestionQuery->pluck('qzID')->toArray())
+                ->select('quizzes.*', 'subjects.subjectName');
 
             if ($searchTitle) {
-                $allTestQuery = $allTestQuery->where('tfTitle', 'LIKE', "%$searchTitle%");
+                $allTestQuery = $allTestQuery->where('qzTitle', 'LIKE', "%$searchTitle%");
             }
-            if ($subjectFilter) {
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
                 $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
             }
 
-            $allTestQuery = $allTestQuery->orderBy('tftests.tfID', 'desc')
+            $allTestQuery = $allTestQuery->orderBy('quizzes.qzID', 'desc')
                 ->get();
+        }
 
+        if ($test_type == 'tf') {
 
             $allQuestionQuery = tftests::join('tfitems', 'tftests.tfID', '=', 'tfitems.tfID')
                 ->leftJoin('tm_tf_items', 'tm_tf_items.itmID', '=', 'tfitems.itmID')
@@ -602,24 +585,23 @@ class testMakerController extends Controller
                     return $labelNumbers == $labelFiltered;
                 });
             }
-        }
-
-        if ($test_type == 'mtf') {
-            $allTestQuery = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
-                ->where('mtftests.user_id', '=', $currentUserId)
-                ->select('mtftests.*', 'subjects.subjectName');
+            $allTestQuery = tftests::leftJoin('subjects', 'tftests.subjectID', '=', 'subjects.subjectID')
+                ->where('tftests.user_id', '=', $currentUserId)
+                ->whereIn('tftests.tfID', $allQuestionQuery->pluck('tfID')->toArray())
+                ->select('tftests.*', 'subjects.subjectName');
 
             if ($searchTitle) {
-                $allTestQuery = $allTestQuery->where('mtfTitle', 'LIKE', "%$searchTitle%");
+                $allTestQuery = $allTestQuery->where('tfTitle', 'LIKE', "%$searchTitle%");
             }
-            if ($subjectFilter) {
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
                 $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
             }
 
-            $allTestQuery = $allTestQuery->orderBy('mtftests.mtfID', 'desc')
+            $allTestQuery = $allTestQuery->orderBy('tftests.tfID', 'desc')
                 ->get();
+        }
 
-
+        if ($test_type == 'mtf') {
             $allQuestionQuery = mtftests::join('mtfitems', 'mtftests.mtfID', '=', 'mtfitems.mtfID')
                 ->leftJoin('tm_mtf_items', 'tm_mtf_items.itmID', '=', 'mtfitems.itmID')
                 ->leftjoin('tmtests', 'tm_mtf_items.tmID', '=', 'tmtests.tmID')
@@ -664,17 +646,30 @@ class testMakerController extends Controller
                     return $labelNumbers == $labelFiltered;
                 });
             }
+            $allTestQuery = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
+                ->where('mtftests.user_id', '=', $currentUserId)
+                ->whereIn('mtftests.mtfID', $allQuestionQuery->pluck('mtfID')->toArray())
+                ->select('mtftests.*', 'subjects.subjectName');
+
+            if ($searchTitle) {
+                $allTestQuery = $allTestQuery->where('mtfTitle', 'LIKE', "%$searchTitle%");
+            }
+            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
+                $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
+            }
+
+            $allTestQuery = $allTestQuery->orderBy('mtftests.mtfID', 'desc')
+                ->get();
         }
         // dd($allQuestionQuery);
 
 
-        $uniqueSubjects = subjects::where('user_id', $currentUserId)
-            ->where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-            ->distinct('subjectName')
-            ->pluck('subjectName')
-            ->toArray();
+        // $uniqueSubjects = subjects::where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
+        //     ->distinct('subjectName')
+        //     ->pluck('subjectName')
+        //     ->toArray();
 
-
+        $uniqueSubjects = subjects::all();
         $testPage = 'test';
         return view('testbank.test_maker.add_question', [
             'test' => $test,
@@ -683,6 +678,7 @@ class testMakerController extends Controller
             'testType' => ucfirst($test_type),
             'uniqueSubjects' => $uniqueSubjects,
             'testPage' => $testPage,
+            'subjectSelected' => $subjectFilter,
         ]);
     }
 

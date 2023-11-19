@@ -32,8 +32,11 @@
     @enderror
     <p class="text-input-label label-margin-top">Subject</p>
     <div style="position: relative; width: 100%;">
-        <input type="text" id="searchInput" class="textinput-base textarea-title text-input-background" name="subject" value="{{$test->subjectName}}">
-        <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;" data-unique-subjects="{{ json_encode($uniqueSubjects) }}"></ul>
+        <select name="subject" class="textinput-base textarea-title text-input-background">
+            @foreach($uniqueSubjects as $subject)
+            <option value="{{$subject->subjectID}}">{{$subject->subjectName}}</option>
+            @endforeach
+        </select>
     </div>
     <p class="text-supported-format">Leave blank for no subject.</p>
     <div class="share-container">
@@ -67,68 +70,68 @@
     @endif
 </form>
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const suggestionsList = document.getElementById('suggestions');
+    // const searchInput = document.getElementById('searchInput');
+    // const suggestionsList = document.getElementById('suggestions');
 
-    // Preload the suggestions from the data attribute
-    const suggestions = JSON.parse(suggestionsList.getAttribute('data-unique-subjects'));
-    // const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
+    // // Preload the suggestions from the data attribute
+    // const suggestions = JSON.parse(suggestionsList.getAttribute('data-unique-subjects'));
+    // // const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'];
 
-    // Create the list items for suggestions and hide them initially
-    const suggestionItems = suggestions.map(suggestion => {
-        const li = document.createElement('li');
-        li.textContent = suggestion;
+    // // Create the list items for suggestions and hide them initially
+    // const suggestionItems = suggestions.map(suggestion => {
+    //     const li = document.createElement('li');
+    //     li.textContent = suggestion;
 
-        li.style.display = 'none'; // Hide initially
-        suggestionsList.appendChild(li);
+    //     li.style.display = 'none'; // Hide initially
+    //     suggestionsList.appendChild(li);
 
-        return li;
-    });
+    //     return li;
+    // });
 
-    function updateSuggestions() {
-        const searchTerm = searchInput.value.toLowerCase();
+    // function updateSuggestions() {
+    //     const searchTerm = searchInput.value.toLowerCase();
 
-        const filteredSuggestions = suggestions.filter(suggestion =>
-            suggestion.toLowerCase().startsWith(searchTerm)
-        );
+    //     const filteredSuggestions = suggestions.filter(suggestion =>
+    //         suggestion.toLowerCase().startsWith(searchTerm)
+    //     );
 
-        // Hide all suggestions by default
-        suggestionItems.forEach(item => (item.style.display = 'none'));
+    //     // Hide all suggestions by default
+    //     suggestionItems.forEach(item => (item.style.display = 'none'));
 
-        // Display filtered suggestions
-        if (filteredSuggestions.length > 0) {
-            filteredSuggestions.forEach(suggestion => {
-                // Show only the suggestions that match the filter
-                suggestionItems
-                    .filter(item => item.textContent === suggestion)
-                    .forEach(item => (item.style.display = 'block'));
-            });
-            suggestionsList.style.display = 'block'; // Show suggestions list
-        } else {
-            suggestionsList.style.display = 'none'; // Hide suggestions list
-        }
-    }
+    //     // Display filtered suggestions
+    //     if (filteredSuggestions.length > 0) {
+    //         filteredSuggestions.forEach(suggestion => {
+    //             // Show only the suggestions that match the filter
+    //             suggestionItems
+    //                 .filter(item => item.textContent === suggestion)
+    //                 .forEach(item => (item.style.display = 'block'));
+    //         });
+    //         suggestionsList.style.display = 'block'; // Show suggestions list
+    //     } else {
+    //         suggestionsList.style.display = 'none'; // Hide suggestions list
+    //     }
+    // }
 
-    // Delegate the click event to the suggestionsList and set the input value when a suggestion is clicked
-    suggestionsList.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target.nodeName === 'LI') {
-            searchInput.value = target.textContent;
-            suggestionsList.style.display = 'none'; // Hide suggestions list
-        }
-    });
+    // // Delegate the click event to the suggestionsList and set the input value when a suggestion is clicked
+    // suggestionsList.addEventListener('click', (event) => {
+    //     const target = event.target;
+    //     if (target.nodeName === 'LI') {
+    //         searchInput.value = target.textContent;
+    //         suggestionsList.style.display = 'none'; // Hide suggestions list
+    //     }
+    // });
 
-    let blurTimer; // Initialize a timer variable
-    // Add this event listener to hide suggestions when the input loses focus
-    searchInput.addEventListener('blur', () => {
-        // Delay the blur event for 200 milliseconds (adjust as needed)
-        blurTimer = setTimeout(() => {
-            suggestionsList.style.display = 'none'; // Hide suggestions list
-        }, 100); // 200 milliseconds delay
-    });
+    // let blurTimer; // Initialize a timer variable
+    // // Add this event listener to hide suggestions when the input loses focus
+    // searchInput.addEventListener('blur', () => {
+    //     // Delay the blur event for 200 milliseconds (adjust as needed)
+    //     blurTimer = setTimeout(() => {
+    //         suggestionsList.style.display = 'none'; // Hide suggestions list
+    //     }, 100); // 200 milliseconds delay
+    // });
 
-    // Listen for both input and focus events on the search input
-    searchInput.addEventListener('input', updateSuggestions);
-    searchInput.addEventListener('focus', updateSuggestions);
+    // // Listen for both input and focus events on the search input
+    // searchInput.addEventListener('input', updateSuggestions);
+    // searchInput.addEventListener('focus', updateSuggestions);
 </script>
 @endsection

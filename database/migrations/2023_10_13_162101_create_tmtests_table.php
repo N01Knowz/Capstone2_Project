@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('tmTotal', 10, 2)->default(0.00);
             $table->boolean('tmIsPublic');
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

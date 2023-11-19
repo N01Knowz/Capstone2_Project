@@ -19,4 +19,8 @@ class quizzes extends Model
         "subjectID",
         "user_id",
     ];
+    public function quizItems()
+    {
+        return $this->hasMany(quizitems::class, 'qzID', 'qzID');
+    }
 }

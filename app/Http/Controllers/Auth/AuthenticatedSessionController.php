@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -23,11 +24,17 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request, LoginRequest $loginRequest): RedirectResponse
     {
-        $request->authenticate();
+        $user = User::where('email', $request->input('email'))->first();
+    
+        if ($user && !$user->active) {
+            return back()->with('deactivated', 'This account is deactivated');
+        }
+    
+        $loginRequest->authenticate();
 
-        $request->session()->regenerate();
+        $loginRequest->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Logged in Successfully');
     }

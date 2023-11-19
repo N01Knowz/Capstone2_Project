@@ -10,6 +10,11 @@
     }
 }
 
+.button-disabled {
+    background-color: #cccccc;
+    color: white;
+}
+
 .test-body-header {
     padding-top: 1em;
     padding-bottom: 1em;
@@ -19,7 +24,6 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    
 }
 
 .add-test-button-anchor {
