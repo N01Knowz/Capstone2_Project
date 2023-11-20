@@ -66,8 +66,8 @@ class takeTestController extends Controller
             'ettests.etTotal as total',
             'ettests.etIsPublic as public',
             'ettests.subjectID',
-            'ettests.created_at',
             'subjects.subjectName',
+            'ettests.created_at',
             'users.first_name',
             'users.last_name',
             'users.user_image',
@@ -476,11 +476,13 @@ class takeTestController extends Controller
             $studentAnswers = enumerationItemsAnswers::where('etttID', $id)->get();
             foreach ($studentAnswers as $answer) {
                 foreach($correctAnswers as $key => $value){
-                    if($value) {
-                        $key = strtolower($key);
-                        $stdntAnswer = $answer->etStudentItemAnswer;
+                    $stdntAnswer = $answer->etStudentItemAnswer;
+                    $crctAnswer = $key;
+                    if(!$value) {
+                        $crctAnswer = strtolower($crctAnswer);
+                        $stdntAnswer = strtolower($answer->etStudentItemAnswer);
                     }
-                    if($key == $stdntAnswer){
+                    if($crctAnswer == $stdntAnswer){
                         $points += 1;
                     }
                 }

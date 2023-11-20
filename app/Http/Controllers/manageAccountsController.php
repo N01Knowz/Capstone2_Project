@@ -15,20 +15,30 @@ class manageAccountsController extends Controller
         $this->middleware('isAdmin');
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
         $users = User::where('role', '!=', 'super admin');
         $user = Auth::user();
         if ($user->role !== 'super admin') {
             $users = $users->where('role', '!=', 'admin');
         }
-        $users = $users->where('id', '!=', Auth::id())->get();
+        $users = $users->where('id', '!=', Auth::id());
+        if (!empty($search)) {
+            $users->where(function ($query) use ($search) {
+                $query->where('first_name', 'LIKE', "%$search%")
+                    ->orWhere('last_name', 'LIKE', "%$search%")
+                    ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+        $users = $users->get();
 
         $pageType = 'accounts';
-        return view('accounts.index', [
+        return view('admin.accounts.index', [
             'user_role' => $user->role,
             'users' => $users,
             'pageType' => $pageType,
+            'searchInput' => $search,
         ]);
     }
     public function activate($id)

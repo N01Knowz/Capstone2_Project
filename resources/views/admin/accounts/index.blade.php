@@ -30,7 +30,7 @@
         @endif
     </form>
     <form method="GET" action="" class="searchbar-container">
-        <input type="text" placeholder="Search user here..." class="test-searchbar" name="search">
+        <input type="text" placeholder="Search user here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
         <button class="search-button">Search</button>
     </form>
 </div>

@@ -55,6 +55,29 @@
             </tbody>
         </table>
     </div>
+    <div class="test-taken-container">
+        <strong>Tests Taken</strong>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Subject</th>
+                    <th>Test Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($testsTaken as $test)
+                    <tr>
+                        <td>{{$test->title}}</td>
+                        <td>{{$test->description}}</td>
+                        <td>{{$test->subjectName}}</td>
+                        <td>{{$test->type}}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @endsection
