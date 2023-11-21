@@ -1,0 +1,147 @@
+@extends('layouts.navigation')
+@section('title', 'Essay')
+
+@push('styles')
+    <link rel="stylesheet" href="/css/front_page.css">
+    <link rel="stylesheet" href="/css/navigator.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/essay.css">
+@endpush
+@section('content')
+<div class="test-body-header">
+    <form method="get" action="/essay/create" class="add-test-button-anchor">
+        <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+            <p>Add New Test</p>
+        </button>
+    </form>
+    <form method="GET" action="" class="searchbar-container">
+        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search">
+        <button class="search-button">Search</button>
+    </form>
+</div>
+<div class="test-body-content">
+    <table class="test-body-table">
+        <thead>
+            <tr class="test-table-header">
+                <th>Title</th>
+                <th>Instruction</th>
+                <th>Status</th>
+                <th>Subject</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table content goes here -->
+            @foreach ($tests as $test)
+            <tr>
+                <td class="test-body-column test-body-title" data-id="{{$test->essID}}">
+                    <p>{{$test->essTitle}}</p>
+                </td>
+                <td class="test-body-column test-body-instruction" data-id="{{$test->essID}}">
+                    <p>{{$test->essInstruction}}</p>
+                    <div class="question-labels">
+                        @isset(($test->tags['Realistic']))
+                        <div class="label r-label">Realistic</div>
+                        @endisset
+                        @isset(($test->tags['Investigative']))
+                        <div class="label i-label">Investigative</div>
+                        @endisset
+                        @isset(($test->tags['Artistic']))
+                        <div class="label a-label">Artistic</div>
+                        @endisset
+                        @isset(($test->tags['Social']))
+                        <div class="label s-label">Social</div>
+                        @endisset
+                        @isset(($test->tags['Enterprising']))
+                        <div class="label e-label">Enterprising</div>
+                        @endisset
+                        @isset(($test->tags['Conventional']))
+                        <div class="label c-label">Conventional</div>
+                        @endisset
+                        @isset(($test->tags['Unknown']))
+                        <div class="label u-label">Unknown</div>
+                        @endisset
+                    </div>
+                </td>
+                <td class="test-body-column test-body-status" data-id="{{$test->essID}}">
+                    <div>
+                        <p class="test-status-word" style="width: 3.5em;">@if($test->essIsPublic == 0) Private @else Public @endif</p>
+                        <img @if($test->essIsPublic == 0) src="/images/closed-eye-icon-light.png" style="background-color: #C61D1F; padding: 0.1em;" @else src="/images/eye-icon-light.png" style="background-color: #2d9c18; padding: 0.1em;" @endif class="test-status-icon">
+                    </div>
+                </td>
+                <td class="test-body-column test-body-points" data-id="{{$test->essID}}">
+                    <div>
+                        <p>{{$test->subjectName}}</p>
+                    </div>
+                </td>
+                <td class="test-body-buttons-column">
+                    <div class="test-body-buttons-column-div">
+                        <button class="test-body-buttons buttons-edit-button test-edit-button" data-id="{{$test->essID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                            <p>Edit</p>
+                        </button>
+                        <form method="POST" action="/essay/{{$test->essID}}" class="button-delete-form" onsubmit="return confirmDelete();">
+                            @csrf
+                            @method('delete')
+                            <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                                <p>Delete</p>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+@if(session('success'))
+<script>
+    alert("{{ session('success') }}");
+</script>
+@endif
+@if(session('store_success'))
+<script>
+    alert("{{ session('store_success') }}");
+</script>
+@endif
+@if(session('update_success'))
+<script>
+    alert("{{ session('update_success') }}");
+</script>
+@endif
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this record?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
+
+        function handleRowClick(event) {
+            const clickedColumn = event.currentTarget;
+            const columnData = clickedColumn.getAttribute('data-id');
+            window.location.href = "/essay/" + columnData;
+        }
+
+        const buttons = document.querySelectorAll(".buttons-edit-button");
+
+        // Loop through each button and attach the event handler
+        buttons.forEach(function(button) {
+            button.onclick = function() {
+                const dataID = this.getAttribute("data-id");
+                window.location.href = "/essay/" + dataID + "/edit";
+            }
+        });
+
+        const columns = document.querySelectorAll('.test-body-column');
+        columns.forEach(column => {
+            column.addEventListener('click', handleRowClick);
+        });
+    });
+</script>
+@endsection

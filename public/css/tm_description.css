@@ -1,0 +1,273 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+.test-select-body-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+    height: calc(100% - 2em);
+    height: 100%;
+}
+
+.test-select-body-container>a {
+    margin: 0.5em;
+    height: 4em;
+}
+
+.test-select-body-container>a>button {
+    height: 4em;
+    width: 100%;
+}
+
+.add-item-sub-container {
+    height: 400px;
+}
+
+.add-item-modal-header {
+    height: 15%;
+}
+
+.add-item-modal-body {
+    height: 65%;
+}
+
+.select-type-test-button {
+    cursor: pointer;
+}
+
+
+.test-maker-questions-container {
+    width: calc(96% + 2em);
+}
+
+.dropdown-header {
+    border: 1px solid black;
+    background-color: var(--color4);
+}
+
+
+.dropdown-title {
+    width: 100%;
+    font-size: 1.2em;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3em 0.5em 0.3em 0.5em;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+
+.dropdown-content {
+    border: 1px solid black;
+    padding: 0.2em 0.5em 0.5em 0.5em;
+    background-color: gray;
+    flex-direction: column;
+    gap: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    display: none;
+}
+
+.test-maker-tests-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.dropdown-question-container {
+    background-color: white;
+    display: flex;
+}
+
+.dropdown-question-content {
+    width: calc(100% - 1.5em);
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    font-size: 1.2em;
+}
+
+.dropdown-del-btn {
+    background-color: #ed3838;
+    color: white;
+    cursor: pointer;
+}
+
+.dropdown-del-btn-img {
+    height: 1.5em;
+    width: 1.5em;
+}
+
+.no-question-sentence {
+    background-color: white;
+    padding: 1em;
+    font-size: 1.5em;
+}
+
+.add-random-item-container {
+    position: absolute;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 3;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    justify-content: center;
+}
+
+
+
+.add-random-item-sub-container {
+    width: 500px;
+    height: 280px;
+    margin-top: 25px;
+    background-color: white;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.add-random-item-sub-container.show {
+    opacity: 1;
+}
+
+.add-random-item-modal-header {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 10%;
+    border-bottom: 1px solid gray;
+}
+
+.add-random-item-enter-answer {
+    font-size: 1.5em;
+    margin-left: 1em;
+    margin-top: 0.3em;
+}
+
+.add-random-item-modal-header-close {
+   margin-left: auto;
+   height: 60%;
+   cursor: pointer;
+   background-color: transparent;
+   border: none;
+   color: gray;
+   font-size: 1.5em;
+}
+
+.add-random-item-modal-body {
+    width: 100%;
+    border-bottom: 1px solid gray;
+}
+
+.add-random-item-modal-footer {
+    height: 15%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.add-random-item-buttons-container {
+    margin-right: 2em;
+}
+
+.add-random-item-modal-button {
+    font-size: 1.2em;
+    border-radius: 10px;
+    padding: 0.5em;
+    border: 1px solid gray;
+}
+
+.add-random-item-save-button {
+    background-color: #087cfc;
+    color: white;
+}
+
+.case-sensitive-container {
+    display: flex;
+}
+
+.add-random-item-form-answer-label {
+    font-weight: bold;
+    color: rgb(82, 82, 82);
+}
+
+#add_item_form {
+    margin-left: 1em;
+    margin-right: 1em;
+    padding-top: 1em;
+}
+
+.add-random-item-text-input {
+    width: calc(100% - 1em);
+    height: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+
+.add-random-item-modal-header {
+    height: 10%;
+}
+
+.add-random-item-modal-body {
+    height: 76%;
+    display: grid;
+    grid-row-gap: 1em;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
+.add-item-modal-body>* {
+    box-sizing: border-box;
+}
+
+.add-random-item-sub-container {
+    height: 540px;
+    width: 500px;
+}
+
+.filter-label-buttons {
+    padding: 0.5em 0.2em 0.5em 0.2em;
+    cursor: pointer;
+}
+
+.random-item-label-button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 1em;
+    grid-column-gap: 1em;
+}
+
+.random-item-filter {
+    display: grid;
+}
+
+.chosen-label-button {
+    background-color: #007bff; /* Change to the desired color for active state */
+    color: white; /* Change text color for better contrast */
+}
+
+.random-item-filter-input {
+    height: 2em;
+}
+
+.random-item-filter-input-label {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.dropdown-del-btn {
+    width: 100%;
+    height: 100%;
+}

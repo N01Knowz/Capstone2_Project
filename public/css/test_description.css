@@ -1,0 +1,166 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
+
+.test-profile-container {
+    width: 96%;
+    padding: 1em;
+    border: 1px solid gray;
+    border-radius: 25px;
+    margin-bottom: 2%;
+}
+
+.test-profile-label {
+    font-weight: bold;
+}
+
+.test-profile-value {
+    font-weight: normal;
+}
+
+.test-questions-container {
+    width: calc(96% + 2em);
+    border: 1px solid gray;
+    border-radius: 25px;
+}
+
+.test-questions-table-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-weight: bold;
+    padding-bottom: 1.5em;
+}
+
+.questions-table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+}
+
+.questions-table>thead {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 100%;
+}
+
+.questions-table>thead>tr>th {
+    padding-left: 1em;
+}
+
+.questions-table>tbody>tr:nth-child(even) {
+    background-color: #cccccc;
+    /* Grayish background color */
+    padding: 10px;
+    /* Adjust the padding as needed for left and right spacing */
+}
+
+.questions-table>tbody>tr>td {
+    font-weight: normal;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+}
+
+.questions-table-no-column {
+    width: 10%;
+}
+
+.questions-table-status-column {
+    width: 15%;
+    font-weight: bold;
+}
+
+.questions-table-question-column {
+    width: 30%;
+}
+
+.questions-table-point-column {
+    width: 15%;
+}
+
+.questions-table-buttons-column {
+    width: 30%;
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+}
+
+.questions-table-buttons-column-div {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 10px;
+    /* Adjust the left and right margin as needed */
+    gap: 10%;
+}
+
+.question-table-button-form {
+    flex: 1;
+    display: inline-flex;
+}
+
+.questions-table-buttons {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 25px;
+    gap: 0.5em;
+    font-weight: bolder;
+    padding: 0.3em;
+    cursor: pointer;
+}
+
+.questions-table-buttons>img {
+    height: 2em;
+}
+
+.buttons-deactivate-button {
+    background-color: var(--color2);
+}
+
+.buttons-edit-button {
+    background-color: #5177ff;
+    color: white;
+}
+
+.buttons-delete-button {
+    background-color: #ed3838;
+    color: white;
+}
+
+.add-test-question-button {
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    font-size: 1em;
+    background-color: var(--color1);
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3%;
+    width: 20em;
+}
+
+
+.add-test-question-button>img {
+    height: 2em;
+}
+
+#test-question-item-description:hover {
+    background-color: #ffcc66;
+    cursor: pointer;
+}

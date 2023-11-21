@@ -1,0 +1,23 @@
+.body-content {
+    display: flex;
+    margin-top: 3em;
+    height: 70%;
+    align-items: center;
+    flex-direction: column;
+}
+
+.riasec-bargraph {
+    width: 80%;
+}
+
+.table-bargraph {
+    width: 100%;
+}
+
+.table-bargraph > tbody > tr > td:first-child {
+    width: auto;
+}
+
+.table-bargraph > tbody > tr > td:nth-child(2) {
+    width: 100%;
+}
