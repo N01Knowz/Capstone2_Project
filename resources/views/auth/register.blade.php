@@ -42,9 +42,9 @@
             @if($user_role == 'super admin')
             <p id="register-sentence"><span><a href="/accounts">Cancel</a></span></p>
             @else
-            @endisset
             <p id="register-sentence">Already have an account? <span><a href="/">Sign In</a></span></p>
             @endif
+            @endisset
         </form>
     </div>
 </body>

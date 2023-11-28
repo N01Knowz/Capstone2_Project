@@ -3,7 +3,6 @@
 
 @push('styles')
 <link rel="stylesheet" href="/css/front_page.css">
-<link rel="stylesheet" href="/css/navigator.css">
 <link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/mcq.css">
 <link rel="stylesheet" href="/css/filter.css">
@@ -64,7 +63,8 @@
                                     <p>Publish</p>
                                 </button>
                             </form>
-                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-edit-button @endif" id="test-edit-button" data-id="{{$test->qzID}}" @if($test->qzIsPublic) disabled @endif><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-edit-button @endif" id="test-edit-button" data-id="{{$test->qzID}}" @if($test->qzIsPublic) disabled @endif>
+                                <img src="/images/edit-icon.png" class="test-body-buttons-icons">
                                 <p>Edit</p>
                             </button>
                             <form method="GET" action="/print/mcq/{{$test->qzID}}" class="button-delete-form" target="_blank">
@@ -75,7 +75,7 @@
                             <form method="POST" action="/mcq/{{$test->qzID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-delete-button @endif"><img src="/images/delete-icon.png" class="test-body-buttons-icons" @if($test->qzIsPublic) disabled @endif>
+                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->qzIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
                                     <p>Delete</p>
                                 </button>
                             </form>

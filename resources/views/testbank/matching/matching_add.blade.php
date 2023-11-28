@@ -32,18 +32,17 @@
     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
     @enderror
     <p class="text-input-label label-margin-top">Subject</p>
-    <div style="position: relative; width: 100%;">
+    <div style="position: relative; width: 100%; margin-bottom: 1em;">
         <select name="subject" class="textinput-base textarea-title text-input-background">
             @foreach($uniqueSubjects as $subject)
             <option value="{{$subject->subjectID}}">{{$subject->subjectName}}</option>
             @endforeach
         </select>
     </div>
-    <p class="text-supported-format">Leave blank for no subject.</p>
-    <div class="share-container">
+    <!-- <div class="share-container">
         <input type="checkbox" class="share-checkbox" name="share">
         <p class="text-input-label">Share with other users</p>
-    </div>
+    </div> -->
     <!-- <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
     <input type="number" class="text-input-choices" value="{{ old('numChoicesInput') ? old('numChoicesInput') : 1 }}" id="numChoicesInput" name="numChoicesInput">
     <p class="mt-note">Note: you may add extra choices (distractors) by adding an answer with a blank item text. Blank item test will not be added to the list of answerable items (including points).</p>

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->longText('mtTitle');
             $table->longText('mtDescription')->nullable();
             $table->decimal('mtTotal', 10, 2)->default(0.00);
-            $table->boolean('mtIsPublic');
+            $table->boolean('mtIsPublic')->default(0);
+            $table->boolean('IsHidden')->default(0);
             $table->unsignedBigInteger('subjectID')->nullable();
             $table->foreign('subjectID')->references('subjectID')->on('subjects');
             $table->unsignedBigInteger('user_id');

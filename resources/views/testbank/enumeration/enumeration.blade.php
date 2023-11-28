@@ -109,7 +109,7 @@
                             <form method="POST" action="/enumeration/{{$test->etID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-delete-button @endif"><img src="/images/delete-icon.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
+                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->etIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
                                     <p>Delete</p>
                                 </button>
                             </form>

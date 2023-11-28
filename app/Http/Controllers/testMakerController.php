@@ -37,6 +37,22 @@ class testMakerController extends Controller
         $this->middleware(['auth', 'verified']);
         $this->middleware('isTeacher');
     }
+
+    public function publish(string $id)
+    {
+        $test = tmtests::find($id);
+        if (is_null($test)) {
+            abort(404); // User does not own the test
+        }
+        if ($test->user_id != Auth::id()) {
+            abort(403); // User does not own the test
+        }
+        $test->update([
+            'tmIsPublic' => 1,
+        ]);
+        return back()->with('publish', 'Record successfully published. Now it will be seen by students.');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -56,7 +72,7 @@ class testMakerController extends Controller
         $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
 
         $tests = $testsQuery->orderBy('tmID', $sortDate)
-            ->get();
+            ->paginate(13);
 
 
         $testPage = 'test';

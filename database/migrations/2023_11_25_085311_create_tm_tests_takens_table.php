@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tmtests', function (Blueprint $table) {
-            $table->id('tmID');
-            $table->longText('tmTitle');
-            $table->longText('tmDescription')->nullable();
-            $table->decimal('tmTotal', 10, 2)->default(0.00);
-            $table->boolean('tmIsPublic');
-            $table->boolean('IsHidden')->default(0);
+        Schema::create('tm_tests_takens', function (Blueprint $table) {
+            $table->id('tmttID');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('tmID');
+            $table->foreign('tmID')->references('tmID')->on('tmtests')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tmtests');
+        Schema::dropIfExists('tm_tests_takens');
     }
 };

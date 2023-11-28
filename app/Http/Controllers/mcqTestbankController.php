@@ -501,8 +501,8 @@ class mcqTestbankController extends Controller
                 $imageData = base64_decode($srcData);
                 $uploadpath = public_path('user_upload_images');
                 $filename = time() . '_' . uniqid() . '.' . $imageType;
-                file_put_contents($uploadpath . '/' . $filename, $imageData);
-                $image->setAttribute('src', '/user_upload_images/' . Auth::id() . $filename);
+                file_put_contents($uploadpath . '/' . Auth::id() . '/'  . $filename, $imageData);
+                $image->setAttribute('src', '/user_upload_images/' . Auth::id() . '/' . $filename);
             }
 
             $bodyContent = '';
@@ -748,8 +748,8 @@ class mcqTestbankController extends Controller
                         $srcData = $dataUriParts[1];
                         $imageData = base64_decode($srcData);
                         $filename = time() . '_' . uniqid() . '.' . $imageType;
-                        file_put_contents($uploadpath . '/' . $filename, $imageData);
-                        $image->setAttribute('src', '/user_upload_images/' . Auth::id() . $filename);
+                        file_put_contents($uploadpath . '/' . Auth::id() . '/'  . $filename, $imageData);
+                        $image->setAttribute('src', '/user_upload_images/' . Auth::id() . '/' . $filename);
                     }
                 }
                 $bodyContent = '';
@@ -760,7 +760,8 @@ class mcqTestbankController extends Controller
                     }
                 }
             }
-
+           
+            
             if ($option) {
                 $updatedHTML = $bodyContent;
             } else {
@@ -769,8 +770,9 @@ class mcqTestbankController extends Controller
             echo $updatedHTML;
 
             $question->update([
-                'option_' . $i => $updatedHTML,
+                'itmOption' . $i => $updatedHTML,
             ]);
+            
         }
 
         $questions = quizitems::where("qzID", "=", $test_id)->get();

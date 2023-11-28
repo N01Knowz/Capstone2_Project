@@ -6,12 +6,21 @@
     flex-direction: column;
 }
 
-.riasec-bargraph {
+.riasec-container {
     width: 80%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+}
+@media (max-width: 1000px) {
+    .riasec-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 .table-bargraph {
     width: 100%;
+    background-color: #d8d7d7;
 }
 
 .table-bargraph > tbody > tr > td:first-child {
@@ -20,4 +29,43 @@
 
 .table-bargraph > tbody > tr > td:nth-child(2) {
     width: 100%;
+}
+
+.tag-label {
+    text-align: right;
+}
+
+.test-taken-container {
+    width: 80%;
+    margin-top: 2em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px 5px 10px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.3);
+    padding: 1em;
+    border-radius: 25px;
+}
+
+.test-taken-table {
+    width: 100%;
+}
+
+.tags-percentage {
+    margin-left: 0.2em;
+}
+
+.top-3-tags {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    font-size: 2em;
+    margin: 0.5em 0;
+}
+
+.user-riasec-score {
+    color: rgba(0, 0, 0, 0.61);
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.riasec-question-label {
+    font-size: 1.2em;
+    font-weight: bold;
 }

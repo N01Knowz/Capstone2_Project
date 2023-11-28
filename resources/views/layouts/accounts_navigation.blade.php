@@ -26,7 +26,7 @@
                         <form action="/profile" method="get">
                             <button class="header-setting-profile">Profile</button>
                         </form>
-                        <form action="/logout" method="POST" class="header-setting-logout-form">
+                        <form action="/logout" method="POST" class="header-setting-logout-form" onsubmit="return confirmLogout();">
                             @csrf
                             <button class="header-setting-logout">Log Out</button>
                         </form>
@@ -37,7 +37,7 @@
         <div class="modal-background" onclick="toggleNavigator()" id="modal-navigator"></div>
         <div class="navigator" id="navigator">
             <div id="logo-container">
-                <img src="/images/logo.png" id="logo">
+                <img src="/images/logoWhite.png" id="logo">
                 <p>Test Bank</p>
             </div>
             <div class="page-type @if(isset($pageType) && $pageType === 'accounts') chosen-type @endif" >
@@ -59,6 +59,15 @@
     </div>
 
     <script>
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
         function toggleNavigator() {
             var dropdown = document.getElementById("navigator");
             var modalNavigator = document.getElementById("modal-navigator");

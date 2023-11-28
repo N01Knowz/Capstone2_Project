@@ -1,0 +1,45 @@
+.body-content {
+    display: flex;
+    margin-top: 3em;
+    height: 70%;
+    align-items: center;
+    flex-direction: column;
+}
+
+ul {
+    list-style-type: disc !important;
+}
+
+li {
+    margin-left: 20px;
+    /* Adjust the margin value as needed */
+}
+
+.riasec-content {
+    padding: 0em 5%;
+}
+
+.summary-code-label {
+    color: rgba(0, 0, 0, 0.61);
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.tag-container {
+    margin-top: 2em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px 5px 10px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.3);
+    padding: 1em;
+    border-radius: 25px;
+}
+
+.tag-label {
+    font-weight: bold;
+}
+
+.tag-career-options {
+    font-weight: bold;
+}
+
+.tag-link {
+    font-weight: bold;
+}

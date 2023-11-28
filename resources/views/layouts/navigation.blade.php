@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
     <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/navigator.css">
     @stack('styles')
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -25,7 +26,7 @@
                         <form action="/profile" method="get">
                             <button class="header-setting-profile">Profile</button>
                         </form>
-                        <form action="/logout" method="POST" class="header-setting-logout-form">
+                        <form action="/logout" method="POST" class="header-setting-logout-form" onsubmit="return confirmLogout();">
                             @csrf
                             <button class="header-setting-logout">Log Out</button>
                         </form>
@@ -47,13 +48,13 @@
             </div> -->
             <div class="test-type @if(isset($testPage) && $testPage === 'mcq') chosen-type @endif" id="mcq-test" data-icon-id="mcq-icon">
                 <a class="test-link" href="/mcq" onclick="chosenTestType('mcq-test')">
-                    <img @if(isset($testPage) && $testPage === 'mcq') src="/images/mcq-icon-dark.png" @else src="/images/mcq-icon-light.png" @endif class="test-icon" data-icon-light="/images/mcq-icon-light.png" data-icon-dark="/images/mcq-icon-dark.png" id="mcq-icon">
+                    <img @if(isset($testPage) && $testPage==='mcq' ) src="/images/mcq-icon-dark.png" @else src="/images/mcq-icon-light.png" @endif class="test-icon" data-icon-light="/images/mcq-icon-light.png" data-icon-dark="/images/mcq-icon-dark.png" id="mcq-icon">
                     <p>Multiple Choices Tests</p>
                 </a>
             </div>
             <div class="test-type @if(isset($testPage) && $testPage === 'tf') chosen-type @endif" id="tf-test" data-icon-id="tf-icon">
                 <a class="test-link" href="/tf" onclick="chosenTestType('tf-test')">
-                    <img @if(isset($testPage) && $testPage === 'tf') src="/images/tf-icon-dark.png" @else src="/images/tf-icon-light.png" @endif class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="tf-icon">
+                    <img @if(isset($testPage) && $testPage==='tf' ) src="/images/tf-icon-dark.png" @else src="/images/tf-icon-light.png" @endif class="test-icon" data-icon-light="/images/tf-icon-light.png" data-icon-dark="/images/tf-icon-dark.png" id="tf-icon">
                     <p>True or False Tests</p>
                 </a>
             </div>
@@ -65,20 +66,20 @@
             </div> -->
             <div class="test-type  @if(isset($testPage) && $testPage === 'matching') chosen-type @endif" id="matching-test" data-icon-id="matching-icon">
                 <a class="test-link" href="/matching" onclick="chosenTestType('matching-test')">
-                    <img @if(isset($testPage) && $testPage === 'matching') src="/images/matching-icon-dark.png" @else src="/images/matching-icon-light.png" @endif class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
+                    <img @if(isset($testPage) && $testPage==='matching' ) src="/images/matching-icon-dark.png" @else src="/images/matching-icon-light.png" @endif class="test-icon" data-icon-light="/images/matching-icon-light.png" data-icon-dark="/images/matching-icon-dark.png" id="matching-icon">
                     <p>Matching Type</p>
                 </a>
             </div>
             <div class="test-type @if(isset($testPage) && $testPage === 'enumeration') chosen-type @endif" id="enumeration-test" data-icon-id="enumeration-icon">
                 <a class="test-link" href="/enumeration" onclick="chosenTestType('enumeration-test')">
-                    <img @if(isset($testPage) && $testPage === 'enumeration') src="/images/enumeration-icon-dark.png" @else src="/images/enumeration-icon-light.png" @endif class="test-icon" data-icon-light="/images/enumeration-icon-light.png" data-icon-dark="/images/enumeration-icon-dark.png" id="enumeration-icon">
+                    <img @if(isset($testPage) && $testPage==='enumeration' ) src="/images/enumeration-icon-dark.png" @else src="/images/enumeration-icon-light.png" @endif class="test-icon" data-icon-light="/images/enumeration-icon-light.png" data-icon-dark="/images/enumeration-icon-dark.png" id="enumeration-icon">
                     <p>Enumeration</p>
                 </a>
             </div>
             <div class="test-type  @if(isset($testPage) && $testPage === 'test') chosen-type @endif" id="test-test" data-icon-id="test-icon">
                 <a class="test-link" href="/test" onclick="chosenTestType('test-test')">
-                    <img @if(isset($testPage) && $testPage === 'test') src="/images/test-icon-dark.png" @else src="/images/test-icon-light.png" @endif class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
-                    <p>Test</p>
+                    <img @if(isset($testPage) && $testPage==='test' ) src="/images/test-icon-dark.png" @else src="/images/test-icon-light.png" @endif class="test-icon" data-icon-light="/images/test-icon-light.png" data-icon-dark="/images/test-icon-dark.png" id="test-icon">
+                    <p>Mixed Test</p>
                 </a>
             </div>
         </div>
@@ -87,8 +88,18 @@
         </div>
     </div>
 
-    
+
     <script>
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out?")) {
+                // User clicked OK, proceed with form submission
+                return true;
+            } else {
+                // User clicked Cancel, prevent form submission
+                return false;
+            }
+        }
+
         function toggleNavigator() {
             var dropdown = document.getElementById("navigator");
             var modalNavigator = document.getElementById("modal-navigator");
@@ -122,9 +133,6 @@
                 document.removeEventListener('click', clickOutsideHandler);
             }
         }
-
-
-        
     </script>
 </body>
 

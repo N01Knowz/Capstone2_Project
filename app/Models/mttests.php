@@ -13,6 +13,7 @@ class mttests extends Model
 
     protected $fillable = [
         "mtTitle",
+        'IsHidden',
         "mtDescription",
         "mtTotal",
         "mtIsPublic",

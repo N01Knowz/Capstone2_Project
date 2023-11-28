@@ -16,7 +16,8 @@ return new class extends Migration
             $table->longText('tfTitle');
             $table->longText('tfDescription')->nullable();
             $table->decimal('tfTotal', 10, 2)->default(0.00);
-            $table->boolean('tfIsPublic');
+            $table->boolean('tfIsPublic')->default(0);
+            $table->boolean('IsHidden')->default(0);
             $table->unsignedBigInteger('subjectID')->nullable();
             $table->foreign('subjectID')->references('subjectID')->on('subjects');
             $table->unsignedBigInteger('user_id');

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->longText('essCriteria5')->nullable()->default(null);
             $table->decimal('essScore5', 10, 2)->default(0.00);
             $table->decimal('essScoreTotal', 10, 2)->default(0.00);
-            $table->boolean('essIsPublic');
+            $table->boolean('essIsPublic')->default(0);
             $table->string('essImage')->nullable();
             $table->unsignedBigInteger('subjectID')->nullable();
             $table->foreign('subjectID')->references('subjectID')->on('subjects');

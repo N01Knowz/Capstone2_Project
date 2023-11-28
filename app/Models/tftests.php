@@ -13,6 +13,7 @@ class tftests extends Model
 
     protected $fillable = [
         "tfTitle",
+        'IsHidden',
         "tfDescription",
         "tfTotal",
         "tfIsPublic",

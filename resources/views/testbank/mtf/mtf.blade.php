@@ -75,7 +75,7 @@
                             <form method="POST" action="/mtf/{{$test->mtfID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->mtfIsPublic) button-disabled @else buttons-delete-button @endif"><img src="/images/delete-icon.png" class="test-body-buttons-icons" @if($test->mtfIsPublic) disabled @endif>
+                                <button class="test-body-buttons @if($test->mtfIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->mtfIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
                                     <p>Delete</p>
                                 </button>
                             </form>

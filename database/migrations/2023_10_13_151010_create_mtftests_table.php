@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('itmPoints1', 10, 2)->default(0.00);
             $table->decimal('itmPoints2', 10, 2)->default(0.00);
             $table->decimal('mtfTotal', 10, 2)->default(0.00);
-            $table->boolean('mtfIsPublic');
+            $table->boolean('mtfIsPublic')->default(0);
             $table->unsignedBigInteger('subjectID')->nullable();
             $table->foreign('subjectID')->references('subjectID')->on('subjects');
             $table->unsignedBigInteger('user_id');

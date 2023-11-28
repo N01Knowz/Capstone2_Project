@@ -75,7 +75,7 @@
             <tbody>
                 <!-- Table content goes here -->
                 @foreach ($tests as $test)
-                <tr data-fullname="{{$test->first_name . ' ' . $test->last_name}}" data-id="{{$test->id}}" data-title="{{$test->title}}" data-description="{{$test->description}}" data-subject="{{$test->subjectName}}" data-type="{{$test->type}}" data-userimage="{{$test->user_image}}" data-item-count="{{$test->itemCount}}" onclick="showTestDescription(event)">
+                <tr data-creator-id='{{$test->creatorID}}' data-fullname="{{$test->first_name . ' ' . $test->last_name}}" data-id="{{$test->id}}" data-title="{{$test->title}}" data-description="{{$test->description}}" data-subject="{{$test->subjectName}}" data-type="{{$test->type}}" data-userimage="{{$test->user_image}}" data-item-count="{{$test->itemCount}}" onclick="showTestDescription(event)">
                     <td class="test-body-column test-body-title">
                         <p>{{$test->title}}</p>
                     </td>
@@ -109,9 +109,11 @@
         const type = clickedRow.getAttribute('data-type');
         const count = clickedRow.getAttribute('data-item-count');
         const id = clickedRow.getAttribute('data-id');
+        const creatorid = clickedRow.getAttribute('data-creator-id');
+        
 
         const modal_form = document.getElementById('take_test_form');
-        modal_form.action = "/taketest/" + type.toLowerCase() + "/" + id; 
+        modal_form.action = "/taketest/" + type.toLowerCase() + "/" + id + "/" + creatorid + "/test"; 
 
         const item_title = document.getElementById('item-title');
         item_title.innerHTML = "";

@@ -110,7 +110,7 @@
                             <form method="POST" action="/matching/{{$test->mtID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->mtIsPublic) button-disabled @else buttons-delete-button @endif"><img src="/images/delete-icon.png" class="test-body-buttons-icons" @if($test->mtIsPublic) disabled @endif>
+                                <button class="test-body-buttons @if($test->mtIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->mtIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
                                     <p>Delete</p>
                                 </button>
                             </form>

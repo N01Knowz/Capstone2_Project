@@ -13,6 +13,7 @@ class ettests extends Model
 
     protected $fillable = [
         "etTitle",
+        'IsHidden',
         "etDescription",
         "etNumber",
         "etTotal",

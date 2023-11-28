@@ -25,10 +25,10 @@
                     <input form="filter-form" type="checkbox" name="enumeration-filter" @if(in_array('enumeration', $filterType)) checked @endif>
                     <label for="">Enumeration</label>
                 </div>
-                <!-- <div>
-                    <input form="filter-form" type="checkbox" name="">
+                <div>
+                    <input form="filter-form" type="checkbox" name="mixed-filter" @if(in_array('mixed', $filterType)) checked @endif>
                     <label for="">Mixed Test</label>
-                </div> -->
+                </div>
             </div>
         </div>
         <div>

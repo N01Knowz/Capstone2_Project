@@ -115,6 +115,7 @@
         </button>
     </a>
     <div class="add-item-button-container">
+        @if(!$test->tmIsPublic)
         @if(auth()->user()->id == $test->user_id)
         <button class="add-test-question-button" id="add-test-button"><img src="/images/add-test-icon.png">
             <p>Add Item</p>
@@ -122,6 +123,7 @@
         <button class="add-test-question-button" id="add-random-test-button"><img src="/images/add-test-icon.png">
             <p>Add Random Items</p>
         </button>
+        @endif
         @endif
     </div>
 </div>

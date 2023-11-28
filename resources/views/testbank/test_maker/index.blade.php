@@ -56,14 +56,16 @@
                 </td>
                 <td class="test-body-buttons-column" id="test-bb">
                     <div class="test-body-buttons-column-div">
-                        <form method="POST" action="/mcq/{{$test->qzID}}/publish" class="button-delete-form" onsubmit="return confirmPublish();">
+                        <form method="POST" action="/test/{{$test->tmID}}/publish" class="button-delete-form" onsubmit="return confirmPublish();">
                             @csrf
                             @method('PUT')
-                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-publish-button @endif"><img src="/images/publish-icon-dark.png" class="test-body-buttons-icons">
+                            <button class="test-body-buttons @if($test->tmIsPublic) button-disabled @else buttons-publish-button @endif" @if($test->tmIsPublic) disabled @endif>
+                                <img src="/images/publish-icon-dark.png" class="test-body-buttons-icons">
                                 <p>Publish</p>
                             </button>
                         </form>
-                        <button class="test-body-buttons buttons-edit-button" id="test-edit-button" data-id="{{$test->tmID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                        <button class="test-body-buttons @if($test->tmIsPublic) button-disabled @else buttons-edit-button @endif" @if($test->tmIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tmID}}">
+                            <img src="/images/edit-icon.png" class="test-body-buttons-icons">
                             <p>Edit</p>
                         </button>
                         <form method="GET" action="/print/tm/{{$test->tmID}}" class="button-delete-form" target="_blank">
@@ -74,7 +76,8 @@
                         <form method="POST" action="/test/{{$test->tmID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                             @csrf
                             @method('delete')
-                            <button class="test-body-buttons buttons-delete-button"><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                            <button class="test-body-buttons @if($test->tmIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->tmIsPublic) disabled @endif>
+                                <img src="/images/delete-icon.png" class="test-body-buttons-icons">
                                 <p>Delete</p>
                             </button>
                         </form>
@@ -84,10 +87,23 @@
             @endforeach
         </tbody>
     </table>
+    <div>
+        {{ $tests->onEachSide(1)->appends(request()->query())->links('pagination::default') }}
+    </div>
 </div>
 <script>
     function confirmDelete() {
         if (confirm("Are you sure you want to delete this record?")) {
+            // User clicked OK, proceed with form submission
+            return true;
+        } else {
+            // User clicked Cancel, prevent form submission
+            return false;
+        }
+    }
+
+    function confirmPublish() {
+        if (confirm("Are you sure you want to publish this record? You will not be able to edit and delete this record and also won't be able to add, edit, and delete the items.")) {
             // User clicked OK, proceed with form submission
             return true;
         } else {

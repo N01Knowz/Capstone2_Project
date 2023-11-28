@@ -64,6 +64,7 @@ Route::delete('/test/{test_type}/{test_id}/{test_maker_id}/delete', [testMakerCo
 Route::get('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_index']);
 Route::post('/test/{test_id}/{test_type}', [testMakerController::class, 'add_test_store']);
 Route::post('/test/{test_id}/{test_type}/add', [testMakerController::class, 'random_test_store']);
+Route::put('/test/{question_id}/publish', [testMakerController::class, 'publish']);
 
 Route::get('/print/{test_type}/{test_id}', [printPageController::class, 'testPage']);
 

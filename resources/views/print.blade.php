@@ -104,7 +104,7 @@ $test_tables = [
         <p>{{$loop->index + 1}}.</p>
         <p>{{ $question->itmQuestion }}</p>
         @if($question->itmImage)
-        <img src="/user_upload_images/{{$question->itmImage}}">
+        <img src="/user_upload_images/{{ auth()->user()->id }}/{{$question->itmImage}}">
         @endif
         <ul>
             @for($i = 1; $i <= 10; $i++) @if($question->{'itmOption' . $i})
@@ -136,7 +136,7 @@ $test_tables = [
         <div class="test-questions">
             <p>{{$loop->index + 1}}. {{ $question->itmQuestion }}</p>
             @if($question->itmImage)
-            <img src="/user_upload_images/{{$question->itmImage}}">
+            <img src="/user_upload_images/{{ auth()->user()->id }}/{{$question->itmImage}}">
             @endif
             <ul>
                 @for($i = 1; $i <= 10; $i++) @if($question->{'itmOption' . $i})
@@ -164,7 +164,7 @@ $test_tables = [
         <div class="test-questions">
             <p>{{$loop->index + 1}}. {{ $question->itmQuestion }}</p>
             @if($question->itmImage)
-            <img src="/user_upload_images/{{$question->itmImage}}">
+            <img src="/user_upload_images/{{ auth()->user()->id }}/{{$question->itmImage}}">
             @endif
             <ul>
                 @for($i = 1; $i <= 10; $i++) @if($question->{'itmOption' . $i})
@@ -192,7 +192,7 @@ $test_tables = [
         <div class="test-questions">
             <p>{{$loop->index + 1}}. {{ $question->itmQuestion }}</p>
             @if($question->itmImage)
-            <img src="/user_upload_images/{{$question->itmImage}}">
+            <img src="/user_upload_images/{{ auth()->user()->id }}/{{$question->itmImage}}">
             @endif
             <ul>
                 @for($i = 1; $i <= 10; $i++) @if($question->{'itmOption' . $i})
@@ -219,7 +219,7 @@ $test_tables = [
         <div class="test-questions">
             <p>{{$loop->index + 1}}. {{ $question->essQuestion }}</p>
             @if($question->essImage)
-            <img src="/user_upload_images/{{$question->essImage}}">
+            <img src="/user_upload_images/{{ auth()->user()->id }}/{{$question->essImage}}">
             @endif
             <table>
                 <thead>

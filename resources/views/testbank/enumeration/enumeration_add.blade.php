@@ -31,18 +31,17 @@
     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
     @enderror
     <p class="text-input-label label-margin-top">Subject</p>
-    <div style="position: relative; width: 100%;">
+    <div style="position: relative; width: 100%; margin-bottom: 1em;">
         <select name="subject" class="textinput-base textarea-title text-input-background">
             @foreach($uniqueSubjects as $subject)
             <option value="{{$subject->subjectID}}">{{$subject->subjectName}}</option>
             @endforeach
         </select>
     </div>
-    <p class="text-supported-format">Leave blank for no subject.</p>
-    <div class="share-container">
+    <!-- <div class="share-container">
         <input type="checkbox" class="share-checkbox" name="share">
         <p class="text-input-label">Share with other users</p>
-    </div>
+    </div> -->
     <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>

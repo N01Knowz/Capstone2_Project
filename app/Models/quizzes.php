@@ -13,6 +13,7 @@ class quizzes extends Model
 
     protected $fillable = [
         "qzTitle",
+        'IsHidden',
         "qzDescription",
         "qzTotal",
         "qzIsPublic",
