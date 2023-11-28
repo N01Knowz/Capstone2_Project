@@ -13,5 +13,6 @@ class tmEtItemsAnswers extends Model
     protected $fillable = [
         "tmttID",
         "etStudentItemAnswer",
+        "etID",
     ];
 }

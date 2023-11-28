@@ -329,7 +329,7 @@ class takeTestController extends Controller
                 $mtQuestions = mtitems::where('mtID', $questions->mtID)->get();
                 $answers = [];
                 foreach ($mtQuestions as $question) {
-                    $answers[$question->itmQuestion] = 0;
+                    $answers[$question->itmID] = '';
                 }
                 session([$type . 'mt' . $questions->mtID . $testID => $answers]);
             }
@@ -340,7 +340,7 @@ class takeTestController extends Controller
                 $etAnswers = etitems::where('etID', $questions->etID)->get();
                 $answers = [];
                 foreach ($etAnswers as $answer) {
-                    $answers[] = 0;
+                    $answers[] = '';
                 }
                 // echo($questions->etID . '<br>');
                 session([$type . 'et' . $questions->etID . $testID => $answers]);
@@ -365,6 +365,7 @@ class takeTestController extends Controller
                 session([$type . $tmType . $testID => $answers]);
             }
             if ($tmType == 'mt') {
+                // dd($answer);
                 session([$type . 'mt' . $tmTest[0]->mtID . $testID => $answer]);
                 // dd(session($type . 'mt' . $tmTest[0]->mtID . $testID));
             }
@@ -516,9 +517,11 @@ class takeTestController extends Controller
                 $studentAnswers = session($type . $question[0]->type . $id);
             } else {
                 $studentAnswers = session($type . $question[0]->type . $question[0]->id . $id);
+                // dd($type . $question[0]->type . $question[0]->id . $id);
             }
             // dd($studentAnswers);
         }
+        // dd($itemQuestion, $studentAnswers);
         // dd($question);
         // dd($item);
         // dd($testItem);
@@ -616,7 +619,7 @@ class takeTestController extends Controller
             $resultID = $test->etttID;
         }
         if ($type == 'mixed') {
-            
+            $resultID = $id;
             $test = tmTestsTaken::create([
                 'user_id' => Auth::id(),
                 'tmID' => $id,
@@ -639,36 +642,54 @@ class takeTestController extends Controller
             )->where('tmID', $id);
             // dd($tmquiz, $tmtf, $tmmt, $tmet);
             $question = $tmquiz->union($tmtf)->union($tmmt)->union($tmet)->get();
-            // dd($question);
+            $doneTypes = [];
             foreach ($question as $res) {
-                if ($res->type == 'quiz') {
-                    $answers = session($type . $question[0]->type . $id);
+                if ($res->type == 'quiz' && !in_array('quiz', $doneTypes)) {
+                    $answers = session($type . $res->type . $id);
                     foreach ($answers as $key => $value) {
                         tmQuizItemsAnswers::create([
                             'tmttID' => $test->tmttID,
                             'itmID' => $key,
-                            'qzStudentItemAnswer' => $value,
+                            'qzStudentItemAnswer' =>  is_null($value) ? '0' : $value,
                         ]);
                     }
-                    $resultID = $test->qzttID;
+                    $doneTypes[] = 'quiz';
                     // session()->forget($type . $question[0]->type . $id);
                 }
-                elseif ($res->type == 'tf') {
-                    dd("ASDASDAS");
-                    $answers = session($type . $question[0]->type . $id);
-                    dd($answers);
+                elseif ($res->type == 'tf' && !in_array('tf', $doneTypes) ) {
+                    $answers = session($type . $res->type . $id);
                     foreach ($answers as $key => $value) {
-                        tfItemsAnswers::create([
+                        tmTfItemsAnswers::create([
                             'tmttID' => $test->tmttID,
                             'itmID' => $key,
-                            'tfStudentItemAnswer' => $value,
+                            'tfStudentItemAnswer' =>  is_null($value) ? '0' : $value,
                         ]);
                     }
-                    $resultID = $test->tfttID;
+                    $doneTypes[] = 'tf';
                     // session()->forget($type . $question[0]->type . $id);
+                }
+                elseif ($res->type == 'mt') {
+                    $answers = session($type . $res->type . $res->id . $id);
+                    foreach ($answers as $key => $value) {
+                        tmMtItemsAnswers::create([
+                            'tmttID' => $test->tmttID,
+                            'etID' => $res->id,
+                            'mtStudentItemAnswer' => $value,
+                        ]);
+                    }
+                }
+                elseif ($res->type == 'et') {
+                    $answers = session($type . $res->type . $res->id . $id);
+                    foreach ($answers as $key => $value) {
+                        tmEtItemsAnswers::create([
+                            'etttID' => $test->etttID,
+                            'etStudentItemAnswer' => $value,
+                        ]);
+                    }
                 }
                 // dd("HELLO");
             }
+            dd("HELLO");
             if (in_array($question[0]->type, ['quiz', 'tf'])) {
                 $studentAnswers = session($type . $question[0]->type . $id);
             } else {

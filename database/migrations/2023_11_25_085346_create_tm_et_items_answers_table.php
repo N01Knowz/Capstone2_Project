@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('tmttID');
             $table->foreign('tmttID')->references('tmttID')->on('tm_tests_takens')->onDelete('cascade');
             $table->longText('etStudentItemAnswer');
+            $table->unsignedBigInteger('etID');
+            $table->foreign('etID')->references('etID')->on('ettests')->onDelete('cascade');
             $table->timestamps();
         });
     }
