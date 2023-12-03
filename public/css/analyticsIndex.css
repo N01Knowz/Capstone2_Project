@@ -17,6 +17,11 @@
         grid-template-columns: 1fr;
     }
 }
+.riasec-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
 .table-bargraph {
     width: 100%;

@@ -14,7 +14,7 @@
 <div class="body-content">
     <div class="riasec-container">
         <div>
-            <p class="user-riasec-score">Your Riasec Scores</p>
+            <p class="user-riasec-score">Your RIASEC Scores</p>
             <table class="table-bargraph">
                 <tbody>
                     <tr>
@@ -56,7 +56,7 @@
                 </tbody>
             </table>
         </div>
-        <div>
+        <div class="riasec-description">
             <p class="riasec-question-label">What is RIASEC?</p>
             <p>The RIASEC model is a career choice theory developed by John Holland. It's based on six interest types: Realistic, Investigative, Artistic, Social, Enterprising, and Conventional.
             </p>

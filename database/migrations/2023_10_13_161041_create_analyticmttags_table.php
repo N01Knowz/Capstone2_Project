@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('analyticmttags', function (Blueprint $table) {
             $table->id('mttgID');
-            $table->unsignedBigInteger('mtID');
-            $table->foreign('mtID')->references('mtID')->on('mttests')->onDelete('cascade');
+            $table->unsignedBigInteger('itmID');
+            $table->foreign('itmID')->references('itmID')->on('mtitems')->onDelete('cascade');
             $table->unsignedBigInteger('tagID');
             $table->foreign('tagID')->references('tagID')->on('analytictags');
             $table->decimal('similarity', 10, 2)->default(0.00);

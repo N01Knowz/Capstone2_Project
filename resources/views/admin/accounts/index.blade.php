@@ -7,14 +7,16 @@
 @section('modal-contents')
 <div class="manage-accounts-modal-background" id="manage-accounts-modal-background" onclick="toggleModal()">
     <div class="manage-accounts-modal-content" onclick="stopPropagation(event)">
-        <p>Are you sure you want to delete the account <span id="delete-user-email"></span>?</p>
-        <form method="POST" id="delete-form">
+        <p class="delete-message">Are you sure you want to delete the account <span id="delete-user-email"></span>?</p>
+        <form method="POST" id="delete-form" class="delete-container">
             @csrf
             @method('delete')
-            <input type="password" name="user-password">
-            <div>
-                <button>Confirm</button>
-                <button type="button" onclick="toggleModal()">Cancel</button>
+            <Label for="user-password">Super Admin Password: </Label><input type="password" name="user-password" class="delete-password-input">
+            <div class="delete-form-buttons">
+                <div class="delete-form-button-container">
+                    <button class="delete-confirm-button">Confirm</button>
+                    <button type="button" onclick="toggleModal()" class="delete-cancel-button">Cancel</button>
+                </div>
             </div>
         </form>
     </div>

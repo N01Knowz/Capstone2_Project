@@ -155,20 +155,20 @@ class matchingTestbankController extends Controller
             ->paginate(13);
 
 
-        $tests->each(function ($tests) {
-            $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
-                ->where('analyticmttags.mtID', $tests->mtID)
-                ->get();
-            // dd($tests->mtID);
+        // $tests->each(function ($tests) {
+        //     $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+        //         ->where('analyticmttags.mtID', $tests->mtID)
+        //         ->get();
+        //     // dd($tests->mtID);
 
-            $tagData = [];
-            foreach ($tags as $tag) {
-                $tagData[$tag->tagName] = $tag->similarity;
-            }
+        //     $tagData = [];
+        //     foreach ($tags as $tag) {
+        //         $tagData[$tag->tagName] = $tag->similarity;
+        //     }
 
 
-            $tests->tags = $tagData;
-        });
+        //     $tests->tags = $tagData;
+        // });
 
 
         $testPage = 'matching';
@@ -278,7 +278,18 @@ class matchingTestbankController extends Controller
         }
         $questions = mtitems::where('mtID', '=', $id)
             ->get();
+        $questions->each(function ($questions) {
+            $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+                ->where('analyticmttags.itmID', $questions->itmID)
+                ->get();
+            // dd($questions->itmID);
 
+            $tagData = [];
+            foreach ($tags as $tag) {
+                $tagData[$tag->tagName] = $tag->similarity;
+            }
+            $questions->tags = $tagData;
+        });
         $testPage = 'matching';
         return view('testbank.matching.matching_test-description', [
             'test' => $test,

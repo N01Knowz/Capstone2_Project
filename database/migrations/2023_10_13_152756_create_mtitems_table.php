@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('itmQuestion')->nullable();
             $table->longText('itmAnswer');
             $table->decimal('itmPoints', 10, 2)->default(0.00);
+            $table->boolean('labeled')->default(0);
             $table->timestamps();
         });
     }

@@ -12,7 +12,7 @@ class analyticmttags extends Model
     protected $primaryKey = 'mttgID';
 
     protected $fillable = [
-        "mtID",
+        "itmID",
         "tagID",
         "isActive",
     ];

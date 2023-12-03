@@ -111,10 +111,20 @@
                 @foreach($questions as $question)
                 <tr>
                     <td>
-                        <input class="mt-inputs" readonly type="text" value="{{$question->itmQuestion}}">
+                        <div>
+                            <input class="mt-inputs" readonly type="text" value="{{$question->itmQuestion}}">
+                        </div>
                     </td>
-                    <td><input class="mt-inputs" readonly type="text" value="{{$question->itmAnswer}}"></td>
-                    <td><input class="mt-inputs" readonly type="text" placeholder="0.00" value="{{$question->itmPoints}}"></td>
+                    <td>
+                        <div class="mt-cell">
+                            <input class="mt-inputs mtcell-top" readonly type="text" value="{{$question->itmAnswer}}">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="mt-cell">
+                            <input class="mt-inputs mtcell-top" readonly type="text" placeholder="0.00" value="{{$question->itmPoints}}">
+                        </div>
+                    </td>
                     @if(auth()->user()->id == $test->user_id)
                     @if(!$test->mtIsPublic)
                     <td class="buttons-column">
@@ -135,6 +145,33 @@
                     </td>
                     @endif
                     @endif
+                </tr>
+                <tr>
+                    <td>
+                        <div class="question-labels" style="margin-bottom: 1em;">
+                            @isset(($question->tags['Realistic']))
+                            <div class="label r-label">Realistic</div>
+                            @endisset
+                            @isset(($question->tags['Investigative']))
+                            <div class="label i-label">Investigative</div>
+                            @endisset
+                            @isset(($question->tags['Artistic']))
+                            <div class="label a-label">Artistic</div>
+                            @endisset
+                            @isset(($question->tags['Social']))
+                            <div class="label s-label">Social</div>
+                            @endisset
+                            @isset(($question->tags['Enterprising']))
+                            <div class="label e-label">Enterprising</div>
+                            @endisset
+                            @isset(($question->tags['Conventional']))
+                            <div class="label c-label">Conventional</div>
+                            @endisset
+                            @isset(($question->tags['Unknown']))
+                            <div class="label u-label">Unknown</div>
+                            @endisset
+                        </div>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
