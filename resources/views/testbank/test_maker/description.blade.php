@@ -53,7 +53,7 @@
             <p class="add-random-item-enter-answer">Select Filters</p>
             <button class="add-random-item-modal-header-close" id="add_random_item_modal_header_close">x</button>
         </div>
-        <form method="post" id="add_random_form" action="/test/{{$test->tmID}}/essay/add" class="add-random-item-modal-body">
+        <form method="post" id="add_random_form" action="/test/{{$test->tmID}}/mcq/add" class="add-random-item-modal-body">
             @csrf
             <div class="random-item-filter">
                 <label for="random_item_filter" class="random-item-filter-input-label">Test Type:</label>
@@ -73,7 +73,6 @@
             <div class="random-item-filter">
                 <label for="random_item_test_type" class="random-item-filter-input-label">Subject:</label>
                 <select name="random_item_subject" id="" class="random-item-filter-input">
-                    <option value=""></option>
                     @foreach($subjects as $subject)
                     <option value="{{$subject->subjectName}}">{{$subject->subjectName}}</option>
                     @endforeach

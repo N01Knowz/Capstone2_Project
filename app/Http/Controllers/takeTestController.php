@@ -58,7 +58,7 @@ class takeTestController extends Controller
             'quizzes.qzTotal as total',
             'quizzes.qzIsPublic as public',
             'quizzes.subjectID',
-            'quizzes.created_at',
+            'quizzes.updated_at',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
@@ -79,7 +79,7 @@ class takeTestController extends Controller
             'ettests.etTotal as total',
             'ettests.etIsPublic as public',
             'ettests.subjectID',
-            'ettests.created_at',
+            'ettests.updated_at',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
@@ -102,7 +102,7 @@ class takeTestController extends Controller
             'mttests.mtTotal as total',
             'mttests.mtIsPublic as public',
             'mttests.subjectID',
-            'mttests.created_at',
+            'mttests.updated_at',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
@@ -123,7 +123,7 @@ class takeTestController extends Controller
             'tftests.tfTotal as total',
             'tftests.tfIsPublic as public',
             'tftests.subjectID',
-            'tftests.created_at',
+            'tftests.updated_at',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
@@ -144,7 +144,7 @@ class takeTestController extends Controller
         //     'mtftests.mtfTotal as total',
         //     'mtftests.mtfIsPublic as public',
         //     'mtftests.subjectID',
-        //     'mtftests.created_at',
+        //     'mtftests.updated_at',
         //     'subjects.subjectName',
         //     'users.first_name',
         //     'users.last_name',
@@ -163,7 +163,7 @@ class takeTestController extends Controller
             'tmtests.tmTotal as total',
             'tmtests.tmIsPublic as public',
             DB::raw("'0' as subjectID"),
-            'tmtests.created_at',
+            'tmtests.updated_at',
             DB::raw("'No Subject' as subjectName"),
             'users.first_name',
             'users.last_name',
@@ -265,7 +265,7 @@ class takeTestController extends Controller
         });
 
         $result = $result
-            ->orderBy('created_at', $sortDate)
+            ->orderBy('updated_at', $sortDate)
             ->paginate(13);
 
         // dd($result);

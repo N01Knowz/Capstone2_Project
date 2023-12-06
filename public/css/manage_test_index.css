@@ -21,6 +21,8 @@
     border-radius: 10px;
     display: flex;
     width: 90%;
+    display: flex;
+    flex-direction: column;
 }
 
 .table-container>table {
@@ -165,4 +167,29 @@
 
 .show-hide-column {
     width: 5%; 
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1em;
+}
+
+.pagination li {
+    margin: 0 5px;
+    list-style: none;
+    display: inline-block;
+}
+
+.pagination a {
+    text-decoration: none;
+    padding: 8px 12px;
+    background-color: #3490dc;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #1e528e;
 }

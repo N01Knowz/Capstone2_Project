@@ -24,6 +24,7 @@ use App\Models\analyticquizitemtags;
 use App\Models\analytictfitemtags;
 use App\Models\analyticmtfitemtags;
 use App\Models\mtfitems;
+use App\Models\mtitems;
 use App\Models\quizitems;
 use App\Models\tfitems;
 use Illuminate\Support\Facades\Validator;
@@ -280,7 +281,6 @@ class testMakerController extends Controller
 
     public function add_test_index(Request $request, string $id, string $test_type)
     {
-
         $test = tmtests::find($id);
         $currentUserId = Auth::user()->id;
         $types_of_test = ['essay', 'tf', 'mtf', 'matching', 'enumeration', 'mcq'];
@@ -293,13 +293,6 @@ class testMakerController extends Controller
                 // dd($request->input($label), $label);
             }
         }
-        if ($searchTitle) {
-            // dd($searchTitle);
-        }
-
-        // if ($subjectFilter == '1' || is_null($subjectFilter)) {
-        //     dd($subjectFilter);
-        // }
 
 
         if (!in_array($test_type, $types_of_test)) {
@@ -315,71 +308,12 @@ class testMakerController extends Controller
 
         $allQuestionQuery = null;
 
-        if ($test_type == 'essay') {
-            $allTestQuery = essays::leftJoin('tm_essays', 'tm_essays.essID', '=', 'essays.essID')
-                ->leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')
-                ->leftjoin('tmtests', 'tm_essays.tmID', '=', 'tmtests.tmID')
-                ->where('essays.user_id', '=', $currentUserId)
-                ->select('essays.*', 'subjects.subjectName')
-                ->addSelect(DB::raw('CASE WHEN tm_essays.tmessID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
-
-            if ($searchTitle) {
-                $allTestQuery = $allTestQuery->where('essTitle', 'LIKE', "%$searchTitle%");
-            }
-            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
-                $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
-            }
-
-            $allTestQuery = $allTestQuery->orderBy('essays.essID', 'desc')
-                ->get();
-
-
-            $allTestQuery->each(function ($allTestQuery) {
-                $tags = analyticessaytags::join('analytictags', 'analytictags.tagID', '=', 'analyticessaytags.tagID')
-                    ->where('analyticessaytags.essID', $allTestQuery->essID)
-                    ->get();
-
-                $tagData = [];
-                foreach ($tags as $tag) {
-                    $tagData[$tag->tagName] = $tag->similarity;
-                }
-                $allTestQuery->tags = $tagData;
-            });
-
-            $shouldFilter = false;
-            foreach ($filterLabel as $key => $value) {
-                if ($request->input($key)) {
-                    $shouldFilter = true;
-                    break;
-                }
-            }
-
-            if ($shouldFilter) {
-                $allTestQuery = $allTestQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
-                    // Apply additional filtering conditions here
-                    $labelNumbers = 0;
-                    $labelFiltered = 0;
-                    foreach ($filterLabel as $key => $value) {
-                        if ($request->input($key)) {
-                            $labelNumbers += 1;
-                            if (isset($item->tags[$value])) {
-                                $labelFiltered += 1;
-                            }
-                        }
-                    }
-                    return $labelNumbers == $labelFiltered;
-                });
-            }
-        }
-
 
         if ($test_type == 'matching') {
-            $allTestQuery = mttests::leftJoin('tm_mts', 'tm_mts.mtID', '=', 'mttests.mtID')
-                ->leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
-                ->leftjoin('tmtests', 'tm_mts.tmID', '=', 'tmtests.tmID')
+            $allTestQuery = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
                 ->where('mttests.user_id', '=', $currentUserId)
-                ->select('mttests.*', 'subjects.subjectName')
-                ->addSelect(DB::raw('CASE WHEN tm_mts.tmmtID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
+                ->select('mttests.*', 'subjects.subjectName');
+            // ->addSelect(DB::raw('CASE WHEN tm_mts.tmmtID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'));
 
             if ($searchTitle) {
                 $allTestQuery = $allTestQuery->where('mtTitle', 'LIKE', "%$searchTitle%");
@@ -392,17 +326,36 @@ class testMakerController extends Controller
                 ->get();
 
 
-            $allTestQuery->each(function ($allTestQuery) {
-                $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
-                    ->where('analyticmttags.mtID', $allTestQuery->mtID)
+            $allTestQuery->each(function ($item) use ($id, &$tagData) {
+                $tmItems = tmMt::where('mtID', $item->mtID)
+                    ->where('tmID', $id)
                     ->get();
+                $item->in_test_makers = $tmItems->isEmpty() ? null : 1;
 
-                $tagData = [];
-                foreach ($tags as $tag) {
-                    $tagData[$tag->tagName] = $tag->similarity;
-                }
-                $allTestQuery->tags = $tagData;
+                $testItems = mtitems::where('mtID', $item->mtID)->get();
+                // dd($testItems);
+                $testItems->each(function ($mtitem) use (&$item, &$tagData) {
+                    $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+                        ->where('analyticmttags.itmID', $mtitem->itmID)
+                        ->get();
+                    foreach ($tags as $tag) {
+                        $tagData[$tag->tagName] = $tag->similarity;
+                    }
+                    $item->tags = $tagData;
+                });
             });
+            // dd($allTestQuery);
+            // $allTestQuery->each(function ($allTestQuery) {
+            //     $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+            //         ->where('analyticmttags.mtID', $allTestQuery->mtID)
+            //         ->get();
+
+            //     $tagData = [];
+            //     foreach ($tags as $tag) {
+            //         $tagData[$tag->tagName] = $tag->similarity;
+            //     }
+            //     $allTestQuery->tags = $tagData;
+            // });
 
             $shouldFilter = false;
             foreach ($filterLabel as $key => $value) {
@@ -495,13 +448,24 @@ class testMakerController extends Controller
         }
 
         if ($test_type == 'mcq') {
-            $allQuestionQuery = quizzes::join('quizitems', 'quizzes.qzID', '=', 'quizitems.qzID')
-                ->leftJoin('tm_quiz_items', 'tm_quiz_items.itmID', '=', 'quizitems.itmID')
-                ->leftjoin('tmtests', 'tm_quiz_items.tmID', '=', 'tmtests.tmID')
+            $allQuestionQuery = quizzes::select('quizitems.*')
+                ->join('quizitems', 'quizzes.qzID', '=', 'quizitems.qzID')
                 ->where('quizzes.user_id', '=', $currentUserId)
-                ->select('quizitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_quiz_items.tmquizID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
                 ->get();
+
+
+            $allQuestionQuery->each(function ($allQuestionQuery) use ($id) {
+
+                $tmItems = tmQuizItems::where('itmID', $allQuestionQuery->itmID)
+                    ->where('tmID', $id)
+                    ->get();
+                // if(!$tmItems->isEmpty()){
+                //     dd("HELLO");
+                // }
+                // dd($tmItems, $allQuestionQuery->itmID, $id);
+                $allQuestionQuery->in_test_makers = $tmItems->isEmpty() ? null : 1;
+            });
+            // dd($allQuestionQuery);
 
             $allQuestionQuery->each(function ($allQuestionQuery) {
                 $tags = analyticquizitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticquizitemtags.tagID')
@@ -558,12 +522,23 @@ class testMakerController extends Controller
         if ($test_type == 'tf') {
 
             $allQuestionQuery = tftests::join('tfitems', 'tftests.tfID', '=', 'tfitems.tfID')
-                ->leftJoin('tm_tf_items', 'tm_tf_items.itmID', '=', 'tfitems.itmID')
-                ->leftjoin('tmtests', 'tm_tf_items.tmID', '=', 'tmtests.tmID')
                 ->where('tftests.user_id', '=', $currentUserId)
                 ->select('tfitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_tf_items.tmtfID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
                 ->get();
+
+
+            $allQuestionQuery->each(function ($allQuestionQuery) use ($id) {
+
+                $tmItems = tmTfItems::where('itmID', $allQuestionQuery->itmID)
+                    ->where('tmID', $id)
+                    ->get();
+                // if(!$tmItems->isEmpty()){
+                //     dd("HELLO");
+                // }
+                // dd($tmItems, $allQuestionQuery->itmID, $id);
+                $allQuestionQuery->in_test_makers = $tmItems->isEmpty() ? null : 1;
+            });
+            // dd($allQuestionQuery);
 
             $allQuestionQuery->each(function ($allQuestionQuery) {
                 $tags = analytictfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analytictfitemtags.tagID')
@@ -616,74 +591,6 @@ class testMakerController extends Controller
             $allTestQuery = $allTestQuery->orderBy('tftests.tfID', 'desc')
                 ->get();
         }
-
-        if ($test_type == 'mtf') {
-            $allQuestionQuery = mtftests::join('mtfitems', 'mtftests.mtfID', '=', 'mtfitems.mtfID')
-                ->leftJoin('tm_mtf_items', 'tm_mtf_items.itmID', '=', 'mtfitems.itmID')
-                ->leftjoin('tmtests', 'tm_mtf_items.tmID', '=', 'tmtests.tmID')
-                ->where('mtftests.user_id', '=', $currentUserId)
-                ->select('mtfitems.*')
-                ->addSelect(DB::raw('CASE WHEN tm_mtf_items.tmmtfID IS NOT NULL AND tmtests.tmID = ' . $id . ' THEN 1 ELSE NULL END AS in_test_makers'))
-                ->get();
-
-            $allQuestionQuery->each(function ($allQuestionQuery) {
-                $tags = analyticmtfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticmtfitemtags.tagID')
-                    ->where('analyticmtfitemtags.itmID', $allQuestionQuery->itmID)
-                    ->get();
-
-                $tagData = [];
-                foreach ($tags as $tag) {
-                    $tagData[$tag->tagName] = $tag->similarity;
-                }
-                $allQuestionQuery->tags = $tagData;
-            });
-
-            $shouldFilter = false;
-            foreach ($filterLabel as $key => $value) {
-                if ($request->input($key)) {
-                    $shouldFilter = true;
-                    break;
-                }
-            }
-
-            if ($shouldFilter) {
-                $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
-                    // Apply additional filtering conditions here
-                    $labelNumbers = 0;
-                    $labelFiltered = 0;
-                    foreach ($filterLabel as $key => $value) {
-                        if ($request->input($key)) {
-                            $labelNumbers += 1;
-                            if (isset($item->tags[$value])) {
-                                $labelFiltered += 1;
-                            }
-                        }
-                    }
-                    return $labelNumbers == $labelFiltered;
-                });
-            }
-            $allTestQuery = mtftests::leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
-                ->where('mtftests.user_id', '=', $currentUserId)
-                ->whereIn('mtftests.mtfID', $allQuestionQuery->pluck('mtfID')->toArray())
-                ->select('mtftests.*', 'subjects.subjectName');
-
-            if ($searchTitle) {
-                $allTestQuery = $allTestQuery->where('mtfTitle', 'LIKE', "%$searchTitle%");
-            }
-            if (!($subjectFilter == '1' || is_null($subjectFilter))) {
-                $allTestQuery = $allTestQuery->where('subjects.subjectName', $subjectFilter);
-            }
-
-            $allTestQuery = $allTestQuery->orderBy('mtftests.mtfID', 'desc')
-                ->get();
-        }
-        // dd($allQuestionQuery);
-
-
-        // $uniqueSubjects = subjects::where('subjectName', '!=', 'No Subject') // Exclude rows with 'No Subject'
-        //     ->distinct('subjectName')
-        //     ->pluck('subjectName')
-        //     ->toArray();
 
         $uniqueSubjects = subjects::all();
         $testPage = 'test';
@@ -795,28 +702,37 @@ class testMakerController extends Controller
 
         if (in_array($test_type, ['tf', 'mtf', 'mcq'])) {
             if ($test_type == 'mcq') {
+
                 $allQuestionQuery = quizzes::join('quizitems', 'quizzes.qzID', '=', 'quizitems.qzID')
-                    ->leftJoin('tm_quiz_items', 'tm_quiz_items.itmID', '=', 'quizitems.itmID')
                     ->leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')
                     ->where('quizzes.user_id', '=', $currentUserId)
-                    ->whereNull('tm_quiz_items.tmquizID');
+                    ->select('quizitems.itmID', 'subjectName')
+                    ->get();
 
                 if ($subjectFilter) {
-                    $allQuestionQuery = $allQuestionQuery->where('subjectName', $subjectFilter);
+                    $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($subjectFilter) {
+                        return $item->subjectName == $subjectFilter;
+                    });
                 }
-                $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->select('quizitems.itmID')->get();
 
-
-                $allQuestionQuery->each(function ($allQuestionQuery) {
-                    $tags = analyticquizitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticquizitemtags.tagID')
-                        ->where('analyticquizitemtags.itmID', $allQuestionQuery->itmID)
+                $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($id) {
+                    $tmItems = tmQuizItems::where('itmID', $item->itmID)
+                        ->where('tmID', $id)
                         ->get();
-
+                    if ($tmItems->isEmpty()) {
+                        return true;
+                    }
+                    return false;
+                });
+                $allQuestionQuery->each(function ($question) {
+                    $tags = analyticquizitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticquizitemtags.tagID')
+                        ->where('analyticquizitemtags.itmID', $question->itmID)
+                        ->get();
                     $tagData = [];
                     foreach ($tags as $tag) {
                         $tagData[$tag->tagName] = $tag->similarity;
                     }
-                    $allQuestionQuery->tags = $tagData;
+                    $question->tags = $tagData;
                 });
 
                 $shouldFilter = false;
@@ -826,9 +742,10 @@ class testMakerController extends Controller
                         break;
                     }
                 }
+                // $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->get();
 
                 if ($shouldFilter) {
-                    $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
+                    $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($filterLabel, $request) {
                         // Apply additional filtering conditions here
                         $labelNumbers = 0;
                         $labelFiltered = 0;
@@ -844,6 +761,8 @@ class testMakerController extends Controller
                     });
                 }
 
+                $allQuestionQuery = $allQuestionQuery->shuffle()->take($numberOfRows);
+
                 if ($allQuestionQuery->count() < $numberOfRows) {
                     return redirect()->back()->with('lackingRows', 'Not enough rows found.');
                 }
@@ -858,16 +777,27 @@ class testMakerController extends Controller
 
             if ($test_type == 'tf') {
                 $allQuestionQuery = tftests::join('tfitems', 'tftests.tfID', '=', 'tfitems.tfID')
-                    ->leftJoin('tm_tf_items', 'tm_tf_items.itmID', '=', 'tfitems.itmID')
                     ->leftJoin('subjects', 'tftests.subjectID', '=', 'subjects.subjectID')
                     ->where('tftests.user_id', '=', $currentUserId)
-                    ->whereNull('tm_tf_items.tmtfID');
+                    ->select('tfitems.itmID', 'subjectName')
+                    ->get();
+
 
                 if ($subjectFilter) {
-                    $allQuestionQuery = $allQuestionQuery->where('subjectName', $subjectFilter);
+                    $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($subjectFilter) {
+                        return $item->subjectName == $subjectFilter;
+                    });
                 }
-                $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->select('tfitems.itmID')->get();
 
+                $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($id) {
+                    $tmItems = tmTfItems::where('itmID', $item->itmID)
+                        ->where('tmID', $id)
+                        ->get();
+                    if ($tmItems->isEmpty()) {
+                        return true;
+                    }
+                    return false;
+                });
                 $allQuestionQuery->each(function ($allQuestionQuery) {
                     $tags = analytictfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analytictfitemtags.tagID')
                         ->where('analytictfitemtags.itmID', $allQuestionQuery->itmID)
@@ -905,6 +835,8 @@ class testMakerController extends Controller
                     });
                 }
 
+                $allQuestionQuery = $allQuestionQuery->shuffle()->take($numberOfRows);
+
                 if ($allQuestionQuery->count() < $numberOfRows) {
                     return redirect()->back()->with('lackingRows', 'Not enough rows found.');
                 }
@@ -917,128 +849,128 @@ class testMakerController extends Controller
                 }
             }
 
-            if ($test_type == 'mtf') {
-                $allQuestionQuery = mtftests::join('mtfitems', 'mtftests.mtfID', '=', 'mtfitems.mtfID')
-                    ->leftJoin('tm_mtf_items', 'tm_mtf_items.itmID', '=', 'mtfitems.itmID')
-                    ->leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
-                    ->where('mtftests.user_id', '=', $currentUserId)
-                    ->whereNull('tm_mtf_items.tmmtfID');
+            // if ($test_type == 'mtf') {
+            //     $allQuestionQuery = mtftests::join('mtfitems', 'mtftests.mtfID', '=', 'mtfitems.mtfID')
+            //         ->leftJoin('tm_mtf_items', 'tm_mtf_items.itmID', '=', 'mtfitems.itmID')
+            //         ->leftJoin('subjects', 'mtftests.subjectID', '=', 'subjects.subjectID')
+            //         ->where('mtftests.user_id', '=', $currentUserId)
+            //         ->whereNull('tm_mtf_items.tmmtfID');
 
-                if ($subjectFilter) {
-                    $allQuestionQuery = $allQuestionQuery->where('subjectName', $subjectFilter);
-                }
-                $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->select('mtfitems.itmID')->get();
+            //     if ($subjectFilter) {
+            //         $allQuestionQuery = $allQuestionQuery->where('subjectName', $subjectFilter);
+            //     }
+            //     $allQuestionQuery = $allQuestionQuery->inRandomOrder()->limit($numberOfRows)->select('mtfitems.itmID')->get();
 
 
-                $allQuestionQuery->each(function ($allQuestionQuery) {
-                    $tags = analyticmtfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticmtfitemtags.tagID')
-                        ->where('analyticmtfitemtags.itmID', $allQuestionQuery->itmID)
-                        ->get();
+            //     $allQuestionQuery->each(function ($allQuestionQuery) {
+            //         $tags = analyticmtfitemtags::join('analytictags', 'analytictags.tagID', '=', 'analyticmtfitemtags.tagID')
+            //             ->where('analyticmtfitemtags.itmID', $allQuestionQuery->itmID)
+            //             ->get();
 
-                    $tagData = [];
-                    foreach ($tags as $tag) {
-                        $tagData[$tag->tagName] = $tag->similarity;
-                    }
-                    $allQuestionQuery->tags = $tagData;
-                });
+            //         $tagData = [];
+            //         foreach ($tags as $tag) {
+            //             $tagData[$tag->tagName] = $tag->similarity;
+            //         }
+            //         $allQuestionQuery->tags = $tagData;
+            //     });
 
-                $shouldFilter = false;
-                foreach ($filterLabel as $key => $value) {
-                    if ($request->input($key)) {
-                        $shouldFilter = true;
-                        break;
-                    }
-                }
+            //     $shouldFilter = false;
+            //     foreach ($filterLabel as $key => $value) {
+            //         if ($request->input($key)) {
+            //             $shouldFilter = true;
+            //             break;
+            //         }
+            //     }
 
-                if ($shouldFilter) {
-                    $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
-                        // Apply additional filtering conditions here
-                        $labelNumbers = 0;
-                        $labelFiltered = 0;
-                        foreach ($filterLabel as $key => $value) {
-                            if ($request->input($key)) {
-                                $labelNumbers += 1;
-                                if (isset($item->tags[$value])) {
-                                    $labelFiltered += 1;
-                                }
-                            }
-                        }
-                        return $labelNumbers == $labelFiltered;
-                    });
-                }
+            //     if ($shouldFilter) {
+            //         $allQuestionQuery = $allQuestionQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
+            //             // Apply additional filtering conditions here
+            //             $labelNumbers = 0;
+            //             $labelFiltered = 0;
+            //             foreach ($filterLabel as $key => $value) {
+            //                 if ($request->input($key)) {
+            //                     $labelNumbers += 1;
+            //                     if (isset($item->tags[$value])) {
+            //                         $labelFiltered += 1;
+            //                     }
+            //                 }
+            //             }
+            //             return $labelNumbers == $labelFiltered;
+            //         });
+            //     }
 
-                if ($allQuestionQuery->count() < $numberOfRows) {
-                    return redirect()->back()->with('lackingRows', 'Not enough rows found.');
-                }
+            //     if ($allQuestionQuery->count() < $numberOfRows) {
+            //         return redirect()->back()->with('lackingRows', 'Not enough rows found.');
+            //     }
 
-                foreach ($allQuestionQuery as $question) {
-                    tmMtfItems::create([
-                        'tmID' => $id,
-                        'itmID' => $question->itmID,
-                    ]);
-                }
-            }
+            //     foreach ($allQuestionQuery as $question) {
+            //         tmMtfItems::create([
+            //             'tmID' => $id,
+            //             'itmID' => $question->itmID,
+            //         ]);
+            //     }
+            // }
         } elseif (in_array($test_type, ['essay', 'enumeration', 'matching'])) {
 
-            if ($test_type == 'essay') {
-                $allTestQuery = essays::leftJoin('tm_essays', 'tm_essays.essID', '=', 'essays.essID')
-                    ->leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')
-                    ->where('essays.user_id', '=', $currentUserId)
-                    ->whereNull('tm_essays.tmessID');
+            // if ($test_type == 'essay') {
+            //     $allTestQuery = essays::leftJoin('tm_essays', 'tm_essays.essID', '=', 'essays.essID')
+            //         ->leftJoin('subjects', 'essays.subjectID', '=', 'subjects.subjectID')
+            //         ->where('essays.user_id', '=', $currentUserId)
+            //         ->whereNull('tm_essays.tmessID');
 
-                if ($subjectFilter) {
-                    $allTestQuery = $allTestQuery->where('subjectName', $subjectFilter);
-                }
-                $allTestQuery = $allTestQuery->inRandomOrder()->limit($numberOfRows)->select('essays.essID')->get();
+            //     if ($subjectFilter) {
+            //         $allTestQuery = $allTestQuery->where('subjectName', $subjectFilter);
+            //     }
+            //     $allTestQuery = $allTestQuery->inRandomOrder()->limit($numberOfRows)->select('essays.essID')->get();
 
-                $allTestQuery->each(function ($allTestQuery) {
-                    $tags = analyticessaytags::join('analytictags', 'analytictags.tagID', '=', 'analyticessaytags.tagID')
-                        ->where('analyticessaytags.essID', $allTestQuery->itmID)
-                        ->get();
+            //     $allTestQuery->each(function ($allTestQuery) {
+            //         $tags = analyticessaytags::join('analytictags', 'analytictags.tagID', '=', 'analyticessaytags.tagID')
+            //             ->where('analyticessaytags.essID', $allTestQuery->itmID)
+            //             ->get();
 
-                    $tagData = [];
-                    foreach ($tags as $tag) {
-                        $tagData[$tag->tagName] = $tag->similarity;
-                    }
-                    $allTestQuery->tags = $tagData;
-                });
+            //         $tagData = [];
+            //         foreach ($tags as $tag) {
+            //             $tagData[$tag->tagName] = $tag->similarity;
+            //         }
+            //         $allTestQuery->tags = $tagData;
+            //     });
 
-                $shouldFilter = false;
-                foreach ($filterLabel as $key => $value) {
-                    if ($request->input($key)) {
-                        $shouldFilter = true;
-                        break;
-                    }
-                }
+            //     $shouldFilter = false;
+            //     foreach ($filterLabel as $key => $value) {
+            //         if ($request->input($key)) {
+            //             $shouldFilter = true;
+            //             break;
+            //         }
+            //     }
 
-                if ($shouldFilter) {
-                    $allTestQuery = $allTestQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
-                        // Apply additional filtering conditions here
-                        $labelNumbers = 0;
-                        $labelFiltered = 0;
-                        foreach ($filterLabel as $key => $value) {
-                            if ($request->input($key)) {
-                                $labelNumbers += 1;
-                                if (isset($item->tags[$value])) {
-                                    $labelFiltered += 1;
-                                }
-                            }
-                        }
-                        return $labelNumbers == $labelFiltered;
-                    });
-                }
+            //     if ($shouldFilter) {
+            //         $allTestQuery = $allTestQuery->filter(function ($item) use ($test_type, $filterLabel, $request) {
+            //             // Apply additional filtering conditions here
+            //             $labelNumbers = 0;
+            //             $labelFiltered = 0;
+            //             foreach ($filterLabel as $key => $value) {
+            //                 if ($request->input($key)) {
+            //                     $labelNumbers += 1;
+            //                     if (isset($item->tags[$value])) {
+            //                         $labelFiltered += 1;
+            //                     }
+            //                 }
+            //             }
+            //             return $labelNumbers == $labelFiltered;
+            //         });
+            //     }
 
-                if ($allTestQuery->count() < $numberOfRows) {
-                    return redirect()->back()->with('lackingRows', 'Not enough rows found.');
-                }
+            //     if ($allTestQuery->count() < $numberOfRows) {
+            //         return redirect()->back()->with('lackingRows', 'Not enough rows found.');
+            //     }
 
-                foreach ($allTestQuery as $question) {
-                    tmEssay::create([
-                        'tmID' => $id,
-                        'essID' => $question->essID,
-                    ]);
-                }
-            }
+            //     foreach ($allTestQuery as $question) {
+            //         tmEssay::create([
+            //             'tmID' => $id,
+            //             'essID' => $question->essID,
+            //         ]);
+            //     }
+            // }
 
             if ($test_type == 'enumeration') {
                 $allTestQuery = ettests::leftJoin('tm_ets', 'tm_ets.etID', '=', 'ettests.etID')
@@ -1100,26 +1032,34 @@ class testMakerController extends Controller
                 }
             }
             if ($test_type == 'matching') {
-                $allTestQuery = mttests::leftJoin('tm_mts', 'tm_mts.mtID', '=', 'mttests.mtID')
-                    ->leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
+                $allTestQuery = mttests::leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
                     ->where('mttests.user_id', '=', $currentUserId)
-                    ->whereNull('tm_mts.tmmtID');
+                    ->select('mttests.mtID', 'subjectName')
+                    ->get();
 
                 if ($subjectFilter) {
-                    $allTestQuery = $allTestQuery->where('subjectName', $subjectFilter);
+                    $allTestQuery = $allTestQuery->filter(function ($item) use ($subjectFilter) {
+                        return $item->subjectName == $subjectFilter;
+                    });
                 }
-                $allTestQuery = $allTestQuery->inRandomOrder()->limit($numberOfRows)->select('mttests.mtID')->get();
 
-                $allTestQuery->each(function ($allTestQuery) {
-                    $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
-                        ->where('analyticmttags.mtID', $allTestQuery->mtID)
+                $allTestQuery->each(function ($item) use ($id, &$tagData) {
+                    $tmItems = tmMt::where('mtID', $item->mtID)
+                        ->where('tmID', $id)
                         ->get();
+                    $item->in_test_makers = $tmItems->isEmpty() ? null : 1;
 
-                    $tagData = [];
-                    foreach ($tags as $tag) {
-                        $tagData[$tag->tagName] = $tag->similarity;
-                    }
-                    $allTestQuery->tags = $tagData;
+                    $testItems = mtitems::where('mtID', $item->mtID)->get();
+                    
+                    $testItems->each(function ($mtitem) use (&$item, &$tagData) {
+                        $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
+                            ->where('analyticmttags.itmID', $mtitem->itmID)
+                            ->get();
+                        foreach ($tags as $tag) {
+                            $tagData[$tag->tagName] = $tag->similarity;
+                        }
+                        $item->tags = $tagData;
+                    });
                 });
 
                 $shouldFilter = false;
@@ -1175,9 +1115,6 @@ class testMakerController extends Controller
             abort(403); // User does not own the test
         }
 
-        if ($test_type == "essay") {
-            tmEssay::where('tmessID', $test_makerID)->delete();
-        }
         if ($test_type == "matching") {
             tmMt::where('tmmtID', $test_makerID)->delete();
         }
@@ -1189,9 +1126,6 @@ class testMakerController extends Controller
         }
         if ($test_type == "tf") {
             tmTfItems::where('tmtfID', $test_makerID)->delete();
-        }
-        if ($test_type == "mtf") {
-            tmMtfItems::where('tmmtfID', $test_makerID)->delete();
         }
         $this->update_score($test_id);
         return back();

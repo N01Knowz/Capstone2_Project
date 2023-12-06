@@ -7,6 +7,7 @@ use App\Models\mttests;
 use App\Models\ettests;
 use App\Models\quizzes;
 use App\Models\tftests;
+use App\Models\tmtests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,14 +25,13 @@ class manageTestController extends Controller
             'quizzes.qzTotal as total',
             'quizzes.qzIsPublic as public',
             'quizzes.subjectID',
-            'quizzes.created_at',
+            'quizzes.updated_at',
             'IsHidden',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
             'users.user_image',
             DB::raw("'MCQ' as type"),
-            DB::raw('(SELECT COUNT(*) FROM quizitems WHERE quizitems.qzID = quizzes.qzID) as itemCount')
         )
             ->where('qzIsPublic', 1)
             ->leftJoin('subjects', 'quizzes.subjectID', '=', 'subjects.subjectID')
@@ -44,14 +44,13 @@ class manageTestController extends Controller
             'ettests.etTotal as total',
             'ettests.etIsPublic as public',
             'ettests.subjectID',
-            'ettests.created_at',
+            'ettests.updated_at',
             'IsHidden',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
             'users.user_image',
             DB::raw("'ET' as type"),
-            DB::raw('(SELECT COUNT(*) FROM etitems WHERE etitems.etID = ettests.etID) as itemCount')
         )
             ->where('etIsPublic', 1)
             ->leftJoin('subjects', 'ettests.subjectID', '=', 'subjects.subjectID')
@@ -66,14 +65,13 @@ class manageTestController extends Controller
             'mttests.mtTotal as total',
             'mttests.mtIsPublic as public',
             'mttests.subjectID',
-            'mttests.created_at',
+            'mttests.updated_at',
             'IsHidden',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
             'users.user_image',
             DB::raw("'MT' as type"),
-            DB::raw('(SELECT COUNT(*) FROM mtitems WHERE mtitems.mtID = mttests.mtID) as itemCount')
         )
             ->where('mtIsPublic', 1)
             ->leftJoin('subjects', 'mttests.subjectID', '=', 'subjects.subjectID')
@@ -86,18 +84,35 @@ class manageTestController extends Controller
             'tftests.tfTotal as total',
             'tftests.tfIsPublic as public',
             'tftests.subjectID',
-            'tftests.created_at',
+            'tftests.updated_at',
             'IsHidden',
             'subjects.subjectName',
             'users.first_name',
             'users.last_name',
             'users.user_image',
             DB::raw("'TF' as type"),
-            DB::raw('(SELECT COUNT(*) FROM tfitems WHERE tfitems.tfID = tftests.tfID) as itemCount')
         )
             ->where('tfIsPublic', 1)
             ->leftJoin('subjects', 'tftests.subjectID', '=', 'subjects.subjectID')
             ->leftJoin('users', 'tftests.user_id', '=', 'users.id');
+
+        $tm = tmtests::select(
+            'tmtests.tmID as id',
+            'tmtests.tmTitle as title',
+            'tmtests.tmDescription as description',
+            'tmtests.tmTotal as total',
+            'tmtests.tmIsPublic as public',
+            DB::raw("'0' as subjectID"),
+            'tmtests.updated_at',
+            'IsHidden',
+            DB::raw("'No Subject' as subjectName"),
+            'users.first_name',
+            'users.last_name',
+            'users.user_image',
+            DB::raw("'MIXED' as type"),
+        )
+            ->where('tmIsPublic', 1)
+            ->leftJoin('users', 'tmtests.user_id', '=', 'users.id');
 
         // $mtf = mtftests::select(
         //     'mtftests.mtfID as id',
@@ -106,7 +121,7 @@ class manageTestController extends Controller
         //     'mtftests.mtfTotal as total',
         //     'mtftests.mtfIsPublic as public',
         //     'mtftests.subjectID',
-        //     'mtftests.created_at',
+        //     'mtftests.updated_at',
         //     'subjects.subjectName',
         //     'users.first_name',
         //     'users.last_name',
@@ -140,12 +155,19 @@ class manageTestController extends Controller
                 $query->where('tftests.tfTitle', 'LIKE', "%$search%")
                     ->orWhere('tftests.tfDescription', 'LIKE', "%$search%");
             });
+
+            $tm->where(function ($query) use ($search) {
+                $query->where('tmtests.tmTitle', 'LIKE', "%$search%")
+                    ->orWhere('tmtests.tmDescription', 'LIKE', "%$search%");
+            });
         }
         $result = $mcq
             ->union($et)
             ->union($mt)
-            ->union($tf);
+            ->union($tf)
+            ->union($tm);
         $result = $result
+            ->orderBy('updated_at', 'desc')
             ->paginate(13);
         // dd($result);
         $page = 'managetest';

@@ -215,7 +215,7 @@ class analyticsController extends Controller
                 'quizzes.qzID as id',
                 'quizzes.qzTitle as title',
                 'quizzes.qzDescription as description',
-                'quiz_tests_takens.created_at',
+                'quiz_tests_takens.updated_at',
                 'subjects.subjectName',
                 DB::raw("'MCQ' as type"),
             );
@@ -228,7 +228,7 @@ class analyticsController extends Controller
                 'tftests.tfID as id',
                 'tftests.tfTitle as title',
                 'tftests.tfDescription as description',
-                'tf_tests_takens.created_at',
+                'tf_tests_takens.updated_at',
                 'subjects.subjectName',
                 DB::raw("'TF' as type"),
             );
@@ -241,7 +241,7 @@ class analyticsController extends Controller
                 'mttests.mtID as id',
                 'mttests.mtTitle as title',
                 'mttests.mtDescription as description',
-                'matching_tests_takens.created_at',
+                'matching_tests_takens.updated_at',
                 'subjects.subjectName',
                 DB::raw("'MT' as type"),
             );
@@ -254,7 +254,7 @@ class analyticsController extends Controller
                 'ettests.etID as id',
                 'ettests.etTitle as title',
                 'ettests.etDescription as description',
-                'enumeration_tests_takens.created_at',
+                'enumeration_tests_takens.updated_at',
                 'subjects.subjectName',
                 DB::raw("'ET' as type"),
             );
@@ -266,7 +266,7 @@ class analyticsController extends Controller
                 'tmtests.tmID as id',
                 'tmtests.tmTitle as title',
                 'tmtests.tmDescription as description',
-                'tm_tests_takens.created_at',
+                'tm_tests_takens.updated_at',
                 DB::raw("'No Subject' as subjectName"),
                 DB::raw("'mixed' as type"),
             );
@@ -276,7 +276,7 @@ class analyticsController extends Controller
             ->union($tfTaken)
             ->union($etTaken)
             ->union($tmTaken)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         foreach ($result as $resultItem) {
