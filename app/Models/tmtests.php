@@ -17,5 +17,6 @@ class tmtests extends Model
         "tmTotal",
         "tmIsPublic",
         "user_id",
+        'IsHidden',
     ];
 }

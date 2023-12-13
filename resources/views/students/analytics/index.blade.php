@@ -61,7 +61,7 @@
             <p>The RIASEC model is a career choice theory developed by John Holland. It's based on six interest types: Realistic, Investigative, Artistic, Social, Enterprising, and Conventional.
             </p>
             <a href="/analytics/riasec">
-                <p>Lean more about RIASEC and its corresponding careers here.</p>
+                <p>Learn more about RIASEC and its corresponding careers here.</p>
             </a>
         </div>
     </div>

@@ -1,3 +1,12 @@
+/* Declaring CSS variables in :root */
+:root {
+    --color1: #F0A202;
+    --color2: #F18805;
+    --color3: #D95D39;
+    --color4: #0E1428;
+    --color5: #7B9E89;
+}
+
 .body-content {
     display: flex;
     margin-top: 3em;
@@ -7,12 +16,13 @@
 }
 .take-test-body{
     width: 600px;
-    border: 2px solid black;
     border-radius: 25px;
     padding: 1em;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background-color: #e7e7e7;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px 5px 10px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.3);
 }
 ul.custom-list {
     margin-left: 1em;
@@ -46,4 +56,23 @@ ul.custom-list {
     font-weight: bold;
     cursor: pointer;
     margin-top: 1em;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+}
+
+.next-previous-button {     
+    width: 10em;
+    padding: 0.5em;
+    margin-top: 1em;
+    background-color: var(--color2);
+    font-weight: bold;
+    border-radius: 25px;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+.question-number {
+    font-size: 1.2em;
+    font-weight: bold;
 }

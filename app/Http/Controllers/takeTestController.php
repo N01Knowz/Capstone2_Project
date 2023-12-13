@@ -34,6 +34,8 @@ use App\Models\tmTfItemsAnswers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+use function PHPUnit\Framework\isEmpty;
+
 class takeTestController extends Controller
 {
 
@@ -183,6 +185,7 @@ class takeTestController extends Controller
             ->where('isHidden', 0)
             ->leftJoin('users', 'tmtests.user_id', '=', 'users.id');
         // dd($mixed);
+
         $search = $request->input('search');
 
         if (!empty($search)) {
@@ -513,13 +516,13 @@ class takeTestController extends Controller
                         ->get();
                 }
             }
-            if (in_array($question[0]->type, ['quiz', 'tf'])) {
-                $studentAnswers = session($type . $question[0]->type . $id);
-            } else {
-                $studentAnswers = session($type . $question[0]->type . $question[0]->id . $id);
-                // dd($type . $question[0]->type . $question[0]->id . $id);
+            if(!isEmpty($question)){
+                if (in_array($question[0]->type, ['quiz', 'tf'])) {
+                    $studentAnswers = session($type . $question[0]->type . $id);
+                } else {
+                    $studentAnswers = session($type . $question[0]->type . $question[0]->id . $id);
+                }
             }
-            // dd($studentAnswers);
         }
         // dd($itemQuestion, $studentAnswers);
         // dd($question);

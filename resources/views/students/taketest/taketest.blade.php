@@ -17,7 +17,7 @@
     @foreach($questions as $question)
     <div class="take-test-body">
         <div>
-            <p>Question {{$questions->currentPage()}}.</p>
+            <p class="question-number">Question {{$questions->currentPage()}}.</p>
             <p><strong>{{$question->itmQuestion}}</strong></p>
             @if(!is_null($question->itmImage) || !empty($question->itmImage))
             <img src="/user_upload_images/{{$creatorID}}/{{$question->itmImage}}" style="width: 200px; height: 200px;">
@@ -33,13 +33,13 @@
         <div class="item-options-form">
             <input type="hidden" name="questionID" value="{{$question->itmID}}">
             <input type="hidden" name="page" value="" id="pageInput">
-            <button type="button" data-page="{{$questions->currentPage() - 1}}" onclick="switchPage(event)" @if($questions->currentPage() == 1) disabled @endif>Previous</button>
-            <button type="button" data-page="{{$questions->currentPage() + 1}}" onclick="switchPage(event)" @if($questions->currentPage() == $questions->lastPage()) disabled @endif>Next</button>
+            <button type="button" data-page="{{$questions->currentPage() - 1}}" onclick="switchPage(event)" @if($questions->currentPage() == 1) disabled @endif class="next-previous-button">Previous</button>
+            <button type="button" data-page="{{$questions->currentPage() + 1}}" onclick="switchPage(event)" @if($questions->currentPage() == $questions->lastPage()) disabled @endif class="next-previous-button">Next</button>
         </div>
     </div>
     @endforeach
     <input type="hidden" name="finish" value="0" id="finishInput">
-    <button type="button" onclick="finishTest()" class="finish-test-button">Finish Test</button>
+    <button type="button" onclick="finishTest()" class="finish-test-button">Finish Attempt</button>
 </form>
 <script>
     function switchPage(event) {
@@ -87,7 +87,7 @@
             </table>
         </div>
     </div>
-    <button type="submit" class="finish-test-button">Finish Test</button>
+    <button type="submit" class="finish-test-button">Finish Attempt</button>
 </form>
 @endif
 @if(in_array($type, ['et']))
@@ -100,7 +100,7 @@
             @endforeach
         </div>
     </div>
-    <button type="submit" class="finish-test-button">Finish Test</button>
+    <button type="submit" class="finish-test-button">Finish Attempt</button>
 </form>
 @endif
 
@@ -110,7 +110,7 @@
     @foreach($questions as $question)
     <div class="take-test-body">
         <div>
-            <p>Question {{$questions->currentPage()}}.</p>
+            <p class="question-number">Question {{$questions->currentPage()}}.</p>
             <p><strong>{{$tmItem->itmQuestion}}</strong></p>
             @if(!is_null($tmItem->itmImage) || !empty($tmItem->itmImage))
             <img src="/user_upload_images/{{$creatorID}}/{{$tmItem->itmImage}}" style="width: 200px; height: 200px;">
@@ -174,11 +174,11 @@
         @endif
         <input type="hidden" name="oldTmType" value="{{$tmType}}">
         <input type="hidden" name="page" value="" id="pageInput">
-        <button type="button" data-page="{{$questions->currentPage() - 1}}" onclick="switchPage(event)" @if($questions->currentPage() == 1) disabled @endif>Previous</button>
-        <button type="button" data-page="{{$questions->currentPage() + 1}}" onclick="switchPage(event)" @if($questions->currentPage() == $questions->lastPage()) disabled @endif>Next</button>
+        <button type="button" data-page="{{$questions->currentPage() - 1}}" onclick="switchPage(event)" @if($questions->currentPage() == 1) disabled @endif class="next-previous-button">Previous</button>
+        <button type="button" data-page="{{$questions->currentPage() + 1}}" onclick="switchPage(event)" @if($questions->currentPage() == $questions->lastPage()) disabled @endif class="next-previous-button">Next</button>
     </div>
     <input type="hidden" name="finish" value="0" id="finishInput">
-    <button type="button" onclick="finishTest()" class="finish-test-button">Finish Test</button>
+    <button type="button" onclick="finishTest()" class="finish-test-button">Finish Attempt</button>
 </form>
 <script>
     function switchPage(event) {

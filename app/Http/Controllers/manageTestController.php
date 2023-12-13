@@ -203,6 +203,12 @@ class manageTestController extends Controller
                 'IsHidden' => $test->IsHidden ? 0 : 1,
             ]);
         }
+        if ($type == 'mixed') {
+            $test = tmtests::find($id);
+            $test->update([
+                'IsHidden' => $test->IsHidden ? 0 : 1,
+            ]);
+        }
         return back();
     }
 }
