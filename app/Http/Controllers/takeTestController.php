@@ -516,9 +516,10 @@ class takeTestController extends Controller
                         ->get();
                 }
             }
-            if(!isEmpty($question)){
+            if (!empty($question)) {
                 if (in_array($question[0]->type, ['quiz', 'tf'])) {
                     $studentAnswers = session($type . $question[0]->type . $id);
+                    // dd($type, session()->has($type . $id), $id, session($type . $id));
                 } else {
                     $studentAnswers = session($type . $question[0]->type . $question[0]->id . $id);
                 }
@@ -814,42 +815,39 @@ class takeTestController extends Controller
             foreach ($question as $res) {
                 if ($res->type == 'quiz') {
                     $items = quizitems::leftJoin('tm_quiz_items_answers', 'tm_quiz_items_answers.itmID', '=', 'quizitems.itmID')->where('quizitems.itmID', $res->id)
-                    ->where('tm_quiz_items_answers.tmttID', $id)->get();
+                        ->where('tm_quiz_items_answers.tmttID', $id)->get();
                     $total += $items[0]->itmPoints;
                     if ($items[0]->itmAnswer == $items[0]->qzStudentItemAnswer) {
                         $points += $items[0]->itmPoints;
                         // echo("Correct: " . $items[0]->itmAnswer . ' = ' . $items[0]->qzStudentItemAnswer);
-                    }
-                    else {
+                    } else {
                         // echo("Wrong: " . $items[0]->itmAnswer . ' != ' . $items[0]->qzStudentItemAnswer);
                     }
                     // echo("<br>");
-                    
+
                     // session()->forget($type . $question[0]->type . $id);
                 } elseif ($res->type == 'tf') {
                     $items = tfitems::leftJoin('tm_tf_items_answers', 'tm_tf_items_answers.itmID', '=', 'tfitems.itmID')->where('tfitems.itmID', $res->id)
-                    ->where('tm_tf_items_answers.tmttID', $id)->get();
+                        ->where('tm_tf_items_answers.tmttID', $id)->get();
                     $total += $items[0]->itmPoints;
                     if ($items[0]->itmAnswer == $items[0]->tfStudentItemAnswer) {
                         $points += $items[0]->itmPoints;
                         // echo("Correct: " . $items[0]->itmAnswer . ' = ' . $items[0]->tfStudentItemAnswer);
-                    }
-                    else {
+                    } else {
                         // echo("Wrong: " . $items[0]->itmAnswer . ' != ' . $items[0]->tfStudentItemAnswer);
                     }
                     // echo("<br>");
                     // session()->forget($type . $question[0]->type . $id);
                 } elseif ($res->type == 'mt') {
                     $items = mtitems::leftJoin('tm_mt_items_answers', 'tm_mt_items_answers.itmID', '=', 'mtitems.itmID')->where('mtitems.mtID', $res->id)
-                    ->where('tm_mt_items_answers.tmttID', $id)->get();
+                        ->where('tm_mt_items_answers.tmttID', $id)->get();
                     foreach ($items as $item) {
                         $total += $item->itmPoints;
                         if ($item->itmAnswer == $item->mtStudentItemAnswer) {
                             $points += $item->itmPoints;
-                        
+
                             // echo("Correct: " . $item->itmAnswer . ' = ' . $item->mtStudentItemAnswer);
-                        }
-                        else {
+                        } else {
                             // echo("Wrong: " . $item->itmAnswer . ' != ' . $item->mtStudentItemAnswer);
                         }
                         // echo("<br>");
