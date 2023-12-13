@@ -29,10 +29,6 @@
     @error('description')
     <div class="alert alert-danger red-asterisk">{{ $message }}</div>
     @enderror
-    <div class="share-container">
-        <input type="checkbox" class="share-checkbox" name="share">
-        <p class="text-input-label">Share with other users</p>
-    </div>
     <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
                         <p class="text-input-label">Criteria<span class="red-asterisk"> *</span></p>
