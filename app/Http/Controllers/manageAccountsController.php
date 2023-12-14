@@ -34,6 +34,14 @@ class manageAccountsController extends Controller
         $users = $users->get();
 
         $pageType = 'accounts';
+        if (session()->has('success')) {
+            return view('admin.accounts.index', [
+                'user_role' => $user->role,
+                'users' => $users,
+                'pageType' => $pageType,
+                'searchInput' => $search,
+            ])->with('success', session('success'));
+        }
         return view('admin.accounts.index', [
             'user_role' => $user->role,
             'users' => $users,

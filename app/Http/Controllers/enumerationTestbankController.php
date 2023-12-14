@@ -83,7 +83,7 @@ class enumerationTestbankController extends Controller
 
             if (is_null($row[0])) {
                 $skippedRows++;
-                break;
+                continue;
             }
 
             etitems::create([
@@ -107,6 +107,9 @@ class enumerationTestbankController extends Controller
             'etTotal' => $total_points,
         ]);
 
+        if($skippedRows == count($rows) - 1) {
+            return redirect()->back()->with('success', 'There were no questions added');
+        }
         return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
     }
     /**

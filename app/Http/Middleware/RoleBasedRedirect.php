@@ -18,15 +18,27 @@ class RoleBasedRedirect
     {
         if (Auth::check()) {
             $user = Auth::user();
-
+            // dd(session('success'));
+            if (session()->has('success')) {
+                // dd("Hello");
+                if ($user->role === 'student') {
+                    return redirect()->route('taketestIndex')->with('success', session('success'));
+                } elseif ($user->role === 'teacher') {
+                    return redirect()->route('mcq.index')->with('success', session('success'));
+                } elseif ($user->role === 'admin') {
+                    return redirect()->route('accountsIndex')->with('success', session('success'));
+                } elseif ($user->role === 'super admin') {
+                    return redirect()->route('accountsIndex')->with('success', session('success'));
+                }
+            }
             if ($user->role === 'student') {
-                return redirect('/taketest');
+                return redirect()->route('taketestIndex');
             } elseif ($user->role === 'teacher') {
-                return redirect('/mcq');
+                return redirect()->route('mcq.index');
             } elseif ($user->role === 'admin') {
-                return redirect('/accounts');
+                return redirect()->route('accountsIndex');
             } elseif ($user->role === 'super admin') {
-                return redirect('/accounts');
+                return redirect()->route('accountsIndex');
             }
         }
 

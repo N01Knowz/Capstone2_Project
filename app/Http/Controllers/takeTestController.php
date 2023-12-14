@@ -273,6 +273,18 @@ class takeTestController extends Controller
 
         // dd($result);
         // dd($result);
+        
+        if (session()->has('success')) {
+            return view('students.taketest.index', [
+                'page' => $page,
+                'sortDate' => $sortDate,
+                'tests' => $result,
+                'subjects' => $subjects,
+                'filterSubjects' => $filterSubjects,
+                'filterType' => $filter,
+                'searchInput' => $search,
+            ])->with('success', session('success'));
+        }
         return view('students.taketest.index', [
             'page' => $page,
             'sortDate' => $sortDate,

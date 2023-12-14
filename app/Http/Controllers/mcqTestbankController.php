@@ -69,6 +69,18 @@ class mcqTestbankController extends Controller
 
         // dd($tests);
         // dd($request->input('sort-date'));
+        // dd(session('success'));
+        if (session()->has('success')) {
+            return view('testbank.mcq.mcq', [
+                'tests' => $tests,
+                'testPage' => $testPage,
+                'searchInput' => $search,
+                'subjects' => $subjects,
+                'filterSubjects' => $filterSubjects,
+                'sortDate' => $sortDate,
+                'published' => $published,
+            ])->with('success', session('success'));
+        }
         return view('testbank.mcq.mcq', [
             'tests' => $tests,
             'testPage' => $testPage,
@@ -389,13 +401,8 @@ class mcqTestbankController extends Controller
 
             if (is_null($row[0]) || is_null($row[2]) || is_null($row[3])) {
                 $skippedRows++;
-                // echo ('Row: ' . $rowIndex + 2 . " skipped");
-                // echo ("<br>");
-                break;
+                continue;
             }
-            // echo ('Row: ' . $rowIndex + 2 . " accepted");
-            // echo ("<br>");
-            // break;
             $choices = 0;
             for ($i = 3; $i < 13; $i++) {
                 if (!is_null($row[$i])) {
@@ -422,7 +429,6 @@ class mcqTestbankController extends Controller
             ]);
             $rowIndex++;
         }
-
         $questions = quizitems::where("qzID", "=", $test_id)->get();
 
         $total_points = 0;
@@ -435,6 +441,9 @@ class mcqTestbankController extends Controller
             'qzTotal' => $total_points,
         ]);
 
+        if($skippedRows == count($rows) - 1) {
+            return redirect()->back()->with('success', 'There were no questions added');
+        }
         return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
     }
 
@@ -760,8 +769,8 @@ class mcqTestbankController extends Controller
                     }
                 }
             }
-           
-            
+
+
             if ($option) {
                 $updatedHTML = $bodyContent;
             } else {
@@ -772,7 +781,6 @@ class mcqTestbankController extends Controller
             $question->update([
                 'itmOption' . $i => $updatedHTML,
             ]);
-            
         }
 
         $questions = quizitems::where("qzID", "=", $test_id)->get();

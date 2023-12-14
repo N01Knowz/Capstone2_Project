@@ -145,4 +145,9 @@
     alert("{{ session('publish') }}");
 </script>
 @endif
+@if(session('success'))
+<script>
+    alert("{{ session('success') }}");
+</script>
+@endif
 @endsection

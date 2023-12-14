@@ -85,11 +85,11 @@ class tfTestbankController extends Controller
 
             if (is_null($row[0]) || is_null($row[2])) {
                 $skippedRows++;
-                break;
+                continue;
             }
             if (!in_array($row[2], ['1', '0'])) {
                 $skippedRows++;
-                break;
+                continue;
             }
 
             tfitems::create([
@@ -115,6 +115,9 @@ class tfTestbankController extends Controller
             'tfTotal' => $total_points,
         ]);
 
+        if($skippedRows == count($rows) - 1) {
+            return redirect()->back()->with('success', 'There were no questions added');
+        }
         return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
     }
 

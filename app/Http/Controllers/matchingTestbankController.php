@@ -83,7 +83,7 @@ class matchingTestbankController extends Controller
 
             if (is_null($row[1])) {
                 $skippedRows++;
-                break;
+                continue;
             }
 
             mtitems::create([
@@ -108,6 +108,9 @@ class matchingTestbankController extends Controller
             'mtTotal' => $total_points,
         ]);
 
+        if($skippedRows == count($rows) - 1) {
+            return redirect()->back()->with('success', 'There were no questions added');
+        }
         return redirect()->back()->with('success', 'Items added succesfully. Only ' . $skippedRows . ' skipped.');
     }
     /**
