@@ -385,6 +385,9 @@ class mcqTestbankController extends Controller
         $skippedRows = 0;
 
         foreach ($rows as $row) {
+            if(count($rows) != count($header)){
+                return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+            }
             $columnIndex = -1;
             if ($headerRow) {
                 foreach ($row as $cell) {
