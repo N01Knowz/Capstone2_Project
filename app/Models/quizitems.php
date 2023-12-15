@@ -28,6 +28,7 @@ class quizitems extends Model
         "itmAnswer",
         "itmPoints",
         "itmImage",
+        'inTM',
     ];
     
     public function analyticQuizItemTags()

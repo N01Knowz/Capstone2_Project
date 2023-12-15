@@ -37,13 +37,9 @@
         <ul id="suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1;" data-unique-subjects="{{ json_encode($uniqueSubjects) }}"></ul> -->
         <select name="subject" class="textinput-base textarea-title text-input-background">
             @foreach($uniqueSubjects as $subject)
-            <option value="{{$subject->subjectID}}">{{$subject->subjectName}}</option>
+            <option value="{{$subject->subjectID}}" @if($subject->subjectID == $test->subjectID) selected @endif>{{$subject->subjectName}}</option>
             @endforeach
         </select>
-    </div>
-    <div class="share-container">
-        <input type="checkbox" @if($test->qzIsPublic == '1') checked="true" @endif class="share-checkbox" name="share" >
-        <p class="text-input-label">Share with other users</p>
     </div>
     <!-- <div class="criteria-point-container">
                     <div class="criteria-point-sub-container">
@@ -58,7 +54,7 @@
                     </div>
                 </div> -->
     <div class="add-test-button-anchor">
-        <button class="save-test-button">Save Changes</button>
+        <button class="save-test-button" style="margin-top:1em;">Save Changes</button>
     </div>
 </form>
 <script>

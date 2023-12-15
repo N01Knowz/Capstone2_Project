@@ -191,7 +191,6 @@ class mcqTestbankController extends Controller
         }
 
         $uniqueSubjects = subjects::all();
-
         $testPage = 'mcq';
         return view('testbank.mcq.mcq_edit', [
             'uniqueSubjects' => $uniqueSubjects,
@@ -599,7 +598,8 @@ class mcqTestbankController extends Controller
 
         $question->delete();
 
-        $questions = quizitems::where("qzID", "=", $test->id)->get();
+
+        $questions = quizitems::where("qzID", "=", $question->qzID)->get();
 
         $total_points = 0;
 
@@ -639,7 +639,7 @@ class mcqTestbankController extends Controller
     public function add_question_update(Request $request, string $test_id, string $question_id)
     {
         $test = quizzes::find($test_id);
-
+        // dd($analytics);
 
         if (is_null($test)) {
             abort(404); // User does not own the test
@@ -662,6 +662,7 @@ class mcqTestbankController extends Controller
         }
         $question = quizitems::find($question_id);
 
+        $analytics = analyticquizitemtags::where('itmID', $question->itmID)->delete();
         $randomName = "";
         if ($request->input('imageChanged')) {
             $questionImage = $question->question_image;

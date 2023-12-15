@@ -483,7 +483,7 @@ class tfTestbankController extends Controller
 
         $question->delete();
 
-        $questions = tfitems::where("tfID", "=", $test->id)->get();
+        $questions = tfitems::where("tfID", "=", $question->tfID)->get();
 
         $total_points = 0;
 
@@ -546,6 +546,7 @@ class tfTestbankController extends Controller
         }
 
         $question = tfitems::find($question_id);
+        $analytics = analytictfitemtags::where('itmID', $question->itmID)->delete();
 
         $randomName = "";
         if ($request->input('imageChanged')) {

@@ -346,6 +346,7 @@ class enumerationTestbankController extends Controller
         // }
 
 
+        $analytics = analyticettags::where('etID', $testbank->etID)->delete();
         $testbank->update([
             'etTitle' => $request->input('title'),
             'etDescription' => $request->input('description'),

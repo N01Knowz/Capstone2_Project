@@ -19,6 +19,7 @@ class mttests extends Model
         "mtIsPublic",
         "subjectID",
         "user_id",
+        'inTM',
     ];
     public function analyticmttags()
     {

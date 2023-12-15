@@ -20,6 +20,7 @@ class tfitems extends Model
         "itmAnswer",
         "itmPoints",
         "itmImage",
+        'inTM',
     ];
     public function analytictfitemtags()
     {

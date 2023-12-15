@@ -538,6 +538,7 @@ class matchingTestbankController extends Controller
         }
 
         $question = mtitems::find($question_id);
+        $analytics = analyticmttags::where('itmID', $question->itmID)->delete();
 
         $question->update([
             'itmAnswer' => $request->input('item_answer'),

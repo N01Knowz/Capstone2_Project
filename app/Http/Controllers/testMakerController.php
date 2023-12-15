@@ -344,18 +344,6 @@ class testMakerController extends Controller
                     $item->tags = $tagData;
                 });
             });
-            // dd($allTestQuery);
-            // $allTestQuery->each(function ($allTestQuery) {
-            //     $tags = analyticmttags::join('analytictags', 'analytictags.tagID', '=', 'analyticmttags.tagID')
-            //         ->where('analyticmttags.mtID', $allTestQuery->mtID)
-            //         ->get();
-
-            //     $tagData = [];
-            //     foreach ($tags as $tag) {
-            //         $tagData[$tag->tagName] = $tag->similarity;
-            //     }
-            //     $allTestQuery->tags = $tagData;
-            // });
 
             $shouldFilter = false;
             foreach ($filterLabel as $key => $value) {
@@ -630,11 +618,17 @@ class testMakerController extends Controller
                             'tmID' => $id,
                             'itmID' => $checkbox,
                         ]);
+                        $item = quizitems::find($checkbox)->update([
+                            'inTM' => 1,
+                        ]);
                     }
                     if ($test_type == "tf") {
                         tmTfItems::create([
                             'tmID' => $id,
                             'itmID' => $checkbox,
+                        ]);
+                        $item = tfitems::find($checkbox)->update([
+                            'inTM' => 1,
                         ]);
                     }
                     if ($test_type == "mtf") {
@@ -662,12 +656,18 @@ class testMakerController extends Controller
                             'tmID' => $id,
                             'etID' => $checkbox,
                         ]);
+                        $item = ettests::find($checkbox)->update([
+                            'inTM' => 1,
+                        ]);
                     }
                     // dd($checkbox);
                     if ($test_type == "matching") {
                         tmMt::create([
                             'tmID' => $id,
                             'mtID' => $checkbox,
+                        ]);
+                        $item = mttests::find($checkbox)->update([
+                            'inTM' => 1,
                         ]);
                     }
                 }

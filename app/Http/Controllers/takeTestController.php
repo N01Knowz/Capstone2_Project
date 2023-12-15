@@ -270,10 +270,59 @@ class takeTestController extends Controller
         $result = $result
             ->orderBy('updated_at', $sortDate)
             ->paginate(13);
+        $result->each(function ($result) {
+            // 'user_id' => Auth::id(),
+            $result->taken = 0;
+            if ($result->type == 'MCQ') {
 
+                $queryResult = quizTestsTaken::where('user_id', Auth::id())->where('qzID', $result->id)->get();
+                if ($queryResult->count() != 0) {
+                    $result->taken = 1;
+                }
+            }
+            if ($result->type == 'TF') {
+                $queryResult = tfTestsTaken::where('user_id', Auth::id())->where('tfID', $result->id)->get();
+                if ($queryResult->count() != 0) {
+                    $result->taken = 1;
+                }
+                // dd($queryResult, $queryResult->count() != 0);
+            }
+            if ($result->type == 'MT') {
+
+                $queryResult = matchingTestsTaken::where('user_id', Auth::id())->where('mtID', $result->id)->get();
+                if ($queryResult->count() != 0) {
+                    $result->taken = 1;
+                }
+            }
+            if ($result->type == 'ET') {
+
+                $queryResult = enumerationTestsTaken::where('user_id', Auth::id())->where('etID', $result->id)->get();
+                if ($queryResult->count() != 0) {
+                    $result->taken = 1;
+                }
+            }
+            if ($result->type == 'MIXED') {
+
+                $queryResult = tmTestsTaken::where('user_id', Auth::id())->where('tmID', $result->id)->get();
+                if ($queryResult->count() != 0) {
+                    $result->taken = 1;
+                }
+            }
+            // dd($result);
+            // $tags = analyticettags::join('analytictags', 'analytictags.tagID', '=', 'analyticettags.tagID')
+            //     ->where('analyticettags.etID', $result->etID)
+            //     ->get();
+
+            // $tagData = [];
+            // foreach ($tags as $tag) {
+            //     $tagData[$tag->tagName] = $tag->similarity;
+            // }
+            // $result->tags = $tagData;
+        });
         // dd($result);
         // dd($result);
-        
+        // dd($result);
+
         if (session()->has('success')) {
             return view('students.taketest.index', [
                 'page' => $page,

@@ -51,7 +51,7 @@
             <img id="selectedImage" src="#" alt="Selected Image" class="image-preview">
         </div>
         <p class="text-input-label">Number of Choices/Options(Max. 10)</p>
-        <input type="number" class="text-input-choices" id="numChoicesInput" value="1" name="number_of_choices">
+        <input type="number" class="text-input-choices" id="numChoicesInput" value="2" name="number_of_choices">
         @error('number_of_choices')
         <div class="alert alert-danger red-asterisk">{{ $message }}</div>
         @enderror
@@ -61,12 +61,15 @@
             @error('option_1')
             <div class="alert alert-danger red-asterisk">{{ $message }}</div>
             @enderror
+            <p class="text-input-label">Option 2</p>
+            <textarea class="summernote" name="option_2"></textarea>
         </div>
         <div class="item-answer-points-container">
             <div class="correct-answer-container">
                 <p class="text-input-label">Answer <span class="red-asterisk">*</span></p>
                 <select class="select-option" id="option-select" name="question_answer">
                     <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
                 </select>
             </div>
             <div class="item-point-container">

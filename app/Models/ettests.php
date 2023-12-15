@@ -20,6 +20,7 @@ class ettests extends Model
         "etIsPublic",
         "subjectID",
         "user_id",
+        'inTM',
     ];
     public function analyticettags()
     {

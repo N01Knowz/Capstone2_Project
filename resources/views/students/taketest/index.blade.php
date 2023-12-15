@@ -40,6 +40,9 @@
             </div>
         </div>
         <form class="add-item-modal-footer" id="take_test_form">
+            <p>
+                <strong style="display: none; color:red; margin-left: 1em;" id="taken-test-paragraph">You've already taken this test.</strong>
+            </p>
             <div class="add-item-buttons-container">
                 <button form="take_test_form" class="add-item-save-button add-item-modal-button" id="take-test-button">Yes</button>
                 <button type="button" id="add_item_close_button" class="add-item-close-button add-item-modal-button">No</button>
@@ -75,7 +78,7 @@
             <tbody>
                 <!-- Table content goes here -->
                 @foreach ($tests as $test)
-                <tr data-creator-id='{{$test->creatorID}}' data-fullname="{{$test->first_name . ' ' . $test->last_name}}" data-id="{{$test->id}}" data-title="{{$test->title}}" data-description="{{$test->description}}" data-subject="{{$test->subjectName}}" data-type="{{$test->type}}" data-userimage="{{$test->user_image}}" data-item-count="{{$test->itemCount}}" onclick="showTestDescription(event)">
+                <tr data-taken='{{$test->taken}}' data-creator-id='{{$test->creatorID}}' data-fullname="{{$test->first_name . ' ' . $test->last_name}}" data-id="{{$test->id}}" data-title="{{$test->title}}" data-description="{{$test->description}}" data-subject="{{$test->subjectName}}" data-type="{{$test->type}}" data-userimage="{{$test->user_image}}" data-item-count="{{$test->itemCount}}" onclick="showTestDescription(event)">
                     <td class="test-body-column test-body-title">
                         <p>{{$test->title}}</p>
                     </td>
@@ -110,10 +113,11 @@
         const count = clickedRow.getAttribute('data-item-count');
         const id = clickedRow.getAttribute('data-id');
         const creatorid = clickedRow.getAttribute('data-creator-id');
-        
+        const test_taken = clickedRow.getAttribute('data-taken');
+
 
         const modal_form = document.getElementById('take_test_form');
-        modal_form.action = "/taketest/" + type.toLowerCase() + "/" + id + "/" + creatorid + "/test"; 
+        modal_form.action = "/taketest/" + type.toLowerCase() + "/" + id + "/" + creatorid + "/test";
 
         const item_title = document.getElementById('item-title');
         item_title.innerHTML = "";
@@ -133,6 +137,15 @@
         const item_count = document.getElementById('item-count');
         item_count.innerHTML = "";
         item_count.innerHTML = count;
+        const taken_test_paragraph = document.getElementById('taken-test-paragraph');
+        console.log(test_taken);
+        console.log(test_taken == 1);
+        console.log(taken_test_paragraph);
+        if (test_taken == 1) {
+            taken_test_paragraph.style.display = 'block';
+        } else {
+            taken_test_paragraph.style.display = 'none';
+        }
         show_add_item_modal();
     }
 
@@ -152,10 +165,9 @@
             add_item_sub_container.classList.remove("show");
         }
     });
-    
+
 
     const take_test = document.getElementById('take-test-button');
-
 </script>
 @endsection
 @if(session('success'))
