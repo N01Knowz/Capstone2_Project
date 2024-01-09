@@ -2,7 +2,6 @@
 @section('title', 'Multiple Choices')
 
 @push('styles')
-<link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/mcq.css">
 <link rel="stylesheet" href="/css/filter.css">
 <link rel="stylesheet" href="/css/teacher_front-page.css">
@@ -14,7 +13,7 @@
     <div class="table-container">
         <div class="test-body-header">
             <form method="get" action="mcq/create" class="add-test-button-anchor">
-                <button class="add-test-button"><img src="/images/add-test-dark.png" class="add-test-button-icon">
+                <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
                     <p>Add New Test</p>
                 </button>
             </form>
@@ -26,7 +25,7 @@
         <table class="test-body-table">
             <thead>
                 <tr class="test-table-header">
-                    <th>Title</th>
+                    <th class="test-body-title">Title</th>
                     <th>Description</th>
                     <th>Status</th>
                     <th>Subject</th>
@@ -45,8 +44,10 @@
                     </td>
                     <td class="test-body-column test-body-status" data-id="{{$test->qzID}}">
                         <div>
-                            <p class="test-status-word" style="width: 3.5em;">@if($test->qzIsPublic == 0) Private @else Public @endif</p>
-                            <img @if($test->qzIsPublic == 0) src="/images/closed-eye-icon-light.png" style="background-color: #C61D1F; padding: 0.1em;" @else src="/images/eye-icon-light.png" style="background-color: #2d9c18; padding: 0.1em;" @endif class="test-status-icon">
+                            @if($test->qzIsPublic == 0)
+                            <p class="test-status-word" style="width: 3.5em; font-weight: bold;">Unpublished </p>
+                            @else
+                            <p class="test-status-word" style="width: 3.5em; color: green; font-weight: bold;"> Published</p>@endif
                         </div>
                     </td>
                     <td class="test-body-column test-body-points" data-id="{{$test->qzID}}">
@@ -59,20 +60,21 @@
                             <form method="POST" action="/mcq/{{$test->qzID}}/publish" class="button-delete-form" @if($test->quiz_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else interact-button @endif"><img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
+                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else button-active @endif" Title="Publish Test">
+                                    <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
-                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else interact-button @endif" id="test-edit-button" data-id="{{$test->qzID}}" @if($test->qzIsPublic) disabled @endif>
-                                <img src="/images/edit-icon.png" class="test-body-buttons-icons">
+                            <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else buttons-edit-button button-active @endif" Title="Edit Test" id="test-edit-button" data-id="{{$test->qzID}}" @if($test->qzIsPublic) disabled @endif>
+                                <img src="/images/edit-text-icon-dark.png" class="test-body-buttons-icons">
                             </button>
                             <form method="GET" action="/print/mcq/{{$test->qzID}}" class="button-delete-form" target="_blank">
-                                <button class="test-body-buttons"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
+                                <button class="test-body-buttons button-active"><img src="/images/printing-icon-dark.png" Title="Print Test" class="test-body-buttons-icons">
                                 </button>
                             </form>
                             <form method="POST" action="/mcq/{{$test->qzID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else interact-button @endif" @if($test->qzIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
+                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else button-active @endif" Title="Delete Test" @if($test->qzIsPublic) disabled @endif><img src="/images/delete-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
                         </div>

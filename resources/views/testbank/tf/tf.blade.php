@@ -2,28 +2,26 @@
 @section('title', 'True or False')
 
 @push('styles')
-<link rel="stylesheet" href="/css/front_page.css">
-<link rel="stylesheet" href="/css/navigator.css">
-<link rel="stylesheet" href="/css/body.css">
-<link rel="stylesheet" href="/css/tf.css">
 <link rel="stylesheet" href="/css/filter.css">
+<link rel="stylesheet" href="/css/teacher_front-page.css">
+<link rel="stylesheet" href="/css/tf.css">
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 @endpush
 @section('content')
-<div class="test-body-header">
-    <form method="get" action="tf/create" class="add-test-button-anchor">
-        <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
-            <p>Add New Test</p>
-        </button>
-    </form>
-    <form method="GET" action="" class="searchbar-container" id="filter-form">
-        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
-        <button class="search-button">Search</button>
-    </form>
-</div>
 <div class="test-body-content">
     @include('layouts.filter')
     <div class="table-container">
+        <div class="test-body-header">
+            <form method="get" action="tf/create" class="add-test-button-anchor">
+                <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+                    <p>Add New Test</p>
+                </button>
+            </form>
+            <form method="GET" action="" class="searchbar-container" id="filter-form">
+                <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
+                <button class="search-button">Search</button>
+            </form>
+        </div>
         <table class="test-body-table">
             <thead>
                 <tr class="test-table-header">
@@ -46,8 +44,10 @@
                     </td>
                     <td class="test-body-column test-body-status" data-id="{{$test->tfID}}">
                         <div>
-                            <p class="test-status-word" style="width: 3.5em;">@if($test->tfIsPublic == 0) Private @else Public @endif</p>
-                            <img @if($test->tfIsPublic == 0) src="/images/closed-eye-icon-light.png" style="background-color: #C61D1F; padding: 0.1em;" @else src="/images/eye-icon-light.png" style="background-color: #2d9c18; padding: 0.1em;" @endif class="test-status-icon">
+                            @if($test->qzIsPublic == 0)
+                            <p class="test-status-word" style="width: 3.5em; font-weight: bold;">Unpublished </p>
+                            @else
+                            <p class="test-status-word" style="width: 3.5em; color: green; font-weight: bold;"> Published</p>@endif
                         </div>
                     </td>
                     <td class="test-body-column test-body-points" data-id="{{$test->tfID}}">
@@ -60,25 +60,22 @@
                             <form method="POST" action="/tf/{{$test->tfID}}/publish" class="button-delete-form" @if($test->tf_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @else buttons-publish-button @endif" @if($test->tfIsPublic) disabled @endif>
+                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @endif">
                                     <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
-                            <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @else buttons-edit-button @endif" @if($test->tfIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tfID}}">
-                                <img src="/images/edit-icon.png" class="test-body-buttons-icons">
-                                <p>Edit</p>
+                            <button class="test-body-buttons @if($test->tfIsPublic) button-disabled else buttons-edit-button @endif" @if($test->tfIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tfID}}">
+                                <img src="/images/edit-text-icon-dark.png" class="test-body-buttons-icons">
                             </button>
                             <form method="GET" action="/print/tf/{{$test->tfID}}" class="button-delete-form" target="_blank">
-                                <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                    <p>Print</p>
+                                <button class="test-body-buttons"><img src="/images/printing-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
                             <form method="POST" action="/tf/{{$test->tfID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->tfIsPublic) disabled @endif>
-                                    <img src="/images/delete-icon.png" class="test-body-buttons-icons">
-                                    <p>Delete</p>
+                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @endif" @if($test->tfIsPublic) disabled @endif>
+                                    <img src="/images/delete-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
                         </div>

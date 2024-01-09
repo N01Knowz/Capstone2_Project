@@ -2,9 +2,8 @@
 @section('title', 'Test Maker')
 
 @push('styles')
-<link rel="stylesheet" href="/css/front_page.css">
-<link rel="stylesheet" href="/css/navigator.css">
-<link rel="stylesheet" href="/css/body.css">
+<link rel="stylesheet" href="/css/filter.css">
+<link rel="stylesheet" href="/css/teacher_front-page.css">
 <link rel="stylesheet" href="/css/tf.css">
 <link rel="stylesheet" href="/css/filter.css">
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">

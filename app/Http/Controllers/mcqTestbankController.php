@@ -65,7 +65,7 @@ class mcqTestbankController extends Controller
 
         $sortDate =  is_null($request->input('sort-date')) ? 'desc' : $request->input('sort-date');
         $tests = $testsQuery->orderBy('qzID', $sortDate)
-            ->paginate(13);
+            ->paginate(10);
         // dd($tests);
 
         // dd($tests);
