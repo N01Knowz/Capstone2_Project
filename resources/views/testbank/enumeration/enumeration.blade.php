@@ -94,8 +94,7 @@
                             <form method="POST" action="/enumeration/{{$test->etID}}/publish" class="button-delete-form" @if($test->et_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-publish-button @endif"><img src="/images/publish-icon-dark.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
-                                    <p>Publish</p>
+                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-publish-button @endif"><img src="/images/upload-icon-dark.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
                                 </button>
                             </form>
                             <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-edit-button @endif" id="test-edit-button" data-id="{{$test->etID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>

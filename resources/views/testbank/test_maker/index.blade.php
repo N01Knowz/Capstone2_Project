@@ -60,8 +60,7 @@
                             @csrf
                             @method('PUT')
                             <button class="test-body-buttons @if($test->tmIsPublic) button-disabled @else buttons-publish-button @endif" @if($test->tmIsPublic) disabled @endif>
-                                <img src="/images/publish-icon-dark.png" class="test-body-buttons-icons">
-                                <p>Publish</p>
+                                <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                             </button>
                         </form>
                         <button class="test-body-buttons @if($test->tmIsPublic) button-disabled @else buttons-edit-button @endif" @if($test->tmIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tmID}}">

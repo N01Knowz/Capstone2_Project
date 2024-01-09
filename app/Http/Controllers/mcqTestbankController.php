@@ -41,6 +41,7 @@ class mcqTestbankController extends Controller
         }
 
         $testPage = 'mcq';
+        $filterTitle = 'Multiple Choices Questions';
 
         $subjects = subjects::all();
         $filterSubjects = [];
@@ -74,6 +75,7 @@ class mcqTestbankController extends Controller
             return view('testbank.mcq.mcq', [
                 'tests' => $tests,
                 'testPage' => $testPage,
+                'filterTitle' => $filterTitle,
                 'searchInput' => $search,
                 'subjects' => $subjects,
                 'filterSubjects' => $filterSubjects,
@@ -82,6 +84,7 @@ class mcqTestbankController extends Controller
             ])->with('success', session('success'));
         }
         return view('testbank.mcq.mcq', [
+            'filterTitle' => $filterTitle,
             'tests' => $tests,
             'testPage' => $testPage,
             'searchInput' => $search,
@@ -384,7 +387,10 @@ class mcqTestbankController extends Controller
         $skippedRows = 0;
 
         foreach ($rows as $row) {
-            if(count($rows) != count($header)){
+            if(!isset($rows[0])) {
+                return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+            }
+            if(count($rows[0]) != count($header)){
                 return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
             }
             $columnIndex = -1;

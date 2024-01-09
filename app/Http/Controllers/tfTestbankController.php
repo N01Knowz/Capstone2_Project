@@ -69,7 +69,10 @@ class tfTestbankController extends Controller
         $skippedRows = 0;
 
         foreach ($rows as $row) {
-            if(count($rows) != count($header)){
+            if(!isset($rows[0])) {
+                return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+            }
+            if(count($rows[0]) != count($header)){
                 return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
             }
             $columnIndex = -1;
@@ -168,7 +171,9 @@ class tfTestbankController extends Controller
             ->paginate(13);
 
         $testPage = 'tf';
+        $filterTitle = 'True or False Questions';
         return view('testbank.tf.tf', [
+            'filterTitle' => $filterTitle,
             'tests' => $tests,
             'testPage' => $testPage,
             'searchInput' => $search,

@@ -67,7 +67,10 @@ class matchingTestbankController extends Controller
         $skippedRows = 0;
 
         foreach ($rows as $row) {
-            if(count($rows) != count($header)){
+            if(!isset($rows[0])) {
+                return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
+            }
+            if(count($rows[0]) != count($header)){
                 return redirect()->back()->with('wrong_template', 'There is a problem with the excel file uploaded. Template may not have been used.');
             }
             $columnIndex = -1;
@@ -178,7 +181,10 @@ class matchingTestbankController extends Controller
 
 
         $testPage = 'matching';
+        
+        $filterTitle = 'Matching Questions';
         return view('testbank.matching.matching', [
+            'filterTitle' => $filterTitle,
             'tests' => $tests,
             'testPage' => $testPage,
             'searchInput' => $search,
