@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/login');
+    return view('dashboard');
 });
 
 Route::get('/redirect', function () {})->middleware(['auth', 'role.redirect']);

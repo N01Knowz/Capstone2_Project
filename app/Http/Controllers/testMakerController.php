@@ -75,9 +75,10 @@ class testMakerController extends Controller
         $tests = $testsQuery->orderBy('tmID', $sortDate)
             ->paginate(13);
 
-
+        $filterTitle = "Mixed Test";
         $testPage = 'test';
         return view('testbank.test_maker.index', [
+            'filterTitle' => $filterTitle,
             'tests' => $tests,
             'testPage' => $testPage,
             'searchInput' => $search,

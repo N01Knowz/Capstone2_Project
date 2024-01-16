@@ -1,5 +1,6 @@
 <div class="filter-content">
-    <strong>{{strtoupper($testPage)}}</strong>
+    <button class="filter-submit-button" form="filter-form" type="submit">Filter</button>
+    <strong>{{strtoupper($filterTitle)}}</strong>
     <div>
         <div>
             <strong>Sort By</strong>
@@ -14,6 +15,5 @@
                 </div>
             </div>
         </div>
-        <button form="filter-form" type="submit">Filter</button>
     </div>
 </div>
