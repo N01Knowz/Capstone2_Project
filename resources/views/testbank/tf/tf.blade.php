@@ -44,7 +44,7 @@
                     </td>
                     <td class="test-body-column test-body-status" data-id="{{$test->tfID}}">
                         <div>
-                            @if($test->qzIsPublic == 0)
+                            @if($test->tfIsPublic == 0)
                             <p class="test-status-word" style="width: 3.5em; font-weight: bold;">Unpublished </p>
                             @else
                             <p class="test-status-word" style="width: 3.5em; color: green; font-weight: bold;"> Published</p>@endif
@@ -60,21 +60,21 @@
                             <form method="POST" action="/tf/{{$test->tfID}}/publish" class="button-delete-form" @if($test->tf_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @endif">
+                                <button Title="Publish Test" class="test-body-buttons @if($test->tfIsPublic) button-disabled @else button-active @endif" @if($test->tfIsPublic) disabled @endif>
                                     <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
-                            <button class="test-body-buttons @if($test->tfIsPublic) button-disabled else buttons-edit-button @endif" @if($test->tfIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tfID}}">
+                            <button Title="Edit Test" class="test-body-buttons @if($test->tfIsPublic) button-disabled @else buttons-edit-button button-active @endif" @if($test->tfIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->tfID}}">
                                 <img src="/images/edit-text-icon-dark.png" class="test-body-buttons-icons">
                             </button>
                             <form method="GET" action="/print/tf/{{$test->tfID}}" class="button-delete-form" target="_blank">
-                                <button class="test-body-buttons"><img src="/images/printing-icon-dark.png" class="test-body-buttons-icons">
+                                <button Title="Print Test" class="test-body-buttons button-active"><img src="/images/printing-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
                             <form method="POST" action="/tf/{{$test->tfID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->tfIsPublic) button-disabled @endif" @if($test->tfIsPublic) disabled @endif>
+                                <button Title="Delete Test" class="test-body-buttons @if($test->tfIsPublic) button-disabled @else button-active @endif" @if($test->tfIsPublic) disabled @endif>
                                     <img src="/images/delete-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>

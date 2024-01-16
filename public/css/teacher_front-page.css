@@ -13,6 +13,11 @@
     padding-top: 1em;
     display: flex;
     background-color: #F6EDDF;
+    padding-bottom: 1em;
+}
+
+body {
+    background-color: #F6EDDF;
 }
 
 .table-container {
@@ -34,6 +39,7 @@
 .button-disabled {
     background-color: #cccccc;
     color: white;
+    cursor: not-allowed;
 }
 
 .test-body-header {
@@ -200,11 +206,11 @@
     border-radius: 5px;
     height: 2.5em;
     width: 2.5em;
-    cursor: pointer;
 }
 
 .button-active {
     background-color: var(--color2);
+    cursor: pointer;
 }
 
 .test-body-buttons-icons {
@@ -226,7 +232,7 @@
 
 .test-body-column {
     padding: 1em 0em;
-    
+    cursor:pointer;
 }
 
 .test-body-title {
@@ -264,11 +270,19 @@ th {
 .pagination a {
     text-decoration: none;
     padding: 8px 12px;
-    background-color: #3490dc;
+    background-color: var(--color4);
     color: #fff;
     border-radius: 4px;
 }
 
 .pagination a:hover {
-    background-color: #1e528e;
+    background-color: #707070 ;
+}
+
+.active {
+    text-decoration: none;
+    padding: 8px 12px;
+    background-color: var(--color3);
+    color: #fff;
+    border-radius: 4px;
 }

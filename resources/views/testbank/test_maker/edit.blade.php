@@ -8,7 +8,7 @@
 @endpush
 @section('content')
 <div class="test-body-header">
-    <a href="/mcq" class="add-test-button-anchor">
+    <a href="/test" class="add-test-button-anchor">
         <button class="add-test-button"><img src="/images/back-icon.png" class="add-test-button-icon">
             <p>Back</p>
         </button>

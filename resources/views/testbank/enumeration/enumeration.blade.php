@@ -2,28 +2,26 @@
 @section('title', 'Enumeration')
 
 @push('styles')
-<link rel="stylesheet" href="/css/front_page.css">
-<link rel="stylesheet" href="/css/navigator.css">
-<link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/mcq.css">
+<link rel="stylesheet" href="/css/teacher_front-page.css">
 <link rel="stylesheet" href="/css/filter.css">
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 @endpush
 @section('content')
-<div class="test-body-header">
-    <form method="get" action="enumeration/create" class="add-test-button-anchor">
-        <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
-            <p>Add New Test</p>
-        </button>
-    </form>
-    <form method="GET" action="" class="searchbar-container" id="filter-form">
-        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
-        <button class="search-button">Search</button>
-    </form>
-</div>
 <div class="test-body-content">
     @include('layouts.filter')
     <div class="table-container">
+        <div class="test-body-header">
+            <form method="get" action="enumeration/create" class="add-test-button-anchor">
+                <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+                    <p>Add New Test</p>
+                </button>
+            </form>
+            <form method="GET" action="" class="searchbar-container" id="filter-form">
+                <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
+                <button class="search-button">Search</button>
+            </form>
+        </div>
         <table class="test-body-table">
             <thead>
                 <tr class="test-table-header">
@@ -69,8 +67,10 @@
                     </td>
                     <td class="test-body-column test-body-status" data-id="{{$test->etID}}">
                         <div>
-                            <p class="test-status-word" style="width: 3.5em;">@if($test->etIsPublic == 0) Private @else Public @endif</p>
-                            <img @if($test->etIsPublic == 0) src="/images/closed-eye-icon-light.png" style="background-color: #C61D1F; padding: 0.1em;" @else src="/images/eye-icon-light.png" style="background-color: #2d9c18; padding: 0.1em;" @endif class="test-status-icon">
+                            @if($test->etIsPublic == 0)
+                            <p class="test-status-word" style="width: 3.5em; font-weight: bold;">Unpublished </p>
+                            @else
+                            <p class="test-status-word" style="width: 3.5em; color: green; font-weight: bold;"> Published</p>@endif
                         </div>
                     </td>
                     <td class="test-body-column test-body-points" data-id="{{$test->etID}}">
@@ -94,22 +94,21 @@
                             <form method="POST" action="/enumeration/{{$test->etID}}/publish" class="button-delete-form" @if($test->et_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-publish-button @endif"><img src="/images/upload-icon-dark.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
+                                <!-- <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-publish-button @endif">
+                                    <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
+                                </button> -->
+                                <button Title="Publish Test" class="test-body-buttons @if($test->etIsPublic) button-disabled @else button-active @endif" @if($test->etIsPublic) disabled @endif>
+                                    <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
-                            <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-edit-button @endif" id="test-edit-button" data-id="{{$test->etID}}"><img src="/images/edit-icon.png" class="test-body-buttons-icons" @if($test->etIsPublic) disabled @endif>
-                                <p>Edit</p>
+                            <button Title="Edit Test" class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-edit-button button-active @endif" @if($test->etIsPublic) disabled @endif id="test-edit-button" data-id="{{$test->etID}}">
+                                <img src="/images/edit-text-icon-dark.png" class="test-body-buttons-icons">
                             </button>
-                            <form method="GET" action="/print/enumeration/{{$test->etID}}" class="button-delete-form" target="_blank">
-                                <button class="test-body-buttons buttons-print-button"><img src="/images/print-icon-dark.png" class="test-body-buttons-icons">
-                                    <p>Print</p>
-                                </button>
-                            </form>
                             <form method="POST" action="/enumeration/{{$test->etID}}" class="button-delete-form" onsubmit="return confirmDelete();">
                                 @csrf
                                 @method('delete')
-                                <button class="test-body-buttons @if($test->etIsPublic) button-disabled @else buttons-delete-button @endif" @if($test->etIsPublic) disabled @endif><img src="/images/delete-icon.png" class="test-body-buttons-icons">
-                                    <p>Delete</p>
+                                <button Title="Delete Test" class="test-body-buttons @if($test->etIsPublic) button-disabled @else button-active @endif" @if($test->etIsPublic) disabled @endif>
+                                    <img src="/images/delete-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
                         </div>
@@ -148,6 +147,7 @@
         alert("There's no item for this record.");
         return false;
     }
+
     function handleRowClick(event) {
         const clickedColumn = event.currentTarget;
         const columnData = clickedColumn.getAttribute('data-id');

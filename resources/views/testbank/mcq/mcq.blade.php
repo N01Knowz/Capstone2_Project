@@ -60,7 +60,7 @@
                             <form method="POST" action="/mcq/{{$test->qzID}}/publish" class="button-delete-form" @if($test->quiz_items_count == 0) onsubmit="return noItemsPublish();" @else onsubmit="return confirmPublish();" @endif>
                                 @csrf
                                 @method('PUT')
-                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else button-active @endif" Title="Publish Test">
+                                <button class="test-body-buttons @if($test->qzIsPublic) button-disabled @else button-active @endif" @if($test->qzIsPublic) disabled @endif Title="Publish Test">
                                     <img src="/images/upload-icon-dark.png" class="test-body-buttons-icons">
                                 </button>
                             </form>
