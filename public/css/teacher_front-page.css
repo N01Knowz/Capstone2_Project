@@ -15,7 +15,7 @@ body {
 }
 
 .table-container {
-    width: calc(100% - 17em);
+    width: calc(100% - 5em);
     margin-left: 1em;
     margin-right: 1em;
     height: 88vh;
@@ -30,10 +30,6 @@ body {
     .test-body {
         margin-left: 0%;
         width: 100%;
-    }
-
-    .table-container {
-        width: calc(100% - 2em);
     }
 }
 
