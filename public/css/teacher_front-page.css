@@ -7,6 +7,10 @@
         margin-left: 0%;
         width: 100%;
     }
+
+    .table-container {
+        width: calc(100% - 2em);
+    }
 }
 
 .test-body-content {
@@ -232,7 +236,7 @@ body {
 
 .test-body-column {
     padding: 1em 0em;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .test-body-title {
@@ -276,7 +280,7 @@ th {
 }
 
 .pagination a:hover {
-    background-color: #707070 ;
+    background-color: #707070;
 }
 
 .active {
