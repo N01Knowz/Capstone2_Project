@@ -15,7 +15,7 @@ body {
 }
 
 .table-container {
-    width: calc(100% - 5em);
+    min-width: calc(100% - 25em);
     margin-left: 1em;
     margin-right: 1em;
     height: 88vh;
