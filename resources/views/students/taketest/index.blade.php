@@ -2,12 +2,10 @@
 @section('title', 'Take Test')
 
 @push('styles')
-<link rel="stylesheet" href="/css/front_page.css">
 <link rel="stylesheet" href="/css/navigator.css">
-<link rel="stylesheet" href="/css/body.css">
 <link rel="stylesheet" href="/css/filter.css">
 <link rel="stylesheet" href="/css/testtake.css">
-<link rel="stylesheet" href="/css/front_page.css">
+<link rel="stylesheet" href="/css/teacher_front-page.css">
 @endpush
 
 @section('modal-contents')
@@ -52,24 +50,24 @@
 </div>
 @endsection
 @section('content')
-<div class="test-body-header">
-    <div class="add-test-button-anchor">
-        <!-- <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
-            <p>Add New Test</p>
-        </button> -->
-    </div>
-    <form method="GET" action="" class="searchbar-container" id="filter-form">
-        <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
-        <button class="search-button">Search</button>
-    </form>
-</div>
 <div class="body-content">
     @include('layouts.filter_student')
     <div class="table-container">
+        <div class="test-body-header">
+            <div class="add-test-button-anchor">
+                <!-- <button class="add-test-button"><img src="/images/add-test-icon.png" class="add-test-button-icon">
+            <p>Add New Test</p>
+        </button> -->
+            </div>
+            <form method="GET" action="" class="searchbar-container" id="filter-form">
+                <input type="text" placeholder="Search tests here..." class="test-searchbar" name="search" @isset($searchInput) value="{{$searchInput}}" @endisset>
+                <button class="search-button">Search</button>
+            </form>
+        </div>
         <table class="test-body-table">
             <thead>
                 <tr class="test-table-header">
-                    <th>Title</th>
+                    <th class="test-body-title">Title</th>
                     <th>Description</th>
                     <th>Subject</th>
                     <th>Test Type</th>

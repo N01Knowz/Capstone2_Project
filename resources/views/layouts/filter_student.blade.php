@@ -1,4 +1,5 @@
 <div class="filter-content">
+    <button class="filter-submit-button" form="filter-form" type="submit">Filter</button>
     <strong>{{strtoupper($page)}}</strong>
     <div>
         <strong>Filter</strong>
@@ -55,6 +56,5 @@
                 </div>
             </div>
         </div>
-        <button form="filter-form" type="submit">Filter</button>
     </div>
 </div>
